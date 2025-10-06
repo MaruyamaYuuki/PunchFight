@@ -16,7 +16,13 @@ public:
 
 	void TitleAnimation();
 
+	void SpriteFlashUpdate();
+
+	void FadeOutUpdate();
+
 private:
+	XINPUT_STATE state, preState;
+
 	KamataEngine::DirectXCommon* dxCommon = nullptr;
 	KamataEngine::Input* input = nullptr;
 	KamataEngine::Audio* audio = nullptr;
@@ -29,6 +35,7 @@ private:
 	KamataEngine::Sprite* titleBackSprite[2];
 	KamataEngine::Sprite* titleSprite_ = nullptr;
 	KamataEngine::Sprite* startSprite_ = nullptr;
+	KamataEngine::Sprite* fadeSprite_ = nullptr;
 
 	// ---タイトルロゴアニメーション用---
 	float blinkTime_ = 0.0f;
@@ -44,8 +51,8 @@ private:
 	float fadeInTimer_ = 0.0f;
 	bool titleBGMStarted_ = false;
 
-	KamataEngine::Vector2 titlePos_ = {640.0f, 300.0f};
-	KamataEngine::Vector2 titleSize_ = {1000, 410};
+	KamataEngine::Vector2 titlePos_ = {640.0f, 200.0f};
+	KamataEngine::Vector2 titleSize_ = {600, 364};
 	// ---------------------------------
 
 	// ---背景スクロール用---
@@ -53,8 +60,26 @@ private:
 	float bgPosX[2] = {{0.0f}, {1367.0f}};
 	// -----------------------
 
-	uint32_t punchSEDataHandle_ = 0;
-	uint32_t punchSEVoiceHandle_ = 0;
+	// ---シーン遷移用---
+	// タイトル点滅制御用
+	bool titleBlinking_ = false;
+	bool titleBlinkFinished_ = false;
+	float blinkTimer_ = 0.0f;
+	int blinkCount_ = 0;
+	const int kMaxBlinkCount_ = 2;
+	// フェードアウト制御用
+	bool fadeOutStarted_ = false;
+	bool fadeOutFinished_ = false;
+	float fadeWaitTime = 30.0f;
+	float fadeScale_ = 0.0f;      // 拡大率
+	float fadeSpeed_ = 1.5f;      // 拡大速度（大きいほど早く覆う）
+
+	uint32_t hitSEDataHandle_ = 0;
+	uint32_t hitSEVoiceHandle_ = 0;
+	uint32_t doubleHitSEDataHandle_ = 0;
+	uint32_t doubleHitSEVoiceHandle_ = 0;
 	uint32_t titleBGMDataHandle_ = 0;
 	uint32_t titleBGMVoiceHandle_ = 0;
+
+	bool isAButtonPressed = false;
 };
