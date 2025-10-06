@@ -22,7 +22,9 @@ void TitleScene::Initialize() {
 	worldTransform_.translation_.y -= 5.0f;
 
 	textureHandle_ = TextureManager::Load("brickWall.png");
-	titleBackSprite_ = Sprite::Create(textureHandle_, {0.0f, 0.0f});
+	for (int i = 0; i < 2; i++) {
+		titleBackSprite[i] = Sprite::Create(textureHandle_, {bgPosX[i], 0.0f});
+	}
 
 	textureHandle_ = TextureManager::Load("punchFightTitle.png");
 	titleSprite_ = Sprite::Create(textureHandle_, titlePos_, {1, 1, 1, 1}, {0.5f, 0.5f});
@@ -41,6 +43,15 @@ void TitleScene::Initialize() {
 }
 
 void TitleScene::Update() { 
+	for (int i = 0; i < 2; i++) {
+		bgPosX[i] -= bgScrollSpeed_;
+		if (bgPosX[i] <= -1367.0f) {
+			bgPosX[i] = 1367.0f;
+		}
+
+		titleBackSprite[i]->SetPosition({bgPosX[i], 0.0f});
+	}
+
 	TitleAnimation();
 
 	if (titleAnimeFinished_) {
@@ -62,7 +73,9 @@ void TitleScene::Draw() {
 	// 背景スプライト描画前処理
 	Sprite::PreDraw(dxCommon->GetCommandList());
 
-	titleBackSprite_->Draw();
+	for (int i = 0; i < 2; i++) {
+		titleBackSprite[i]->Draw();
+	}
 
 	// スプライト描画後処理
 	Sprite::PostDraw();

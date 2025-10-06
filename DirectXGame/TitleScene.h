@@ -26,10 +26,11 @@ private:
 
 	uint32_t textureHandle_ = 0;
 
-	KamataEngine::Sprite* titleBackSprite_ = nullptr;
+	KamataEngine::Sprite* titleBackSprite[2];
 	KamataEngine::Sprite* titleSprite_ = nullptr;
 	KamataEngine::Sprite* startSprite_ = nullptr;
 
+	// ---タイトルロゴアニメーション用---
 	float blinkTime_ = 0.0f;
 	float titleAnimeTimer_ = 0.0f;
 	float animeDuration_ = 0.4f; // アニメ時間（秒） — 好みで調整
@@ -45,6 +46,12 @@ private:
 
 	KamataEngine::Vector2 titlePos_ = {640.0f, 300.0f};
 	KamataEngine::Vector2 titleSize_ = {1000, 410};
+	// ---------------------------------
+
+	// ---背景スクロール用---
+	float bgScrollSpeed_ = 1.0f;
+	float bgPosX[2] = {{0.0f}, {1367.0f}};
+	// -----------------------
 
 	uint32_t punchSEDataHandle_ = 0;
 	uint32_t punchSEVoiceHandle_ = 0;

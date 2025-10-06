@@ -258,8 +258,15 @@
   <ItemGroup>
     <ClInclude Include="Easing.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="resource1.h" />
     <ClInclude Include="TitleScene.h" />
     <ClInclude Include="WorldTransformEx.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="IconResource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
