@@ -1,5 +1,5 @@
 #include "TitleScene.h"
-#include "Easing.h"
+#include "../../Engine/Math/Easing.h"
 #include <chrono>
 
 using namespace KamataEngine;

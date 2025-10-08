@@ -1,6 +1,6 @@
 #pragma once
 #include "KamataEngine.h"
-#include "WorldTransformEx.h"
+#include "../../Engine/Math/WorldTransformEx.h"
 
 class TitleScene {
 public:
