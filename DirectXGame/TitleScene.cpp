@@ -43,6 +43,13 @@ void TitleScene::Initialize() {
 	fadeSprite_->SetPosition({640.0f, 360.0f}); // 画面中心
 	fadeSprite_->SetSize({1280.0f, 720.0f});    // 一応設定しておく
 
+	textureHandle_ = TextureManager::Load("loadingText.png");
+	loadingTextSprite_ = Sprite::Create(textureHandle_, {640.0f, 250.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
+
+	textureHandle_ = TextureManager::Load("loadingBar.png");
+	loadingBarSprite_ = Sprite::Create(textureHandle_, {430.0f, 300.0f});
+	loadingBarSprite_->SetSize(loadingBarSize_);
+
 	hitSEDataHandle_ = audio->LoadWave("audio/SE/hitSE.wav");
 	doubleHitSEDataHandle_ = audio->LoadWave("audio/SE/doubleHitSE.wav");
 	titleBGMDataHandle_ = audio->LoadWave("audio/BGM/titleBGM.wav");
@@ -69,6 +76,7 @@ void TitleScene::Update() {
 	TitleAnimation();
 	SpriteFlashUpdate();
 	FadeOutUpdate();
+	NowLoading();
 }
 
 void TitleScene::Draw() {
@@ -102,6 +110,10 @@ void TitleScene::Draw() {
 
 	if (fadeOutStarted_) {
 		fadeSprite_->Draw();
+	}
+	if (fadeOutFinished_) {
+		loadingBarSprite_->Draw();
+		loadingTextSprite_->Draw();
 	}
 	// 前景スプライト描画後処理
 	Sprite::PostDraw();
@@ -234,6 +246,27 @@ void TitleScene::FadeOutUpdate() {
 		// 拡大が十分なら終了
 		if (fadeScale_ >= 1.5f) {
 			fadeOutFinished_ = true;
+		}
+	}
+}
+
+void TitleScene::NowLoading() {
+	// フェードアウト完了後にロード開始
+	if (fadeOutFinished_ && !loadingStarted_) {
+		loadingStarted_ = true;
+		loadingBarSize_ = {0.0f, 40.0f};
+		loadingBarSprite_->SetSize(loadingBarSize_);
+	}
+
+	// ロード中
+	if (loadingStarted_ && !loadingFinished_) {
+		loadingBarSize_.x += 1.5f;
+
+		loadingBarSprite_->SetSize(loadingBarSize_);
+
+		if (loadingBarSize_.x >= loadingXMaxSize_) {
+			loadingBarSize_.x = loadingXMaxSize_;
+			loadingFinished_ = true;
 		}
 	}
 }

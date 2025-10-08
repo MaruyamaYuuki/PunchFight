@@ -19,6 +19,10 @@ public:
 	void SpriteFlashUpdate();
 
 	void FadeOutUpdate();
+	
+	void NowLoading();
+
+	bool isFinished() { return loadingFinished_; }
 
 private:
 	XINPUT_STATE state, preState;
@@ -36,6 +40,8 @@ private:
 	KamataEngine::Sprite* titleSprite_ = nullptr;
 	KamataEngine::Sprite* startSprite_ = nullptr;
 	KamataEngine::Sprite* fadeSprite_ = nullptr;
+	KamataEngine::Sprite* loadingTextSprite_ = nullptr;
+	KamataEngine::Sprite* loadingBarSprite_ = nullptr;
 
 	// ---タイトルロゴアニメーション用---
 	float blinkTime_ = 0.0f;
@@ -73,6 +79,12 @@ private:
 	float fadeWaitTime = 30.0f;
 	float fadeScale_ = 0.0f;      // 拡大率
 	float fadeSpeed_ = 1.5f;      // 拡大速度（大きいほど早く覆う）
+	// ローディング用
+	bool loadingStarted_ = false;
+	KamataEngine::Vector2 loadingBarSize_ = {0.0f, 40.0f};
+	float loadingXMaxSize_ = 400.0f;
+    bool loadingFinished_ = false;
+	// -----------------
 
 	uint32_t hitSEDataHandle_ = 0;
 	uint32_t hitSEVoiceHandle_ = 0;
