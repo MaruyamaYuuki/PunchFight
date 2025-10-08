@@ -22,7 +22,7 @@ public:
 	
 	void NowLoading();
 
-	bool isFinished() { return loadingFinished_; }
+	bool IsFinished() { return loadingFinished_; }
 
 private:
 	XINPUT_STATE state, preState;

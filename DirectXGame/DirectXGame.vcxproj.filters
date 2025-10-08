@@ -31,6 +31,9 @@
     <Filter Include="Engine\Core">
       <UniqueIdentifier>{fce4a93d-14d3-4eb7-a7e5-ff8169743753}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Rendering">
+      <UniqueIdentifier>{235bbd91-e2f1-407b-9441-6de5a8f0359d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App\Scenes\GameScene.cpp">
@@ -44,6 +47,9 @@
     </ClCompile>
     <ClCompile Include="Engine\Core\main.cpp">
       <Filter>Engine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Rendering\Fade.cpp">
+      <Filter>Engine\Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -113,6 +119,9 @@
     </ClInclude>
     <ClInclude Include="Engine\Core\resource1.h">
       <Filter>Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Rendering\Fade.h">
+      <Filter>Engine\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
