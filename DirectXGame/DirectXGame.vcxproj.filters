@@ -16,16 +16,40 @@
     <Filter Include="シェーダー ファイル">
       <UniqueIdentifier>{718c7f4c-fc51-40ad-a221-b9456a7a1a3c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="App">
+      <UniqueIdentifier>{10f8be25-d606-41b0-b937-3f92a08b005f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\Scenes">
+      <UniqueIdentifier>{34f3bb5c-8a6d-4345-a445-6e3511a0ca5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{c3668b54-9504-4249-9c60-be311ee57d57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Math">
+      <UniqueIdentifier>{ee7f5f08-308d-400a-b33e-42b87f1919bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Core">
+      <UniqueIdentifier>{fce4a93d-14d3-4eb7-a7e5-ff8169743753}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Rendering">
+      <UniqueIdentifier>{235bbd91-e2f1-407b-9441-6de5a8f0359d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="App\Scenes\GameScene.cpp">
+      <Filter>App\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="TitleScene.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="App\Scenes\TitleScene.cpp">
+      <Filter>App\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="WorldTransformEx.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="Engine\Math\WorldTransformEx.cpp">
+      <Filter>Engine\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\main.cpp">
+      <Filter>Engine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Rendering\Fade.cpp">
+      <Filter>Engine\Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -78,17 +102,36 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="TitleScene.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="App\Scenes\GameScene.h">
+      <Filter>App\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="WorldTransformEx.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="App\Scenes\TitleScene.h">
+      <Filter>App\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="Easing.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="Engine\Math\WorldTransformEx.h">
+      <Filter>Engine\Math</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="Engine\Math\Easing.h">
+      <Filter>Engine\Math</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Core\resource.h">
+      <Filter>Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\resource1.h">
+      <Filter>Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Rendering\Fade.h">
+      <Filter>Engine\Rendering</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Engine\Core\IconResource.rc">
+      <Filter>リソース ファイル</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\icon.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
   </ItemGroup>
 </Project>

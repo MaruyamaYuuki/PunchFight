@@ -154,9 +154,11 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="TitleScene.cpp" />
-    <ClCompile Include="WorldTransformEx.cpp" />
+    <ClCompile Include="App\Scenes\GameScene.cpp" />
+    <ClCompile Include="Engine\Core\main.cpp" />
+    <ClCompile Include="App\Scenes\TitleScene.cpp" />
+    <ClCompile Include="Engine\Math\WorldTransformEx.cpp" />
+    <ClCompile Include="Engine\Rendering\Fade.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
@@ -256,10 +258,19 @@
     <None Include="Resources\shaders\Sprite.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Easing.h" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="TitleScene.h" />
-    <ClInclude Include="WorldTransformEx.h" />
+    <ClInclude Include="Engine\Math\Easing.h" />
+    <ClInclude Include="App\Scenes\GameScene.h" />
+    <ClInclude Include="Engine\Core\resource.h" />
+    <ClInclude Include="Engine\Core\resource1.h" />
+    <ClInclude Include="App\Scenes\TitleScene.h" />
+    <ClInclude Include="Engine\Math\WorldTransformEx.h" />
+    <ClInclude Include="Engine\Rendering\Fade.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Engine\Core\IconResource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
