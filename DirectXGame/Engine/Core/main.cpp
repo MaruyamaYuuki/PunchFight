@@ -30,10 +30,24 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// DirectXCommonインスタンス
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
 
+
+
+
+
+#ifdef _DEBUG
+	gameScene = new GameScene();
+	gameScene->Initialize();
+
+	scene = Scene::kGame;
+#else
 	titleScene = new TitleScene();
 	titleScene->Initialize();
 
 	scene = Scene::kTitle;
+#endif // DEBUG
+
+
+
 
 	// メインループ
 	while (true) {

@@ -159,6 +159,7 @@
     <ClCompile Include="App\Scenes\TitleScene.cpp" />
     <ClCompile Include="Engine\Math\WorldTransformEx.cpp" />
     <ClCompile Include="Engine\Rendering\Fade.cpp" />
+    <ClCompile Include="App\Objects\Stage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
@@ -265,6 +266,7 @@
     <ClInclude Include="App\Scenes\TitleScene.h" />
     <ClInclude Include="Engine\Math\WorldTransformEx.h" />
     <ClInclude Include="Engine\Rendering\Fade.h" />
+    <ClInclude Include="App\Objects\Stage.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Engine\Core\IconResource.rc" />

@@ -2,6 +2,7 @@
 #include "KamataEngine.h"
 #include "../../Engine/Math/WorldTransformEx.h"
 #include "../../Engine/Rendering/Fade.h"
+#include "../Objects/Stage.h"
 
 class GameScene {
 public:
@@ -24,6 +25,14 @@ private:
 
 	KamataEngine::Camera camera_;
 	WorldTransformEx worldTransform_;
+
+	KamataEngine::Model* modelLoad_ = nullptr;
+
+	uint32_t textureHandle_ = 0;
+
+	KamataEngine::Sprite* backTextSprite_ = nullptr;
+
+	Stage* stage_ = nullptr;
 
 	Fade* fade_ = nullptr;
 	float fadeTime_ = 1.0;

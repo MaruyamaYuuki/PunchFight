@@ -34,8 +34,8 @@ void TitleScene::Initialize() {
 	titleSprite_ = Sprite::Create(textureHandle_, titlePos_, {1, 1, 1, 1}, {0.5f, 0.5f});
 	titleSprite_->SetSize(titleSize_);
 
-	textureHandle_ = TextureManager::Load("start.png");
-	startSprite_ = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
+	textureHandle_ = TextureManager::Load("eStart.png");
+	startSprite_ = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1, 1, 1, 0}, {0.5f, 0.5f});
 	startSprite_->SetPosition({640.0f, 500.0f});
 
 	textureHandle_ = TextureManager::Load("black.png");
