@@ -3,6 +3,7 @@
 #include <algorithm>
 
 using namespace KamataEngine;
+using namespace KamataEngine::MathUtility;
 
 void Player::Initialize(Model* model) { 
 	input_ = Input::GetInstance(); 
@@ -10,18 +11,35 @@ void Player::Initialize(Model* model) {
 	assert(model);
 	model_ = model;
 
+	modelDebugHitBox_ = Model::Create();
+
 	worldTransform_.Initialize();
 	worldTransform_.translation_.y += 1.0f;
 	worldTransform_.scale_ = {0.5f, 0.5f, 0.5f};
+	worldTransformHitBox_.Initialize();
 }
 
-void Player::Update() { 
+void Player::Update() {
 	Move();
 
-	worldTransform_.UpdateMatrix(); 
+	// 攻撃入力チェック
+	if (input_->TriggerKey(DIK_J)) { // Jキーでパンチ
+		Attack();
+	}
+
+	AttackUpdate();
+	worldTransform_.UpdateMatrix();
+	worldTransformHitBox_.UpdateMatrix();
 }
 
-void Player::Draw(Camera& camera) { model_->Draw(worldTransform_, camera); }
+void Player::Draw(Camera& camera) { 
+	model_->Draw(worldTransform_, camera); 
+	if (hitBox_.active) {
+		worldTransformHitBox_.translation_ = hitBox_.pos;
+		worldTransformHitBox_.scale_ = hitBox_.size;
+		modelDebugHitBox_->Draw(worldTransformHitBox_, camera);
+	}
+}
 
 void Player::Move() {
 	Vector3 move = {0, 0, 0};
@@ -43,6 +61,12 @@ void Player::Move() {
 		move.x /= length;
 		move.z /= length;
 	}
+
+	// 向き更新（X方向に移動した場合のみ）
+	if (move.x > 0.0f)
+		facingDir_ = 1.0f;
+	if (move.x < 0.0f)
+		facingDir_ = -1.0f;
 
 	// クールタイム減少
 	if (stepTimer_ > 0)
@@ -72,4 +96,45 @@ void Player::Move() {
 	// 通常移動
 	worldTransform_.translation_.x += move.x * moveSpeed;
 	worldTransform_.translation_.z += move.z * moveSpeed;
+}
+
+void Player::Attack() {
+	if (!canAttack_ || isAttacking_)
+		return;
+
+	isAttacking_ = true;
+	canAttack_ = false;
+	attackTimer_ = attackDuration_;
+
+	// パンチテクスチャ切り替え（右左交互）
+	attackFromRight_ = !attackFromRight_;
+
+	// ヒットボックスはプレイヤーの向きに依存
+	float hitboxOffsetX = 0.5f * facingDir_; // プレイヤーが右向きなら+0.8、左向きなら-0.8
+	hitBox_.active = true;
+	hitBox_.pos = worldTransform_.translation_ + Vector3{hitboxOffsetX, 0.1f, 0.0f};
+	hitBox_.size = {0.2f, 0.5f, 0.2f};
+}
+
+
+void Player::AttackUpdate() {
+	if (isAttacking_) {
+		attackTimer_--;
+		if (attackTimer_ <= 0) {
+			isAttacking_ = false;
+			hitBox_.active = false;
+			attackCooldownTimer_ = attackCooldown_;
+		} else {
+			float hitboxOffsetX = 0.5f * facingDir_; // プレイヤーが右向きなら+0.8、左向きなら-0.8
+			hitBox_.pos = worldTransform_.translation_ + Vector3{hitboxOffsetX, 0.1f, 0.0f};
+		}
+	}
+
+	// クールタイム中
+	else if (!canAttack_) {
+		attackCooldownTimer_--;
+		if (attackCooldownTimer_ <= 0) {
+			canAttack_ = true;
+		}
+	}
 }
