@@ -22,12 +22,16 @@ void GameScene::Initialize() {
 	worldTransform_.Initialize();
 
 	modelLoad_ = Model::CreateFromOBJ("load", true);
+	modelPlayer_ = Model::CreateFromOBJ("player", true);
 
 	textureHandle_ = TextureManager::Load("BackTitle.png");
 	backTextSprite_ = Sprite::Create(textureHandle_, {640.0f, 360.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
 
 	stage_ = new Stage();
 	stage_->Initialize(modelLoad_);
+
+	player_ = new Player();
+	player_->Initialize(modelPlayer_);
 
 	fade_ = new Fade();
 	fade_->Initialize();
@@ -36,6 +40,7 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 	stage_->Update();
+	player_->Update();
 	fade_->Update(); 
 
 	if (input->TriggerKey(DIK_B)) {
@@ -57,6 +62,7 @@ void GameScene::Draw() {
 	Model::PreDraw();
 
 	stage_->Draw(camera_);
+	player_->Draw(camera_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

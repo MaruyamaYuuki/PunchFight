@@ -34,6 +34,9 @@
     <Filter Include="Engine\Rendering">
       <UniqueIdentifier>{235bbd91-e2f1-407b-9441-6de5a8f0359d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="App\Objects">
+      <UniqueIdentifier>{84c83c04-1b43-483c-a92b-006e46d34b6f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App\Scenes\GameScene.cpp">
@@ -51,8 +54,11 @@
     <ClCompile Include="Engine\Rendering\Fade.cpp">
       <Filter>Engine\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="App\Objects\Player.cpp">
+      <Filter>App\Objects</Filter>
+    </ClCompile>
     <ClCompile Include="App\Objects\Stage.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>App\Objects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -126,8 +132,11 @@
     <ClInclude Include="Engine\Rendering\Fade.h">
       <Filter>Engine\Rendering</Filter>
     </ClInclude>
+    <ClInclude Include="App\Objects\Player.h">
+      <Filter>App\Objects</Filter>
+    </ClInclude>
     <ClInclude Include="App\Objects\Stage.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>App\Objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

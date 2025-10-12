@@ -3,6 +3,7 @@
 #include "../../Engine/Math/WorldTransformEx.h"
 #include "../../Engine/Rendering/Fade.h"
 #include "../Objects/Stage.h"
+#include "../Objects/Player.h"
 
 class GameScene {
 public:
@@ -27,12 +28,14 @@ private:
 	WorldTransformEx worldTransform_;
 
 	KamataEngine::Model* modelLoad_ = nullptr;
+	KamataEngine::Model* modelPlayer_ = nullptr;
 
 	uint32_t textureHandle_ = 0;
 
 	KamataEngine::Sprite* backTextSprite_ = nullptr;
 
 	Stage* stage_ = nullptr;
+	Player* player_ = nullptr;
 
 	Fade* fade_ = nullptr;
 	float fadeTime_ = 1.0;
