@@ -18,6 +18,10 @@ public:
 
 	void AttackUpdate();
 
+	const WorldTransformEx& GetWorldTransform() const { return worldTransform_; }
+
+	const KamataEngine::Vector3& GetVelocity() const { return move; }
+
 private:
 	KamataEngine::Input* input_ = nullptr;
 
@@ -26,6 +30,9 @@ private:
 
 	KamataEngine::Model* model_ = nullptr;
 	KamataEngine::Model* modelDebugHitBox_ = nullptr;
+
+	KamataEngine::Vector3 move = {0, 0, 0};
+	float moveSpeed = 0.1f; // 通常移動速度
 
 	// --- ステップ関連 ---
     bool isStepping_ = false;

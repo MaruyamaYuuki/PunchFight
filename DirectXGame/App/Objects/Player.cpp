@@ -42,8 +42,8 @@ void Player::Draw(Camera& camera) {
 }
 
 void Player::Move() {
-	Vector3 move = {0, 0, 0};
-	float moveSpeed = 0.1f; // 通常移動速度
+
+	move = {0, 0, 0};
 
 	// 入力処理
 	if (input_->PushKey(DIK_W))

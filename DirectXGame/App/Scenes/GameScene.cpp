@@ -16,8 +16,7 @@ void GameScene::Initialize() {
 	audio = Audio::GetInstance();
 
 	camera_.Initialize();
-	camera_.translation_.y += 2.0f;
-	camera_.translation_.z += 42.0f;
+	//camera_.translation_ = {0.0f, 2.0f, -8.0f};
 
 	worldTransform_.Initialize();
 
@@ -33,6 +32,13 @@ void GameScene::Initialize() {
 	player_ = new Player();
 	player_->Initialize(modelPlayer_);
 
+	cameraController_ = new CameraController(); // 生成
+	cameraController_->Initialize();            // 初期化
+	cameraController_->SetTarget(player_);      // 追従対象をセット
+	cameraController_->Reset();                 // リセット(瞬間合わせ)
+	CameraController::Rect cameraArea = {0.0f, 100 - 12.0f, -8.0f,-1.0f};
+	cameraController_->SetMovableArea(cameraArea);
+
 	fade_ = new Fade();
 	fade_->Initialize();
 	fade_->Start(Fade::Status::FadeIn, fadeTime_);
@@ -47,7 +53,12 @@ void GameScene::Update() {
 		isFinished_ = true;
 	}
 
-	camera_.UpdateMatrix();
+	cameraController_->Update();
+
+	const Camera& cameraViewProjection = cameraController_->GetCamera();
+	camera_.matView = cameraViewProjection.matView;
+	camera_.matProjection = cameraViewProjection.matProjection;
+	camera_.TransferMatrix();
 }
 
 void GameScene::Draw() {
@@ -70,7 +81,7 @@ void GameScene::Draw() {
 	// 前景スプライト描画前処理
 	Sprite::PreDraw(dxCommon->GetCommandList());
 
-	backTextSprite_->Draw();
+	//backTextSprite_->Draw();
 
 	fade_->Draw();
 

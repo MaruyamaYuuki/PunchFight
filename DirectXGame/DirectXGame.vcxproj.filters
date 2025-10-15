@@ -37,6 +37,9 @@
     <Filter Include="App\Objects">
       <UniqueIdentifier>{84c83c04-1b43-483c-a92b-006e46d34b6f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Camera">
+      <UniqueIdentifier>{9d3d208e-695b-4840-babe-4d625591bec8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App\Scenes\GameScene.cpp">
@@ -59,6 +62,9 @@
     </ClCompile>
     <ClCompile Include="App\Objects\Stage.cpp">
       <Filter>App\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Camera\CameraController.cpp">
+      <Filter>Engine\Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -137,6 +143,9 @@
     </ClInclude>
     <ClInclude Include="App\Objects\Stage.h">
       <Filter>App\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Camera\CameraController.h">
+      <Filter>Engine\Camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
