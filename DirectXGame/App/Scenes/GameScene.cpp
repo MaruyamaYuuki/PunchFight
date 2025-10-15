@@ -26,11 +26,11 @@ void GameScene::Initialize() {
 	textureHandle_ = TextureManager::Load("BackTitle.png");
 	backTextSprite_ = Sprite::Create(textureHandle_, {640.0f, 360.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
 
-	stage_ = new Stage();
-	stage_->Initialize(modelLoad_);
-
 	player_ = new Player();
 	player_->Initialize(modelPlayer_);
+
+	stage_ = new StageManager();
+	stage_->Initialize(1, 10);
 
 	cameraController_ = new CameraController(); // 生成
 	cameraController_->Initialize();            // 初期化

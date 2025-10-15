@@ -6,7 +6,6 @@ using namespace KamataEngine;
 void Stage::Initialize(Model* model) {
 	assert(model);
 	model_ = model;
-
 	worldTransform_.Initialize();
 }
 

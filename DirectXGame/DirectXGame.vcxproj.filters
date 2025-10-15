@@ -66,6 +66,9 @@
     <ClCompile Include="Engine\Camera\CameraController.cpp">
       <Filter>Engine\Camera</Filter>
     </ClCompile>
+    <ClCompile Include="App\Objects\StageManager.cpp">
+      <Filter>App\Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\SpritePS.hlsl">
@@ -146,6 +149,9 @@
     </ClInclude>
     <ClInclude Include="Engine\Camera\CameraController.h">
       <Filter>Engine\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="App\Objects\StageManager.h">
+      <Filter>App\Objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

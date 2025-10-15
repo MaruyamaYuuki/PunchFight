@@ -3,7 +3,7 @@
 #include "../../Engine/Math/WorldTransformEx.h"
 #include "../../Engine/Rendering/Fade.h"
 #include "../../Engine/Camera/CameraController.h"
-#include "../Objects/Stage.h"
+#include "../Objects/StageManager.h"
 #include "../Objects/Player.h"
 
 class GameScene {
@@ -35,7 +35,7 @@ private:
 
 	KamataEngine::Sprite* backTextSprite_ = nullptr;
 
-	Stage* stage_ = nullptr;
+	StageManager* stage_ = nullptr;
 	Player* player_ = nullptr;
 
 	CameraController* cameraController_ = nullptr;
