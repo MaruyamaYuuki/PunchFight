@@ -2,6 +2,7 @@
 #include "KamataEngine.h"
 #include "../../Engine/Math/WorldTransformEx.h"
 
+class Fade;
 class TitleScene {
 public:
 	TitleScene();
@@ -22,7 +23,7 @@ public:
 	
 	void NowLoading();
 
-	bool IsFinished() { return loadingFinished_; }
+	bool IsFinished() { return isFinished_; }
 
 private:
 	XINPUT_STATE state, preState;
@@ -73,17 +74,10 @@ private:
 	float blinkTimer_ = 0.0f;
 	int blinkCount_ = 0;
 	const int kMaxBlinkCount_ = 2;
-	// フェードアウト制御用
-	bool fadeOutStarted_ = false;
-	bool fadeOutFinished_ = false;
-	float fadeWaitTime = 30.0f;
-	float fadeScale_ = 0.0f;      // 拡大率
-	float fadeSpeed_ = 1.5f;      // 拡大速度（大きいほど早く覆う）
-	// ローディング用
-	bool loadingStarted_ = false;
-	KamataEngine::Vector2 loadingBarSize_ = {0.0f, 40.0f};
-	float loadingXMaxSize_ = 400.0f;
-    bool loadingFinished_ = false;
+	// フェード用
+	Fade* fade_ = nullptr;
+	float fadeTime_ = 1.0f;
+	bool isFinished_ = false;
 	// -----------------
 
 	uint32_t hitSEDataHandle_ = 0;
@@ -94,4 +88,6 @@ private:
 	uint32_t titleBGMVoiceHandle_ = 0;
 
 	bool isAButtonPressed = false;
+
+
 };

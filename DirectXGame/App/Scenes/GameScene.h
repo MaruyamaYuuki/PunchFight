@@ -1,11 +1,11 @@
 #pragma once
 #include "KamataEngine.h"
 #include "../../Engine/Math/WorldTransformEx.h"
-#include "../../Engine/Rendering/Fade.h"
 #include "../../Engine/Camera/CameraController.h"
 #include "../Objects/StageManager.h"
 #include "../Objects/Player.h"
 
+class Fade;
 class GameScene {
 public:
 	GameScene();
@@ -41,7 +41,7 @@ private:
 	CameraController* cameraController_ = nullptr;
 
 	Fade* fade_ = nullptr;
-	float fadeTime_ = 1.0;
+	float fadeTime_ = 1.0f;
 
 	bool isFinished_ = false;
 };

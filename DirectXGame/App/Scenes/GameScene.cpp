@@ -1,4 +1,5 @@
 #include "GameScene.h"
+#include "../../Engine/Rendering/Fade.h"
 
 using namespace KamataEngine;
 
