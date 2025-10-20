@@ -22,6 +22,8 @@ public:
 
 	const KamataEngine::Vector3& GetVelocity() const { return move; }
 
+	void UpdateWorldTransform() { worldTransform_.UpdateMatrix(); }
+
 private:
 	KamataEngine::Input* input_ = nullptr;
 
