@@ -16,6 +16,8 @@ public:
 	void SetPosition(float x, float y = 0.0f, float z = 0.0f) { worldTransform_.translation_ = {x, y, z};
 	}
 
+	float GetPositionX() const { return worldTransform_.translation_.x; }
+
 private:
 	WorldTransformEx worldTransform_;
 

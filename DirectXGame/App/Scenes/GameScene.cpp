@@ -9,8 +9,12 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete modelLoad_;
+	delete modelPlayer_;
 
+	delete player_;
 	delete stage_;
+	delete cameraController_;
+	delete fade_;
 }
 
 void GameScene::Initialize() { 
@@ -37,13 +41,13 @@ void GameScene::Initialize() {
 	player_->Initialize(modelPlayer_);
 
 	stage_ = new StageManager();
-	stage_->Initialize(1, 10);
+	stage_->Initialize(1, 9);
 
 	cameraController_ = new CameraController(); // 生成
 	cameraController_->Initialize();            // 初期化
 	cameraController_->SetTarget(player_);      // 追従対象をセット
 	cameraController_->Reset();                 // リセット(瞬間合わせ)
-	CameraController::Rect cameraArea = {0.0f, 100 - 12.0f, -8.0f,-1.0f};
+	CameraController::Rect cameraArea = { -100.0f, 100 - 5.0f, -8.0f, -1.0f};
 	cameraController_->SetMovableArea(cameraArea);
 
 	fade_ = new Fade();
@@ -61,11 +65,12 @@ void GameScene::Update() {
 	case GameScene::Phase::kFadeIn:
 	case GameScene::Phase::kReady:
 	case GameScene::Phase::kFight:
-		stage_->Update();
+		stage_->Update(cameraController_->GetCamera().translation_.x);
 		player_->UpdateWorldTransform();
 		break;
 	case GameScene::Phase::kPlay:
-		stage_->Update();
+		DebugText::GetInstance()->ConsolePrintf("Camera.Translate.x : %f\n\n", cameraController_->GetCamera().translation_.x);
+		stage_->Update(cameraController_->GetCamera().translation_.x);
 		player_->Update();
 		if (input->TriggerKey(DIK_B)) {
 
@@ -78,8 +83,6 @@ void GameScene::Update() {
 	default:
 		break;
 	}
-
-
 
 	cameraController_->Update();
 
@@ -117,7 +120,7 @@ void GameScene::Draw() {
     	fade_->Draw();
 		break;
 	case GameScene::Phase::kReady:
-		if (startTime_ <= 3.0f) {
+		if (startTime_ <= 2.0f) {
     		readyTextSprite_->Draw();
 		}
 		break;
@@ -150,7 +153,7 @@ void GameScene::ChangePhase() {
 	case GameScene::Phase::kReady:
 		startTime_ -= deltaTime_;
 		if (startTime_ <= 0.0f) {
-			startTime_ = 2.0f;
+			startTime_ = 1.0f;
 			phase_ = Phase::kFight;
 		}
 		break;
@@ -159,6 +162,7 @@ void GameScene::ChangePhase() {
 		if (fightTextAnimeFinished_) {
     		startTime_ -= deltaTime_;
     		if (startTime_ <= 0.0f) {
+
     			startTime_ = 4.0f;
     			phase_ = Phase::kPlay;
     		}

@@ -58,7 +58,7 @@ private:
 	Fade* fade_ = nullptr;
 	float fadeTime_ = 1.0f;
 
-	float startTime_ = 4.0f;
+	float startTime_ = 3.0f;
 	float deltaTime_ = 1.0f / 60.0f;
 
 	bool isFinished_ = false;
