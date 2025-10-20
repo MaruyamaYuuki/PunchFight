@@ -31,4 +31,5 @@ private:
 	Status status_ = Status::None;
 	float duration_ = 0.0f;
 	float counter_ = 0.0f;
+	float scale_ = 0.0f;
 };

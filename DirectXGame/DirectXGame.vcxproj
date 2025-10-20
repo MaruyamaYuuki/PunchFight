@@ -155,10 +155,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="App\Scenes\GameScene.cpp" />
+    <ClCompile Include="Engine\Camera\CameraController.cpp" />
     <ClCompile Include="Engine\Core\main.cpp" />
     <ClCompile Include="App\Scenes\TitleScene.cpp" />
     <ClCompile Include="Engine\Math\WorldTransformEx.cpp" />
     <ClCompile Include="Engine\Rendering\Fade.cpp" />
+    <ClCompile Include="App\Objects\Stage.cpp" />
+    <ClCompile Include="App\Objects\Player.cpp" />
+    <ClCompile Include="App\Objects\StageManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
@@ -258,6 +262,7 @@
     <None Include="Resources\shaders\Sprite.hlsli" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Camera\CameraController.h" />
     <ClInclude Include="Engine\Math\Easing.h" />
     <ClInclude Include="App\Scenes\GameScene.h" />
     <ClInclude Include="Engine\Core\resource.h" />
@@ -265,6 +270,9 @@
     <ClInclude Include="App\Scenes\TitleScene.h" />
     <ClInclude Include="Engine\Math\WorldTransformEx.h" />
     <ClInclude Include="Engine\Rendering\Fade.h" />
+    <ClInclude Include="App\Objects\Stage.h" />
+    <ClInclude Include="App\Objects\Player.h" />
+    <ClInclude Include="App\Objects\StageManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Engine\Core\IconResource.rc" />

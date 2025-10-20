@@ -1,5 +1,6 @@
 #include "TitleScene.h"
 #include "../../Engine/Math/Easing.h"
+#include "../../Engine/Rendering/Fade.h"
 #include <chrono>
 
 using namespace KamataEngine;
@@ -34,21 +35,9 @@ void TitleScene::Initialize() {
 	titleSprite_ = Sprite::Create(textureHandle_, titlePos_, {1, 1, 1, 1}, {0.5f, 0.5f});
 	titleSprite_->SetSize(titleSize_);
 
-	textureHandle_ = TextureManager::Load("start.png");
-	startSprite_ = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
+	textureHandle_ = TextureManager::Load("eStart.png");
+	startSprite_ = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1, 1, 1, 0}, {0.5f, 0.5f});
 	startSprite_->SetPosition({640.0f, 500.0f});
-
-	textureHandle_ = TextureManager::Load("black.png");
-	fadeSprite_ = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
-	fadeSprite_->SetPosition({640.0f, 360.0f}); // 画面中心
-	fadeSprite_->SetSize({1280.0f, 720.0f});    // 一応設定しておく
-
-	textureHandle_ = TextureManager::Load("loadingText.png");
-	loadingTextSprite_ = Sprite::Create(textureHandle_, {640.0f, 250.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
-
-	textureHandle_ = TextureManager::Load("loadingBar.png");
-	loadingBarSprite_ = Sprite::Create(textureHandle_, {430.0f, 300.0f});
-	loadingBarSprite_->SetSize(loadingBarSize_);
 
 	hitSEDataHandle_ = audio->LoadWave("audio/SE/hitSE.wav");
 	doubleHitSEDataHandle_ = audio->LoadWave("audio/SE/doubleHitSE.wav");
@@ -57,6 +46,9 @@ void TitleScene::Initialize() {
 	prevTime_ = std::chrono::high_resolution_clock::now();
 	waitTimer_ = 0.0f;
 
+	fade_ = new Fade();
+	fade_->Initialize();
+	fade_->Start(Fade::Status::FadeOut, fadeTime_);
 }
 
 void TitleScene::Update() { 
@@ -75,8 +67,13 @@ void TitleScene::Update() {
 
 	TitleAnimation();
 	SpriteFlashUpdate();
-	FadeOutUpdate();
-	NowLoading();
+	if (titleBlinkFinished_) {
+		fade_->Update();
+	}
+	if (fade_->IsFinished()) {
+		fade_->Stop();
+		isFinished_ = true;
+	}
 }
 
 void TitleScene::Draw() {
@@ -108,13 +105,10 @@ void TitleScene::Draw() {
     	startSprite_->Draw();
 	}
 
-	if (fadeOutStarted_) {
-		fadeSprite_->Draw();
+	if (titleBlinkFinished_) {
+    	fade_->Draw();
 	}
-	if (fadeOutFinished_) {
-		loadingBarSprite_->Draw();
-		loadingTextSprite_->Draw();
-	}
+
 	// 前景スプライト描画後処理
 	Sprite::PostDraw();
 }
@@ -218,55 +212,5 @@ void TitleScene::SpriteFlashUpdate() {
 
 	} else {
 		startSprite_->SetColor({1.0f, 1.0f, 1.0f, 0.0f});
-	}
-}
-
-void TitleScene::FadeOutUpdate() {
-	// --- フェードアウト処理 ---
-	if (titleBlinkFinished_ && !fadeOutStarted_) {
-		fadeWaitTime--;
-		if (fadeWaitTime <= 0.0f) {
-    		fadeOutStarted_ = true;
-    		fadeScale_ = 0.0f;
-    		fadeSprite_->SetColor({0, 0, 0, 1});  // 最初から不透明な黒
-    		fadeSprite_->SetSize({10.0f, 10.0f}); // 点から始める
-    		fadeSprite_->SetPosition({640.0f, 360.0f});
-		}
-	}
-
-	if (fadeOutStarted_ && !fadeOutFinished_) {
-		// 徐々に拡大
-		fadeScale_ += 0.02f * fadeSpeed_;
-		if (fadeScale_ > 1.5f)
-			fadeScale_ = 1.5f;
-
-		// サイズ更新（中央を基準に拡大）
-		fadeSprite_->SetSize({1280.0f * fadeScale_, 720.0f * fadeScale_});
-
-		// 拡大が十分なら終了
-		if (fadeScale_ >= 1.5f) {
-			fadeOutFinished_ = true;
-		}
-	}
-}
-
-void TitleScene::NowLoading() {
-	// フェードアウト完了後にロード開始
-	if (fadeOutFinished_ && !loadingStarted_) {
-		loadingStarted_ = true;
-		loadingBarSize_ = {0.0f, 40.0f};
-		loadingBarSprite_->SetSize(loadingBarSize_);
-	}
-
-	// ロード中
-	if (loadingStarted_ && !loadingFinished_) {
-		loadingBarSize_.x += 1.5f;
-
-		loadingBarSprite_->SetSize(loadingBarSize_);
-
-		if (loadingBarSize_.x >= loadingXMaxSize_) {
-			loadingBarSize_.x = loadingXMaxSize_;
-			loadingFinished_ = true;
-		}
 	}
 }
