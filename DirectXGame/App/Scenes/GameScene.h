@@ -50,6 +50,9 @@ private:
 	KamataEngine::Sprite* readyTextSprite_ = nullptr;
 	KamataEngine::Sprite* fightTextSprite_ = nullptr;
 
+	uint32_t startGongSEDataHandle_ = 0;
+	uint32_t startGongSEVoiceHandle_ = 0;
+
 	StageManager* stage_ = nullptr;
 	Player* player_ = nullptr;
 

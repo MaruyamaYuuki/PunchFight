@@ -40,6 +40,9 @@
     <Filter Include="Engine\Camera">
       <UniqueIdentifier>{9d3d208e-695b-4840-babe-4d625591bec8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="App\Objects\Enemy">
+      <UniqueIdentifier>{2f11c1a2-610a-47cd-b4b1-f449b4e4877e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App\Scenes\GameScene.cpp">
@@ -68,6 +71,9 @@
     </ClCompile>
     <ClCompile Include="App\Objects\StageManager.cpp">
       <Filter>App\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="App\Objects\Enemy\EnemyBase.cpp">
+      <Filter>App\Objects\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -152,6 +158,9 @@
     </ClInclude>
     <ClInclude Include="App\Objects\StageManager.h">
       <Filter>App\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="App\Objects\Enemy\EnemyBase.h">
+      <Filter>App\Objects\Enemy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

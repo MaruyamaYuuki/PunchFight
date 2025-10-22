@@ -37,6 +37,8 @@ void GameScene::Initialize() {
 	textureHandle_ = TextureManager::Load("fightText.png");
 	fightTextSprite_ = Sprite::Create(textureHandle_, {640.0f, 300.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
 
+	startGongSEDataHandle_ = audio->LoadWave("audio/SE/startGong.wav");
+
 	player_ = new Player();
 	player_->Initialize(modelPlayer_);
 
@@ -153,7 +155,7 @@ void GameScene::ChangePhase() {
 	case GameScene::Phase::kReady:
 		startTime_ -= deltaTime_;
 		if (startTime_ <= 0.0f) {
-			startTime_ = 1.0f;
+			startTime_ = 1.5f;
 			phase_ = Phase::kFight;
 		}
 		break;
@@ -162,7 +164,7 @@ void GameScene::ChangePhase() {
 		if (fightTextAnimeFinished_) {
     		startTime_ -= deltaTime_;
     		if (startTime_ <= 0.0f) {
-
+				audio->StopWave(startGongSEVoiceHandle_);
     			startTime_ = 4.0f;
     			phase_ = Phase::kPlay;
     		}
@@ -199,6 +201,7 @@ void GameScene::FightAnimation() {
 		fightTextVisible_ = true;
 		fightTextAnimeTimer_ = 0.0f;
 		fightTextSprite_->SetSize({fightTextSize_.x * startScale_, fightTextSize_.y * startScale_});
+		startGongSEVoiceHandle_ = audio->PlayWave(startGongSEDataHandle_, false, 1.0f);
 	}
 
 	if (fightTextVisible_) {
