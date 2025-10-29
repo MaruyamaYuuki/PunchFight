@@ -6,6 +6,9 @@
 /// </summary>
 class Fade {
 public:
+	/// <summary>
+	/// フェードの状態
+	/// </summary>
 	enum class Status {
 		None,
 		FadeIn,

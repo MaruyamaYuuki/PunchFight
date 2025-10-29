@@ -3,7 +3,7 @@
 #include "../../../Engine/Math/WorldTransformEx.h"
 
 /// <summary>
-/// 敵の基底クラス
+/// 敵の個別データ
 /// </summary>
 struct EnemyData {
 	std::string modelPath;
@@ -13,6 +13,9 @@ struct EnemyData {
 	float attackPower;
 };
 
+/// <summary>
+/// 敵の基底クラス
+/// </summary>
 class EnemyBase {
 public:
     virtual ~EnemyBase() = default;

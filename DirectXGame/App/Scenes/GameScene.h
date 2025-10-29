@@ -11,6 +11,9 @@
 class Fade;
 class GameScene {
 public:
+	/// <summary>
+	/// ゲーム全体の進行状態
+	/// </summary>
 	enum class Phase {
 		kFadeIn,
 		kReady,
