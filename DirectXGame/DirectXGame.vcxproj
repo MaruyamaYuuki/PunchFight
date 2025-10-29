@@ -155,6 +155,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="App\Scenes\GameScene.cpp" />
+    <ClCompile Include="App\Objects\Enemy\EnemyBase.cpp" />
     <ClCompile Include="Engine\Camera\CameraController.cpp" />
     <ClCompile Include="Engine\Core\main.cpp" />
     <ClCompile Include="App\Scenes\TitleScene.cpp" />
@@ -262,6 +263,7 @@
     <None Include="Resources\shaders\Sprite.hlsli" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="App\Objects\Enemy\EnemyBase.h" />
     <ClInclude Include="Engine\Camera\CameraController.h" />
     <ClInclude Include="Engine\Math\Easing.h" />
     <ClInclude Include="App\Scenes\GameScene.h" />

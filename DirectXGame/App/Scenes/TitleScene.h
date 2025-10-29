@@ -2,6 +2,9 @@
 #include "KamataEngine.h"
 #include "../../Engine/Math/WorldTransformEx.h"
 
+/// <summary>
+/// タイトルシーン
+/// </summary>
 class Fade;
 class TitleScene {
 public:

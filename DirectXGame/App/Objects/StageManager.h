@@ -3,6 +3,9 @@
 #include "Stage.h"
 #include <deque>
 
+/// <summary>
+/// ステージ管理
+/// </summary>
 class StageManager {
 public:
 	StageManager() = default;

@@ -5,6 +5,9 @@
 #include "../Objects/StageManager.h"
 #include "../Objects/Player.h"
 
+/// <summary>
+/// ゲームシーン
+/// </summary>
 class Fade;
 class GameScene {
 public:
@@ -33,6 +36,10 @@ public:
 
 	void FightAnimation();
 
+	void GameOver();
+
+	void ResetGame();
+
 private:
 	KamataEngine::DirectXCommon* dxCommon = nullptr;
 	KamataEngine::Input* input = nullptr;
@@ -49,6 +56,12 @@ private:
 	KamataEngine::Sprite* backTextSprite_ = nullptr;
 	KamataEngine::Sprite* readyTextSprite_ = nullptr;
 	KamataEngine::Sprite* fightTextSprite_ = nullptr;
+	KamataEngine::Sprite* gameOverTextSprite_ = nullptr;
+	KamataEngine::Sprite* blackSprite_ = nullptr;
+	KamataEngine::Sprite* resetTextSprite_ = nullptr;
+
+	uint32_t startGongSEDataHandle_ = 0;
+	uint32_t startGongSEVoiceHandle_ = 0;
 
 	StageManager* stage_ = nullptr;
 	Player* player_ = nullptr;
@@ -82,4 +95,12 @@ private:
 	KamataEngine::Vector2 fightTextPos_ = {640.0f, 300.0f};
 	KamataEngine::Vector2 fightTextSize_ = {400, 150};
 	// ---------------------------------
+	float alphaCounter_  = 0.0f;
+	float duration_ = 1.0f;
+	float gameOverFallTimer_ = 0.0f;    // テキスト落下の経過時間
+	float gameOverFallDuration_ = 1.0f; // 落下にかける時間（秒）
+	bool isGameOverFallFinished_ = false; // 落下完了フラグ
+
+
+
 };

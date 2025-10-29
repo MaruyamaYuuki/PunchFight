@@ -1,7 +1,9 @@
+#define NOMINMAX
 #include "GameScene.h"
 #include <chrono>
 #include "../../Engine/Rendering/Fade.h"
 #include "../../Engine/Math/Easing.h"
+#include <algorithm>
 
 using namespace KamataEngine;
 
@@ -30,12 +32,20 @@ void GameScene::Initialize() {
 	modelLoad_ = Model::CreateFromOBJ("load", true);
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
 
-	textureHandle_ = TextureManager::Load("BackTitle.png");
+	textureHandle_ = TextureManager::Load("gameSelect.png");
 	backTextSprite_ = Sprite::Create(textureHandle_, {640.0f, 360.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
 	textureHandle_ = TextureManager::Load("readyText.png");
 	readyTextSprite_ = Sprite::Create(textureHandle_, {640.0f, 300.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
 	textureHandle_ = TextureManager::Load("fightText.png");
 	fightTextSprite_ = Sprite::Create(textureHandle_, {640.0f, 300.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
+	textureHandle_ = TextureManager::Load("knockDownText.png");
+	gameOverTextSprite_ = Sprite::Create(textureHandle_, {640.0f, 300.0f}, {1, 1, 1, 0}, {0.5f, 0.5f});
+	textureHandle_ = TextureManager::Load("black.png");
+	blackSprite_ = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1, 1, 1, 0});
+	textureHandle_ = TextureManager::Load("resetText.png");
+	resetTextSprite_ = Sprite::Create(textureHandle_, {640.0f, 500.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
+
+	startGongSEDataHandle_ = audio->LoadWave("audio/SE/startGong.wav");
 
 	player_ = new Player();
 	player_->Initialize(modelPlayer_);
@@ -60,6 +70,7 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 	ChangePhase();
+	GameOver();
 
 	switch (phase_) {
 	case GameScene::Phase::kFadeIn:
@@ -130,9 +141,21 @@ void GameScene::Draw() {
 		}
 		break;
 	case GameScene::Phase::kPlay:
-		backTextSprite_->Draw();
+
+		if (player_->IsDead()) {
+			blackSprite_->Draw();
+			gameOverTextSprite_->Draw();
+		} 
+		if (player_->GetHP() > 0) {
+			backTextSprite_->Draw();
+		}
+		if (isGameOverFallFinished_) {
+			resetTextSprite_->Draw();
+		}
 		break;
 	case GameScene::Phase::kFadeOut:
+		blackSprite_->Draw();
+		gameOverTextSprite_->Draw();
 		fade_->Draw();
 		break;
 	}
@@ -153,7 +176,7 @@ void GameScene::ChangePhase() {
 	case GameScene::Phase::kReady:
 		startTime_ -= deltaTime_;
 		if (startTime_ <= 0.0f) {
-			startTime_ = 1.0f;
+			startTime_ = 1.5f;
 			phase_ = Phase::kFight;
 		}
 		break;
@@ -162,17 +185,25 @@ void GameScene::ChangePhase() {
 		if (fightTextAnimeFinished_) {
     		startTime_ -= deltaTime_;
     		if (startTime_ <= 0.0f) {
-
+				audio->StopWave(startGongSEVoiceHandle_);
     			startTime_ = 4.0f;
     			phase_ = Phase::kPlay;
     		}
 		}
 		break;
 	case GameScene::Phase::kPlay:
+		if (input->TriggerKey(DIK_T)) {
+			player_->TakeDamage(100);
+		}
 		break;
 	case GameScene::Phase::kFadeOut:
-		break;
-	default:
+		fade_->Update();
+		if (fade_->IsFinished()) {
+			fade_->Stop();
+			ResetGame();
+			phase_ = Phase::kFadeIn;
+			fade_->Start(Fade::Status::FadeIn, fadeTime_);
+		}
 		break;
 	}
 }
@@ -199,6 +230,7 @@ void GameScene::FightAnimation() {
 		fightTextVisible_ = true;
 		fightTextAnimeTimer_ = 0.0f;
 		fightTextSprite_->SetSize({fightTextSize_.x * startScale_, fightTextSize_.y * startScale_});
+		startGongSEVoiceHandle_ = audio->PlayWave(startGongSEDataHandle_, false, 1.0f);
 	}
 
 	if (fightTextVisible_) {
@@ -222,4 +254,73 @@ void GameScene::FightAnimation() {
 		}
 	}
 	// -------------------------------------
+}
+
+void GameScene::GameOver() {
+	if (player_->IsDead()) {
+		// 経過時間を加算
+		alphaCounter_ += 1.0f / 60.0f;
+		if (alphaCounter_ > duration_)
+			alphaCounter_ = duration_;
+
+		// 正規化された進行度
+		float t = alphaCounter_ / duration_;
+		t = std::clamp(t, 0.0f, 1.0f);
+
+		// イージングで滑らかフェード
+		float easedT = Easing::EaseInQuad(t);
+
+		// ===== 背景の黒フェード =====
+		blackSprite_->SetColor({1, 1, 1, 0.8f * easedT});
+
+		// ===== フェード完了後の「GAME OVER」落下 =====
+		if (t >= 1.0f) {
+			gameOverFallTimer_ += 1.0f / 60.0f;
+
+			// イージングで自然な落下
+			float fallT = std::min(gameOverFallTimer_ / gameOverFallDuration_, 1.0f);
+			float easedFall = Easing::EaseOutBounce(fallT); // ポンっと落ちる感じ
+
+			// Y位置を補間（上→中央）
+			float startY = -200.0f;
+			float endY = 300.0f;
+			float currentY = startY + (endY - startY) * easedFall;
+
+			gameOverTextSprite_->SetPosition({640.0f, currentY});
+			gameOverTextSprite_->SetColor({1, 1, 1, 1.0f}); // 完全不透明
+
+			if (fallT >= 1.0f && !isGameOverFallFinished_) {
+				isGameOverFallFinished_ = true;
+			}
+		} else {
+			// 落下前は画面外に置いておく
+			gameOverTextSprite_->SetPosition({640.0f, -200.0f});
+			gameOverTextSprite_->SetColor({1, 1, 1, 0.0f});
+			gameOverFallTimer_ = 0.0f;
+			isGameOverFallFinished_ = false;
+		}
+
+		// リトライ入力
+		if (input->TriggerKey(DIK_R)) {
+			phase_ = Phase::kFadeOut;
+			fade_->Start(Fade::Status::FadeOut, fadeTime_);
+		}
+	}
+}
+
+void GameScene::ResetGame() {
+	// === タイマー・フラグ初期化 ===
+	alphaCounter_ = 0.0f;
+	gameOverFallTimer_ = 0.0f;
+	isGameOverFallFinished_ = false;
+
+	// === プレイヤー関連 ===
+	if (player_) {
+		player_->Reset();
+	}
+
+	// === スプライトの初期状態 ===
+	blackSprite_->SetColor({1, 1, 1, 0.0f});
+	gameOverTextSprite_->SetColor({1, 1, 1, 0.0f});
+	gameOverTextSprite_->SetPosition({640.0f, -200.0f});
 }
