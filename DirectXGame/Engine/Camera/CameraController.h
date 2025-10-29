@@ -7,6 +7,9 @@
 class Player;
 class CameraController {
 public:
+	/// <summary>
+	/// カメラの移動範囲
+	/// </summary>
 	struct Rect {
 		float left = 0.0f;
 		float right = 1.0f;
