@@ -1,6 +1,9 @@
 #pragma once
 #include "KamataEngine.h"
 
+/// <summary>
+/// フェードイン・フェードアウト管理
+/// </summary>
 class Fade {
 public:
 	enum class Status {

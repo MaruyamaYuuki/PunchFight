@@ -1,5 +1,9 @@
 #pragma once
 #include "KamataEngine.h"
+
+/// <summary>
+/// WorldTransformの拡張
+/// </summary>
 class WorldTransformEx : 
 	public KamataEngine::WorldTransform {
 

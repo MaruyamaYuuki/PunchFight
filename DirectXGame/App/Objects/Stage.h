@@ -2,6 +2,9 @@
 #include "KamataEngine.h"
 #include "../../Engine/Math/WorldTransformEx.h"
 
+/// <summary>
+/// ステージ
+/// </summary>
 class Stage {
 public:
 	Stage() = default;

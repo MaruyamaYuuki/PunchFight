@@ -1,6 +1,9 @@
 #pragma once
 #include "KamataEngine.h"
 
+/// <summary>
+/// カメラ制御
+/// </summary>
 class Player;
 class CameraController {
 public:

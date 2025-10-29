@@ -2,6 +2,9 @@
 #include "KamataEngine.h"
 #include "../../../Engine/Math/WorldTransformEx.h"
 
+/// <summary>
+/// 敵の基底クラス
+/// </summary>
 struct EnemyData {
 	std::string modelPath;
 	std::string texturePath;
