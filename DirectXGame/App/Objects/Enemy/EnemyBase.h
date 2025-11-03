@@ -43,6 +43,7 @@ protected:
 	float attackPower_ = 1.0f;
 
 	float distanceToPlayer_ = 0.0f;
-	float AttackTimer_ = 0.0f;
+	float attackTimer_ = 0.0f;
 	bool isAttacking_ = false;
+	float deltTime_ = 1.0f / 60.0f;
 };
