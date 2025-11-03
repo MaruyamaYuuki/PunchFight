@@ -1,14 +1,11 @@
 #pragma once
 #include "EnemyBase.h"
 
-class NormalEnemy : public EnemyBase {
+class PowerEnemy : public EnemyBase {
 public:
 	void Initialize(const EnemyData& data) override;
 	void Update(const KamataEngine::Vector3& playerPos) override;
 
 private:
-	void Attack() override;
-
-	float moveWaitTimer_ = 0.0f;
-	int attackCount_ = 0;
+	float attackCooldown_ = 0.0f;
 };

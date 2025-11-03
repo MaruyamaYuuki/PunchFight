@@ -5,16 +5,13 @@ using namespace KamataEngine;
 
 void EnemyBase::Initialize(const EnemyData& data) {
 	model_ = Model::CreateFromOBJ(data.modelPath, true);
-	if (!data.texturePath.empty()) {
-		textureHandle_ = TextureManager::Load(data.texturePath);
-	}
 	speed_ = data.speed;
 	hp_ = data.hp;
 	attackPower_ = data.attackPower;
 	worldTransform_.Initialize();
 }
 
-void EnemyBase::Update(const KamataEngine::Vector3 playerPos) { 
+void EnemyBase::Update(const KamataEngine::Vector3& playerPos) { 
 	// プレイヤーをの距離を測る
 	float dx = playerPos.x - worldTransform_.translation_.x;
 	float dz = playerPos.z - worldTransform_.translation_.z;

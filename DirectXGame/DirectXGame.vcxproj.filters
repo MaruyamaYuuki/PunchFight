@@ -75,6 +75,15 @@
     <ClCompile Include="App\Objects\Enemy\EnemyBase.cpp">
       <Filter>App\Objects\Enemy</Filter>
     </ClCompile>
+    <ClCompile Include="App\Objects\Enemy\NormalEnemy.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="App\Objects\Enemy\PowerEnemy.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="App\Objects\Enemy\EnemyManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\SpritePS.hlsl">
@@ -161,6 +170,15 @@
     </ClInclude>
     <ClInclude Include="App\Objects\Enemy\EnemyBase.h">
       <Filter>App\Objects\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="App\Objects\Enemy\NormalEnemy.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="App\Objects\Enemy\PowerEnemy.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="App\Objects\Enemy\EnemyManager.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

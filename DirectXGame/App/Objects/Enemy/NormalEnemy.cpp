@@ -2,7 +2,11 @@
 #include <cmath>
 #include <iostream>
 
-void NormalEnemy::Update(const KamataEngine::Vector3 playerPos) {
+using namespace KamataEngine;
+
+void NormalEnemy::Initialize(const EnemyData& data) { EnemyBase::Initialize(data); }
+
+void NormalEnemy::Update(const KamataEngine::Vector3& playerPos) {
 	EnemyBase::Update(playerPos);
 
 	if (!isAttacking_) {

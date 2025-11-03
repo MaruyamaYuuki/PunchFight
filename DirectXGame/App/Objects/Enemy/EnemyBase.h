@@ -7,7 +7,6 @@
 /// </summary>
 struct EnemyData {
 	std::string modelPath;
-	std::string texturePath;
 	float speed;
 	int hp;
 	float attackPower;
@@ -22,7 +21,7 @@ public:
 
     virtual void Initialize(const EnemyData& data);
 
-	virtual void Update(const KamataEngine::Vector3 playerPos);
+	virtual void Update(const KamataEngine::Vector3& playerPos);
 
 	virtual void Draw(KamataEngine::Camera& camera);
 
