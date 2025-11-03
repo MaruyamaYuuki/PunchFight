@@ -1,3 +1,4 @@
+#define NOMINMAX
 #include "Player.h"
 #include <cassert>
 #include <algorithm>
@@ -117,6 +118,16 @@ void Player::Move() {
 	// 通常移動
 	worldTransform_.translation_.x += move.x * moveSpeed;
 	worldTransform_.translation_.z += move.z * moveSpeed;
+
+	// 移動限界座標
+	const float kStartMoveLimitX = 3.0f;
+	const float kMoveLimitZ = 4.0f;
+	const float kMinMoveLimitZ = 1.5f;
+
+	// 範囲を越えない処理
+	worldTransform_.translation_.x = std::max(worldTransform_.translation_.x, -kStartMoveLimitX);
+	worldTransform_.translation_.z = std::max(worldTransform_.translation_.z, -kMoveLimitZ);
+	worldTransform_.translation_.z = std::min(worldTransform_.translation_.z, +kMinMoveLimitZ);
 }
 
 void Player::Attack() {

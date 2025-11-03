@@ -57,7 +57,7 @@ void GameScene::Initialize() {
 	cameraController_->Initialize();            // 初期化
 	cameraController_->SetTarget(player_);      // 追従対象をセット
 	cameraController_->Reset();                 // リセット(瞬間合わせ)
-	CameraController::Rect cameraArea = { -100.0f, 100 - 5.0f, -8.0f, -1.0f};
+	CameraController::Rect cameraArea = { 0.0f, 100 - 5.0f, -8.0f, -1.0f};
 	cameraController_->SetMovableArea(cameraArea);
 
 	fade_ = new Fade();
