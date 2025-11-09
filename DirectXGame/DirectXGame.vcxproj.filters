@@ -73,7 +73,7 @@
       <Filter>App\Objects</Filter>
     </ClCompile>
     <ClCompile Include="App\Objects\Enemy\EnemyBase.cpp">
-      <Filter>App\Objects\Enemy</Filter>
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="App\Objects\Enemy\NormalEnemy.cpp">
       <Filter>ソース ファイル</Filter>
@@ -168,8 +168,14 @@
     <ClInclude Include="App\Objects\StageManager.h">
       <Filter>App\Objects</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Math\Collider.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Math\Collision.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
     <ClInclude Include="App\Objects\Enemy\EnemyBase.h">
-      <Filter>App\Objects\Enemy</Filter>
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="App\Objects\Enemy\NormalEnemy.h">
       <Filter>ヘッダー ファイル</Filter>

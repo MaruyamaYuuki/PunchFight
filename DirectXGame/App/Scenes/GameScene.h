@@ -4,6 +4,13 @@
 #include "../../Engine/Camera/CameraController.h"
 #include "../Objects/StageManager.h"
 #include "../Objects/Player.h"
+//#include "../Objects/Enemy/EnemyManager.h"
+
+struct AreData {
+	float startX;
+	float endX;
+	bool cleared = false;
+};
 
 /// <summary>
 /// ゲームシーン
@@ -33,7 +40,7 @@ public:
 
 	void Draw();
 
-	bool IsFinished() { return isFinished_; }
+	bool IsFinished() const { return isFinished_; }
 
 	void ChangePhase();
 
@@ -42,6 +49,10 @@ public:
 	void GameOver();
 
 	void ResetGame();
+
+	void EnemyGenerate();
+
+	void EnemyUpdate();
 
 private:
 	KamataEngine::DirectXCommon* dxCommon = nullptr;
@@ -53,6 +64,7 @@ private:
 
 	KamataEngine::Model* modelLoad_ = nullptr;
 	KamataEngine::Model* modelPlayer_ = nullptr;
+	KamataEngine::Model* modelBoxFrame_ = nullptr;
 
 	uint32_t textureHandle_ = 0;
 
@@ -81,6 +93,8 @@ private:
 
 	Phase phase_ = Phase::kFadeIn;
 
+	//EnemyManager* enemyManager_ = nullptr;
+
 	// ---ファイトテキストアニメーション用---
 	float blinkTime_ = 0.0f;
 	float fightTextAnimeTimer_ = 0.0f;
@@ -104,6 +118,5 @@ private:
 	float gameOverFallDuration_ = 1.0f; // 落下にかける時間（秒）
 	bool isGameOverFallFinished_ = false; // 落下完了フラグ
 
-
-
+	bool areaClearedFlag_[3] = {false, false, false};
 };

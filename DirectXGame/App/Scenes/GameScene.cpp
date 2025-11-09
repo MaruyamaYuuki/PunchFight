@@ -31,6 +31,7 @@ void GameScene::Initialize() {
 
 	modelLoad_ = Model::CreateFromOBJ("load", true);
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
+	modelBoxFrame_ = Model::CreateFromOBJ("boxFrame", true);
 
 	textureHandle_ = TextureManager::Load("gameSelect.png");
 	backTextSprite_ = Sprite::Create(textureHandle_, {640.0f, 360.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
@@ -48,7 +49,9 @@ void GameScene::Initialize() {
 	startGongSEDataHandle_ = audio->LoadWave("audio/SE/startGong.wav");
 
 	player_ = new Player();
-	player_->Initialize(modelPlayer_);
+	player_->Initialize(modelPlayer_,modelBoxFrame_);
+
+	EnemyGenerate();
 
 	stage_ = new StageManager();
 	stage_->Initialize(1, 9);
@@ -88,6 +91,9 @@ void GameScene::Update() {
 			isFinished_ = true;
 
 		}
+
+
+		EnemyUpdate();
 		break;
 	case GameScene::Phase::kFadeOut:
 		break;
@@ -116,6 +122,7 @@ void GameScene::Draw() {
 
 	stage_->Draw(camera_);
 	player_->Draw(camera_);
+	//enemyManager_->Draw(camera_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -323,4 +330,47 @@ void GameScene::ResetGame() {
 	blackSprite_->SetColor({1, 1, 1, 0.0f});
 	gameOverTextSprite_->SetColor({1, 1, 1, 0.0f});
 	gameOverTextSprite_->SetPosition({640.0f, -200.0f});
+}
+
+void GameScene::EnemyGenerate() {
+	/*	enemyManager_ = new EnemyManager();
+	enemyManager_->Initialize();
+
+	// --- エリア追加（トリガー位置） ---
+	enemyManager_->AddArea(0.0f);   // area 0
+	enemyManager_->AddArea(50.0f);  // area 1
+	enemyManager_->AddArea(100.0f); // area 2
+
+	// --- 各エリアに敵を追加 ---
+	// エリア0
+	enemyManager_->AddSpawnToArea(0, EnemyType::Normal, {10, 0, 0});
+
+	// エリア1
+	enemyManager_->AddSpawnToArea(1, EnemyType::Power, {60, 0, 0});
+
+	// エリア2
+	enemyManager_->AddSpawnToArea(2, EnemyType::Power, {110, 0, 0});*/
+
+}
+
+void GameScene::EnemyUpdate() {
+	/*	// プレイヤー情報取得
+	KamataEngine::Vector3 playerPos = player_->GetWorldTransform().translation_;
+	HitBox attackBox = player_->GetAttackHitBox();
+	int attackPower = player_->GetAttackPower();
+
+	// ----- 敵管理の更新 -----
+	enemyManager_->Update(playerPos, attackBox, attackPower);
+
+	// ----- エリアクリア判定 -----
+	for (int i = 0; i < 3; i++) {
+		if (enemyManager_->IsAreaCleared(i) && !areaClearedFlag_[i]) {
+			areaClearedFlag_[i] = true;
+
+			// ここにクリア時のイベント（必要なら）
+			// 例：扉を開く、カメラロック解除
+			// Door[i].Open();
+		}
+	}*/
+
 }

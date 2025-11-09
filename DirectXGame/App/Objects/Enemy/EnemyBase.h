@@ -1,10 +1,8 @@
 #pragma once
-#include "KamataEngine.h"
+#include "../../../Engine/Math/Collider.h"
 #include "../../../Engine/Math/WorldTransformEx.h"
+#include "KamataEngine.h"
 
-/// <summary>
-/// 敵の個別データ
-/// </summary>
 struct EnemyData {
 	std::string modelPath;
 	float speed;
@@ -12,37 +10,30 @@ struct EnemyData {
 	float attackPower;
 };
 
-/// <summary>
-/// 敵の基底クラス
-/// </summary>
 class EnemyBase {
 public:
-    virtual ~EnemyBase() = default;
+	EnemyBase() = default; // デフォルトコンストラクタ追加
+	virtual ~EnemyBase() = default;
 
-    virtual void Initialize(const EnemyData& data);
-
-	virtual void Update(const KamataEngine::Vector3& playerPos);
-
+	virtual void Initialize(const EnemyData& data);
+	virtual void Update(const KamataEngine::Vector3&) {}
 	virtual void Draw(KamataEngine::Camera& camera);
+	virtual void OnHit(int damage);
 
+	bool IsDead() const { return hp_ <= 0; }
+	const HitBox& GetHitBox() const { return attackBox_; }
 	void SetPosition(float x, float y, float z);
 	KamataEngine::Vector3 GetPosition() const { return worldTransform_.translation_; }
 
 protected:
-	virtual void Attack();
-
-protected:
 	WorldTransformEx worldTransform_;
 	KamataEngine::Model* model_ = nullptr;
-
 	uint32_t textureHandle_ = 0;
 
 	float speed_ = 0.0f;
 	int hp_ = 1;
 	float attackPower_ = 1.0f;
 
-	float distanceToPlayer_ = 0.0f;
-	float attackTimer_ = 0.0f;
-	bool isAttacking_ = false;
+	HitBox attackBox_;
 	float deltTime_ = 1.0f / 60.0f;
 };

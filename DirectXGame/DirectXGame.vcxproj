@@ -154,9 +154,11 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="App\Scenes\GameScene.cpp" />
     <ClCompile Include="App\Objects\Enemy\EnemyBase.cpp" />
     <ClCompile Include="App\Objects\Enemy\EnemyManager.cpp" />
+    <ClCompile Include="App\Objects\Enemy\NormalEnemy.cpp" />
+    <ClCompile Include="App\Objects\Enemy\PowerEnemy.cpp" />
+    <ClCompile Include="App\Scenes\GameScene.cpp" />
     <ClCompile Include="Engine\Camera\CameraController.cpp" />
     <ClCompile Include="Engine\Core\main.cpp" />
     <ClCompile Include="App\Scenes\TitleScene.cpp" />
@@ -165,8 +167,6 @@
     <ClCompile Include="App\Objects\Stage.cpp" />
     <ClCompile Include="App\Objects\Player.cpp" />
     <ClCompile Include="App\Objects\StageManager.cpp" />
-    <ClCompile Include="App\Objects\Enemy\NormalEnemy.cpp" />
-    <ClCompile Include="App\Objects\Enemy\PowerEnemy.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
@@ -268,6 +268,10 @@
   <ItemGroup>
     <ClInclude Include="App\Objects\Enemy\EnemyBase.h" />
     <ClInclude Include="App\Objects\Enemy\EnemyManager.h" />
+    <ClInclude Include="App\Objects\Enemy\NormalEnemy.h" />
+    <ClInclude Include="App\Objects\Enemy\PowerEnemy.h" />
+    <ClInclude Include="Engine\Math\Collision.h" />
+    <ClInclude Include="Engine\Math\Collider.h" />
     <ClInclude Include="Engine\Camera\CameraController.h" />
     <ClInclude Include="Engine\Math\Easing.h" />
     <ClInclude Include="App\Scenes\GameScene.h" />
@@ -279,8 +283,6 @@
     <ClInclude Include="App\Objects\Stage.h" />
     <ClInclude Include="App\Objects\Player.h" />
     <ClInclude Include="App\Objects\StageManager.h" />
-    <ClInclude Include="App\Objects\Enemy\NormalEnemy.h" />
-    <ClInclude Include="App\Objects\Enemy\PowerEnemy.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Engine\Core\IconResource.rc" />

@@ -6,13 +6,13 @@
 using namespace KamataEngine;
 using namespace KamataEngine::MathUtility;
 
-void Player::Initialize(Model* model) { 
+void Player::Initialize(Model* model, KamataEngine::Model* modelBox) { 
 	input_ = Input::GetInstance(); 
 
 	assert(model);
 	model_ = model;
-
-	modelDebugHitBox_ = Model::Create();
+	assert(modelBox);
+	modelDebugHitBox_ = modelBox;
 
 	worldTransform_.Initialize();
 	worldTransform_.translation_.y += 1.0f;
@@ -56,9 +56,9 @@ void Player::Update() {
 
 void Player::Draw(Camera& camera) { 
 	model_->Draw(worldTransform_, camera, textureHandle_); 
-	if (hitBox_.active) {
-		worldTransformHitBox_.translation_ = hitBox_.pos;
-		worldTransformHitBox_.scale_ = hitBox_.size;
+	if (attackHitBox_.active) {
+		worldTransformHitBox_.translation_ = attackHitBox_.pos;
+		worldTransformHitBox_.scale_ = attackHitBox_.size;
 		modelDebugHitBox_->Draw(worldTransformHitBox_, camera);
 	}
 }
@@ -143,9 +143,9 @@ void Player::Attack() {
 
 	// ヒットボックスはプレイヤーの向きに依存
 	float hitboxOffsetX = 0.5f * facingDir_; // プレイヤーが右向きなら+0.8、左向きなら-0.8
-	hitBox_.active = true;
-	hitBox_.pos = worldTransform_.translation_ + Vector3{hitboxOffsetX, 0.1f, 0.0f};
-	hitBox_.size = {0.2f, 0.5f, 0.2f};
+	attackHitBox_.active = true;
+	attackHitBox_.pos = worldTransform_.translation_ + Vector3{hitboxOffsetX, 0.1f, 0.0f};
+	attackHitBox_.size = {0.2f, 0.5f, 0.2f};
 }
 
 
@@ -154,11 +154,11 @@ void Player::AttackUpdate() {
 		attackTimer_--;
 		if (attackTimer_ <= 0) {
 			isAttacking_ = false;
-			hitBox_.active = false;
+			attackHitBox_.active = false;
 			attackCooldownTimer_ = attackCooldown_;
 		} else {
 			float hitboxOffsetX = 0.5f * facingDir_; // プレイヤーが右向きなら+0.8、左向きなら-0.8
-			hitBox_.pos = worldTransform_.translation_ + Vector3{hitboxOffsetX, 0.1f, 0.0f};
+			attackHitBox_.pos = worldTransform_.translation_ + Vector3{hitboxOffsetX, 0.1f, 0.0f};
 		}
 	}
 

@@ -3,12 +3,11 @@
 
 class NormalEnemy : public EnemyBase {
 public:
+	NormalEnemy() = default; // デフォルトコンストラクタ追加
 	void Initialize(const EnemyData& data) override;
 	void Update(const KamataEngine::Vector3& playerPos) override;
 
 private:
-	void Attack() override;
-
-	float moveWaitTimer_ = 0.0f;
-	int attackCount_ = 0;
+	float attackTimer_ = 0.0f;
+	bool isAttacking_ = false;
 };

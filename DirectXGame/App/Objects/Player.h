@@ -2,6 +2,7 @@
 
 #include "KamataEngine.h"
 #include "../../Engine/Math/WorldTransformEx.h"
+#include "../../Engine//Math/Collider.h"
 
 /// <summary>
 /// プレイヤー
@@ -14,7 +15,7 @@ public:
 	/// 初期化
 	/// </summary>
 	/// <param name="model"></param>
-	void Initialize(KamataEngine::Model* model);
+	void Initialize(KamataEngine::Model* model, KamataEngine::Model* modelBox);
 
 	/// <summary>
 	/// 更新
@@ -41,6 +42,10 @@ public:
 
 	int GetHP() const { return HP_; }
 
+	HitBox GetAttackHitBox() const { return attackHitBox_; }
+
+	int GetAttackPower() const { return attackPower_; }
+
 private:
 	void Move();
 
@@ -61,6 +66,7 @@ private:
 
 	bool isDead_ = false;
 	int HP_ = 100;
+	int attackPower_ = 10;
 
 	// --- プレイヤーのテクスチャ ---
 	uint32_t textureHandle_ = 0;
@@ -103,12 +109,7 @@ private:
 	float facingDir_ = 1.0f;      // 向き（1.0f：右, -1.0f：左）
 
 	// --- ヒットボックス ---
-	struct HitBox {
-		KamataEngine::Vector3 pos;  // ワールド座標
-		KamataEngine::Vector3 size; // 当たり範囲
-		bool active;  // 現在有効か
-	};
-	HitBox hitBox_; // 現在のパンチのヒットボックス
+	HitBox attackHitBox_; // 現在のパンチのヒットボックス
 
 	// --- ノックダウン処理用 ---
 	float knockDownTimer_ = 2.0f;
