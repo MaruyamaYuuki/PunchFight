@@ -131,6 +131,22 @@ void EnemyManager::Draw(Camera& camera) {
 	}
 }
 
+void EnemyManager::BackDraw(KamataEngine::Camera& camera, const KamataEngine::Vector3& playerPos) {
+	for (auto& e : enemies_) {
+		if (e->GetPosition().z > playerPos.z) {
+    		e->Draw(camera);
+		}
+	}
+}
+
+void EnemyManager::FrontDraw(KamataEngine::Camera& camera, const KamataEngine::Vector3& playerPos) {
+	for (auto& e : enemies_) {
+		if (e->GetPosition().z <= playerPos.z) {
+			e->Draw(camera);
+		}
+	}
+}
+
 bool EnemyManager::IsAreaCleared(int areaIndex) const {
 	if (areaIndex < 0 || areaIndex >= static_cast<int>(areas_.size()))
 		return false;

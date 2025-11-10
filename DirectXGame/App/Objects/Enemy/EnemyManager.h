@@ -25,6 +25,8 @@ public:
 	void Initialize();
 	void Update(const KamataEngine::Vector3& playerPos, const HitBox& playerAttackBox, int playerDamage);
 	void Draw(KamataEngine::Camera& camera);
+	void BackDraw(KamataEngine::Camera& camera, const KamataEngine::Vector3& playerPos);
+	void FrontDraw(KamataEngine::Camera& camera, const KamataEngine::Vector3& playerPos);
 	void AddArea(float triggerX);
 	void AddSpawnToArea(int areaIndex, EnemyType type, const KamataEngine::Vector3& pos);
 	bool IsAreaCleared(int areaIndex) const;

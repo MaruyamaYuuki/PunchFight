@@ -121,8 +121,10 @@ void GameScene::Draw() {
 	Model::PreDraw();
 
 	stage_->Draw(camera_);
+	enemyManager_->BackDraw(camera_, player_->GetWorldTransform().translation_);
 	player_->Draw(camera_);
-	enemyManager_->Draw(camera_);
+	enemyManager_->FrontDraw(camera_, player_->GetWorldTransform().translation_);
+	//enemyManager_->Draw(camera_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -151,13 +153,13 @@ void GameScene::Draw() {
 
 		if (player_->IsDead()) {
 			blackSprite_->Draw();
-			gameOverTextSprite_->Draw();
+			//gameOverTextSprite_->Draw();
 		} 
 		if (player_->GetHP() > 0) {
-			backTextSprite_->Draw();
+			//backTextSprite_->Draw();
 		}
 		if (isGameOverFallFinished_) {
-			resetTextSprite_->Draw();
+			//resetTextSprite_->Draw();
 		}
 		break;
 	case GameScene::Phase::kFadeOut:
