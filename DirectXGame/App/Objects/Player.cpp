@@ -136,6 +136,7 @@ void Player::Move() {
 
 	// 範囲を越えない処理
 	worldTransform_.translation_.x = std::max(worldTransform_.translation_.x, -kStartMoveLimitX);
+	worldTransform_.translation_.x = std::min(worldTransform_.translation_.x, +endMoveLimitX);
 	worldTransform_.translation_.z = std::max(worldTransform_.translation_.z, -kMoveLimitZ);
 	worldTransform_.translation_.z = std::min(worldTransform_.translation_.z, +kMinMoveLimitZ);
 

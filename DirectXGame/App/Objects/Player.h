@@ -48,6 +48,8 @@ public:
 
 	float GetFacingDir() const { return facingDir_; }
 
+	void SetEndMoveLimitX(float limit) { endMoveLimitX = limit; }
+
 private:
 	void Move();
 
@@ -125,4 +127,6 @@ private:
 	// --- ノックダウン処理用 ---
 	float knockDownTimer_ = 2.0f;
 	float deltaTime = 1.0f / 60.0f;
+
+	float endMoveLimitX = 0;
 };
