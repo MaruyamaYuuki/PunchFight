@@ -3,6 +3,7 @@
 #include <chrono>
 #include "../../Engine/Rendering/Fade.h"
 #include "../../Engine/Math/Easing.h"
+#include "../../Engine//Math/Collision.h"
 #include <algorithm>
 
 using namespace KamataEngine;
@@ -31,6 +32,7 @@ void GameScene::Initialize() {
 
 	modelLoad_ = Model::CreateFromOBJ("load", true);
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
+	modelBoxFrame_ = Model::CreateFromOBJ("boxFrame", true);
 
 	textureHandle_ = TextureManager::Load("gameSelect.png");
 	backTextSprite_ = Sprite::Create(textureHandle_, {640.0f, 360.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
@@ -48,7 +50,9 @@ void GameScene::Initialize() {
 	startGongSEDataHandle_ = audio->LoadWave("audio/SE/startGong.wav");
 
 	player_ = new Player();
-	player_->Initialize(modelPlayer_);
+	player_->Initialize(modelPlayer_,modelBoxFrame_);
+
+	EnemyGenerate();
 
 	stage_ = new StageManager();
 	stage_->Initialize(1, 9);
@@ -57,7 +61,7 @@ void GameScene::Initialize() {
 	cameraController_->Initialize();            // 初期化
 	cameraController_->SetTarget(player_);      // 追従対象をセット
 	cameraController_->Reset();                 // リセット(瞬間合わせ)
-	CameraController::Rect cameraArea = { -100.0f, 100 - 5.0f, -8.0f, -1.0f};
+	CameraController::Rect cameraArea = {0.0f, scrollArea[0], -8.0f, -1.0f};
 	cameraController_->SetMovableArea(cameraArea);
 
 	fade_ = new Fade();
@@ -88,6 +92,8 @@ void GameScene::Update() {
 			isFinished_ = true;
 
 		}
+		EnemyUpdate();
+		AllCollision();
 		break;
 	case GameScene::Phase::kFadeOut:
 		break;
@@ -115,7 +121,10 @@ void GameScene::Draw() {
 	Model::PreDraw();
 
 	stage_->Draw(camera_);
+	enemyManager_->BackDraw(camera_, player_->GetWorldTransform().translation_);
 	player_->Draw(camera_);
+	enemyManager_->FrontDraw(camera_, player_->GetWorldTransform().translation_);
+	//enemyManager_->Draw(camera_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -144,13 +153,13 @@ void GameScene::Draw() {
 
 		if (player_->IsDead()) {
 			blackSprite_->Draw();
-			gameOverTextSprite_->Draw();
+			//gameOverTextSprite_->Draw();
 		} 
 		if (player_->GetHP() > 0) {
-			backTextSprite_->Draw();
+			//backTextSprite_->Draw();
 		}
 		if (isGameOverFallFinished_) {
-			resetTextSprite_->Draw();
+			//resetTextSprite_->Draw();
 		}
 		break;
 	case GameScene::Phase::kFadeOut:
@@ -200,9 +209,13 @@ void GameScene::ChangePhase() {
 		fade_->Update();
 		if (fade_->IsFinished()) {
 			fade_->Stop();
-			ResetGame();
-			phase_ = Phase::kFadeIn;
-			fade_->Start(Fade::Status::FadeIn, fadeTime_);
+			if (player_->IsDead()) {
+    			ResetGame();
+    			phase_ = Phase::kFadeIn;
+    			fade_->Start(Fade::Status::FadeIn, fadeTime_);
+			} else {
+				isFinished_ = true;
+			}
 		}
 		break;
 	}
@@ -323,4 +336,86 @@ void GameScene::ResetGame() {
 	blackSprite_->SetColor({1, 1, 1, 0.0f});
 	gameOverTextSprite_->SetColor({1, 1, 1, 0.0f});
 	gameOverTextSprite_->SetPosition({640.0f, -200.0f});
+}
+
+void GameScene::EnemyGenerate() {
+	enemyManager_ = new EnemyManager();
+	enemyManager_->Initialize();
+
+	// --- エリア追加（トリガー位置） ---
+	enemyManager_->AddArea(10.0f);   // area 0
+	enemyManager_->AddArea(25.0f);  // area 1
+	enemyManager_->AddArea(55.0f); // area 2
+
+	// --- 各エリアに敵を追加 ---
+	// エリア0
+	enemyManager_->AddSpawnToArea(0, EnemyType::Normal, {15, 1, 0});
+
+	// エリア1
+	enemyManager_->AddSpawnToArea(1, EnemyType::Normal, {30, 1, 0});
+
+	// エリア2
+	enemyManager_->AddSpawnToArea(2, EnemyType::Normal, {60, 1, 0});
+
+}
+
+void GameScene::EnemyUpdate() {
+	// プレイヤー情報取得
+	KamataEngine::Vector3 playerPos = player_->GetWorldTransform().translation_;
+
+
+	// ----- 敵管理の更新 -----
+	enemyManager_->Update(playerPos);
+
+	// ----- エリアクリア判定 -----
+	for (int i = 0; i < 3; i++) {
+		if (enemyManager_->IsAreaCleared(i) && !areaClearedFlag_[i]) {
+			areaClearedFlag_[i] = true;
+
+			// ここにクリア時のイベント（必要なら）
+			// 例：扉を開く、カメラロック解除
+			// Door[i].Open();
+		}
+	}
+
+    if (areaClearedFlag_[2]) {
+		phase_ = Phase::kFadeOut;
+		fade_->Start(Fade::Status::FadeOut, fadeTime_);
+	} else if (areaClearedFlag_[1]) {
+		CameraController::Rect area = {0.0f, scrollArea[2], -8.0f, -1.0f};
+		cameraController_->SetMovableArea(area);
+	} else if (areaClearedFlag_[0]) {
+		CameraController::Rect area = {0.0f, scrollArea[1], -8.0f, -1.0f};
+		cameraController_->SetMovableArea(area);
+	}
+}
+
+void GameScene::AllCollision() {
+	// ---プレイヤーの攻撃と敵の当たり判定---
+	const HitBox& atk = player_->GetAttackHitBox();
+
+	// 攻撃終了したら記録リセット
+	if (!atk.active) {
+		hitEnemiesThisAttack_.clear();
+		return;
+	}
+
+	auto& enemies = enemyManager_->GetEnemies();
+
+	for (auto& e : enemies) {
+		// この攻撃中に当たってたらスキップ
+		if (std::find(hitEnemiesThisAttack_.begin(), 
+			          hitEnemiesThisAttack_.end(), 
+			          e.get()) != hitEnemiesThisAttack_.end()) {
+			continue;
+		}
+
+		if (Collision::AABB(atk, e->GetHitBox())) {
+			// この攻撃中に当たった敵として記録
+			hitEnemiesThisAttack_.push_back(e.get());
+
+			Vector3 dir{player_->GetFacingDir(), 0, 0};
+			e->OnHit(player_->GetAttackPower(), dir);
+		}
+	}
 }

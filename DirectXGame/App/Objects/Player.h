@@ -2,6 +2,7 @@
 
 #include "KamataEngine.h"
 #include "../../Engine/Math/WorldTransformEx.h"
+#include "../../Engine//Math/Collider.h"
 
 /// <summary>
 /// プレイヤー
@@ -14,7 +15,7 @@ public:
 	/// 初期化
 	/// </summary>
 	/// <param name="model"></param>
-	void Initialize(KamataEngine::Model* model);
+	void Initialize(KamataEngine::Model* model, KamataEngine::Model* modelBox);
 
 	/// <summary>
 	/// 更新
@@ -41,6 +42,12 @@ public:
 
 	int GetHP() const { return HP_; }
 
+	HitBox GetAttackHitBox() const { return attackHitBox_; }
+
+	int GetAttackPower() const { return attackPower_; }
+
+	float GetFacingDir() const { return facingDir_; }
+
 private:
 	void Move();
 
@@ -61,6 +68,7 @@ private:
 
 	bool isDead_ = false;
 	int HP_ = 100;
+	int attackPower_ = 10;
 
 	// --- プレイヤーのテクスチャ ---
 	uint32_t textureHandle_ = 0;
@@ -70,6 +78,9 @@ private:
 	uint32_t RUppercutTexture_ = 0;
 	uint32_t RKnockDownTexture_ = 0;
 	uint32_t RKnockDown2Texture_ = 0;
+	uint32_t RRunTexture1_ = 0;
+	uint32_t RRunTexture2_ = 0;
+	uint32_t RRunTexture3_ = 0;
 
 	uint32_t LPlayerTexture_ = 0;
 	uint32_t LLeftPunchTexture_ = 0;
@@ -77,10 +88,16 @@ private:
 	uint32_t LUppercutTexture_ = 0;
 	uint32_t LKnockDownTexture_ = 0;
 	uint32_t LKnockDown2Texture_ = 0;
+	uint32_t LRunTexture1_ = 0;
+	uint32_t LRunTexture2_ = 0;
+	uint32_t LRunTexture3_ = 0;
 
 	// --- 移動関連 ---
 	KamataEngine::Vector3 move = {0, 0, 0};
-	float moveSpeed = 0.1f; // 通常移動速度
+	float moveSpeed = 0.05f; // 通常移動速度
+	int walkFrame_ = 0;         // 0〜3でループ
+	int walkFrameTimer_ = 0;    // テクスチャ切替タイマー
+	int walkFrameInterval_ = 6; // 何フレームごとに切り替えるか
 
 	// --- ステップ関連 ---
     bool isStepping_ = false;
@@ -103,12 +120,7 @@ private:
 	float facingDir_ = 1.0f;      // 向き（1.0f：右, -1.0f：左）
 
 	// --- ヒットボックス ---
-	struct HitBox {
-		KamataEngine::Vector3 pos;  // ワールド座標
-		KamataEngine::Vector3 size; // 当たり範囲
-		bool active;  // 現在有効か
-	};
-	HitBox hitBox_; // 現在のパンチのヒットボックス
+	HitBox attackHitBox_; // 現在のパンチのヒットボックス
 
 	// --- ノックダウン処理用 ---
 	float knockDownTimer_ = 2.0f;

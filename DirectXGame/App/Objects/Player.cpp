@@ -1,3 +1,4 @@
+#define NOMINMAX
 #include "Player.h"
 #include <cassert>
 #include <algorithm>
@@ -5,13 +6,13 @@
 using namespace KamataEngine;
 using namespace KamataEngine::MathUtility;
 
-void Player::Initialize(Model* model) { 
+void Player::Initialize(Model* model, KamataEngine::Model* modelBox) { 
 	input_ = Input::GetInstance(); 
 
 	assert(model);
 	model_ = model;
-
-	modelDebugHitBox_ = Model::Create();
+	assert(modelBox);
+	modelDebugHitBox_ = modelBox;
 
 	worldTransform_.Initialize();
 	worldTransform_.translation_.y += 1.0f;
@@ -27,6 +28,9 @@ void Player::Initialize(Model* model) {
 	RUppercutTexture_ = TextureManager::Load("playerTextures/RUppercut.png");
 	RKnockDownTexture_ = TextureManager::Load("playerTextures/RKnockDown.png");
 	RKnockDown2Texture_ = TextureManager::Load("playerTextures/RKnockDown2.png");
+	RRunTexture1_ = TextureManager::Load("playerTextures/RRun1.png");
+	RRunTexture2_ = TextureManager::Load("playerTextures/RRun2.png");
+	RRunTexture3_ = TextureManager::Load("playerTextures/RRun3.png");
 	// 左向きテクスチャ
 	LPlayerTexture_ = TextureManager::Load("playerTextures/LPlayer.png");
 	LLeftPunchTexture_ = TextureManager::Load("playerTextures/LLeftPunch.png");
@@ -34,6 +38,9 @@ void Player::Initialize(Model* model) {
 	LUppercutTexture_ = TextureManager::Load("playerTextures/LUppercut.png");
 	LKnockDownTexture_ = TextureManager::Load("playerTextures/LKnockDown.png");
 	LKnockDown2Texture_ = TextureManager::Load("playerTextures/LKnockDown2.png");
+	LRunTexture1_ = TextureManager::Load("playerTextures/LRun1.png");
+	LRunTexture2_ = TextureManager::Load("playerTextures/LRun2.png");
+	LRunTexture3_ = TextureManager::Load("playerTextures/LRun3.png");
 }
 
 void Player::Update() {
@@ -55,14 +62,18 @@ void Player::Update() {
 
 void Player::Draw(Camera& camera) { 
 	model_->Draw(worldTransform_, camera, textureHandle_); 
-	if (hitBox_.active) {
-		worldTransformHitBox_.translation_ = hitBox_.pos;
-		worldTransformHitBox_.scale_ = hitBox_.size;
+	if (attackHitBox_.active) {
+		worldTransformHitBox_.translation_ = attackHitBox_.pos;
+		worldTransformHitBox_.scale_ = attackHitBox_.size;
 		modelDebugHitBox_->Draw(worldTransformHitBox_, camera);
 	}
 }
 
 void Player::Move() {
+	// 攻撃中なら移動をキャンセル
+	if (isAttacking_) {
+		return;
+	}
 
 	move = {0, 0, 0};
 
@@ -117,6 +128,32 @@ void Player::Move() {
 	// 通常移動
 	worldTransform_.translation_.x += move.x * moveSpeed;
 	worldTransform_.translation_.z += move.z * moveSpeed;
+
+	// 移動限界座標
+	const float kStartMoveLimitX = 3.0f;
+	const float kMoveLimitZ = 4.0f;
+	const float kMinMoveLimitZ = 1.5f;
+
+	// 範囲を越えない処理
+	worldTransform_.translation_.x = std::max(worldTransform_.translation_.x, -kStartMoveLimitX);
+	worldTransform_.translation_.z = std::max(worldTransform_.translation_.z, -kMoveLimitZ);
+	worldTransform_.translation_.z = std::min(worldTransform_.translation_.z, +kMinMoveLimitZ);
+
+	bool isMoving = (move.x != 0.0f || move.z != 0.0f);
+
+	// 歩行アニメ進行
+	if (isMoving && !isStepping_ && !isAttacking_ && HP_ > 0) {
+		walkFrameTimer_++;
+
+		if (walkFrameTimer_ >= walkFrameInterval_) {
+			walkFrameTimer_ = 0;
+			walkFrame_ = (walkFrame_ + 1) % 4; // 4枚ループ
+		}
+	} else {
+		// 止まったらフレームリセットしてもOK（お好み）
+		walkFrame_ = 0;
+		walkFrameTimer_ = 0;
+	}
 }
 
 void Player::Attack() {
@@ -132,9 +169,9 @@ void Player::Attack() {
 
 	// ヒットボックスはプレイヤーの向きに依存
 	float hitboxOffsetX = 0.5f * facingDir_; // プレイヤーが右向きなら+0.8、左向きなら-0.8
-	hitBox_.active = true;
-	hitBox_.pos = worldTransform_.translation_ + Vector3{hitboxOffsetX, 0.1f, 0.0f};
-	hitBox_.size = {0.2f, 0.5f, 0.2f};
+	attackHitBox_.active = true;
+	attackHitBox_.pos = worldTransform_.translation_ + Vector3{hitboxOffsetX, 0.1f, 0.0f};
+	attackHitBox_.size = {0.2f, 0.5f, 1.0f};
 }
 
 
@@ -143,11 +180,11 @@ void Player::AttackUpdate() {
 		attackTimer_--;
 		if (attackTimer_ <= 0) {
 			isAttacking_ = false;
-			hitBox_.active = false;
+			attackHitBox_.active = false;
 			attackCooldownTimer_ = attackCooldown_;
 		} else {
 			float hitboxOffsetX = 0.5f * facingDir_; // プレイヤーが右向きなら+0.8、左向きなら-0.8
-			hitBox_.pos = worldTransform_.translation_ + Vector3{hitboxOffsetX, 0.1f, 0.0f};
+			attackHitBox_.pos = worldTransform_.translation_ + Vector3{hitboxOffsetX, 0.1f, 0.0f};
 		}
 	}
 
@@ -160,7 +197,9 @@ void Player::AttackUpdate() {
 	}
 }
 
-void Player::TextureUpdate() {
+void Player::TextureUpdate() {	
+	bool isMoving = (move.x != 0.0f || move.z != 0.0f);
+	// 攻撃
 	if (isAttacking_) {
 		if (attackFromRight_) {
 			if (facingDir_ == 1.0f) {
@@ -175,7 +214,9 @@ void Player::TextureUpdate() {
 				textureHandle_ = LLeftPunchTexture_;
 			}
 		}
-	} else if (HP_ <= 0) {
+	}  
+	// ダウン
+	else if (HP_ <= 0) {
 		knockDownTimer_ -= deltaTime;
 		if (knockDownTimer_ <= 0) {
 			isDead_ = true;
@@ -193,6 +234,49 @@ void Player::TextureUpdate() {
 			}
 		}
 
+	} 
+	// ステップ
+	else if (isStepping_) {
+		if (facingDir_ == 1.0f) {
+			textureHandle_ = RRunTexture1_;
+		} else {
+			textureHandle_ = LRunTexture1_;
+		}
+		return;
+	}
+	// 移動
+	else if (isMoving) {
+		if (facingDir_ == 1.0f) {
+			switch (walkFrame_) {
+			case 0:
+				textureHandle_ = RRunTexture1_;
+				break;
+			case 1:
+				textureHandle_ = RRunTexture2_;
+				break;
+			case 2:
+				textureHandle_ = RRunTexture3_;
+				break;
+			case 3:
+				textureHandle_ = RRunTexture2_;
+				break;
+			}
+		} else {
+			switch (walkFrame_) {
+			case 0:
+				textureHandle_ = LRunTexture1_;
+				break;
+			case 1:
+				textureHandle_ = LRunTexture2_;
+				break;
+			case 2:
+				textureHandle_ = LRunTexture3_;
+				break;
+			case 3:
+				textureHandle_ = LRunTexture2_;
+				break;
+			}
+		}
 	} else {
 		if (facingDir_ == 1.0f) {
 			textureHandle_ = RPlayerTexture_;
