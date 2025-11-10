@@ -30,34 +30,28 @@ void EnemyManager::AddSpawnToArea(int areaIndex, EnemyType type, const Vector3& 
 
 void EnemyManager::SpawnEnemy(EnemyType type, const KamataEngine::Vector3& pos) {
 	EnemyData data{};
+	std::unique_ptr<EnemyBase> enemy;
+
 	switch (type) {
 	case EnemyType::Normal:
-		data = {"boxFrame", 0.2f, 3, 5};
+		data = {"player", 0.1f, 3, 5};
+		enemy = std::make_unique<NormalEnemy>();
+		enemy->SetHitBox(pos, {0.5f, 1.0f, 0.5f}); // 中心0.5f、高さ1
+		enemy->SetScale({0.5f, 0.5f, 0.5f});
 		break;
 	case EnemyType::Power:
 		data = {"enemy_power", 0.1f, 10, 10};
+		enemy = std::make_unique<PowerEnemy>();
+		enemy->SetHitBox(pos, {1.0f, 2.0f, 1.0f});
+		enemy->SetScale({2.0f, 2.0f, 2.0f});
 		break;
 	}
-
-std::unique_ptr<EnemyBase> enemy;
-
-	switch (type) {
-	case EnemyType::Normal:
-		enemy = std::unique_ptr<EnemyBase>(new NormalEnemy());
-		break;
-	case EnemyType::Power:
-		enemy = std::unique_ptr<EnemyBase>(new PowerEnemy());
-		break;
-	}
-
 
 	enemy->Initialize(data);
 	enemy->SetPosition(pos.x, pos.y, pos.z);
 
 	enemies_.push_back(std::move(enemy));
 }
-
-
 
 void EnemyManager::Update(const Vector3& playerPos, const HitBox& playerAttackBox, int playerDamage) {
 	// ======== エリアトリガーチェック ========
@@ -78,16 +72,21 @@ void EnemyManager::Update(const Vector3& playerPos, const HitBox& playerAttackBo
 		e->Update(playerPos);
 
 		if (playerAttackBox.active) {
+			const HitBox& enemyBox = e->GetHitBox();
 
-			HitBox enemyBox;
-			enemyBox.pos = e->GetPosition();
-			enemyBox.size = {1, 1, 1};
+			// デバッグ出力
+			DebugText::GetInstance()->ConsolePrintf(
+			    "Enemy HB Pos: %.2f, %.2f, %.2f | Size: %.2f, %.2f, %.2f\n", enemyBox.pos.x, enemyBox.pos.y, enemyBox.pos.z, enemyBox.size.x, enemyBox.size.y, enemyBox.size.z);
 
 			if (Collision::AABB(playerAttackBox, enemyBox)) {
 				e->OnHit(playerDamage);
+				isHit_ = true;
 			}
 		}
 	}
+	DebugText::GetInstance()->ConsolePrintf("Hit : %d\n", isHit_);
+
+
 
 	// ======== 死んだ敵を削除 ========
 	enemies_.erase(std::remove_if(enemies_.begin(), enemies_.end(), [](auto& e) { return e->IsDead(); }), enemies_.end());

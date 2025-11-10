@@ -60,7 +60,7 @@ void GameScene::Initialize() {
 	cameraController_->Initialize();            // 初期化
 	cameraController_->SetTarget(player_);      // 追従対象をセット
 	cameraController_->Reset();                 // リセット(瞬間合わせ)
-	CameraController::Rect cameraArea = { 0.0f, 100 - 5.0f, -8.0f, -1.0f};
+	CameraController::Rect cameraArea = {0.0f, scrollArea[0], -8.0f, -1.0f};
 	cameraController_->SetMovableArea(cameraArea);
 
 	fade_ = new Fade();
@@ -122,7 +122,7 @@ void GameScene::Draw() {
 
 	stage_->Draw(camera_);
 	player_->Draw(camera_);
-	//enemyManager_->Draw(camera_);
+	enemyManager_->Draw(camera_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -333,28 +333,28 @@ void GameScene::ResetGame() {
 }
 
 void GameScene::EnemyGenerate() {
-	/*	enemyManager_ = new EnemyManager();
+	enemyManager_ = new EnemyManager();
 	enemyManager_->Initialize();
 
 	// --- エリア追加（トリガー位置） ---
-	enemyManager_->AddArea(0.0f);   // area 0
-	enemyManager_->AddArea(50.0f);  // area 1
-	enemyManager_->AddArea(100.0f); // area 2
+	enemyManager_->AddArea(5.0f);   // area 0
+	enemyManager_->AddArea(20.0f);  // area 1
+	enemyManager_->AddArea(50.0f); // area 2
 
 	// --- 各エリアに敵を追加 ---
 	// エリア0
-	enemyManager_->AddSpawnToArea(0, EnemyType::Normal, {10, 0, 0});
+	enemyManager_->AddSpawnToArea(0, EnemyType::Normal, {15, 1, 0});
 
 	// エリア1
-	enemyManager_->AddSpawnToArea(1, EnemyType::Power, {60, 0, 0});
+	enemyManager_->AddSpawnToArea(1, EnemyType::Normal, {30, 1, 0});
 
 	// エリア2
-	enemyManager_->AddSpawnToArea(2, EnemyType::Power, {110, 0, 0});*/
+	enemyManager_->AddSpawnToArea(2, EnemyType::Normal, {60, 1, 0});
 
 }
 
 void GameScene::EnemyUpdate() {
-	/*	// プレイヤー情報取得
+	// プレイヤー情報取得
 	KamataEngine::Vector3 playerPos = player_->GetWorldTransform().translation_;
 	HitBox attackBox = player_->GetAttackHitBox();
 	int attackPower = player_->GetAttackPower();
@@ -371,6 +371,15 @@ void GameScene::EnemyUpdate() {
 			// 例：扉を開く、カメラロック解除
 			// Door[i].Open();
 		}
-	}*/
+	}
 
+    if (areaClearedFlag_[2]) {
+
+	} else if (areaClearedFlag_[1]) {
+		CameraController::Rect area = {0.0f, scrollArea[2], -8.0f, -1.0f};
+		cameraController_->SetMovableArea(area);
+	} else if (areaClearedFlag_[0]) {
+		CameraController::Rect area = {0.0f, scrollArea[1], -8.0f, -1.0f};
+		cameraController_->SetMovableArea(area);
+	}
 }

@@ -76,6 +76,9 @@ private:
 	uint32_t RUppercutTexture_ = 0;
 	uint32_t RKnockDownTexture_ = 0;
 	uint32_t RKnockDown2Texture_ = 0;
+	uint32_t RRunTexture1_ = 0;
+	uint32_t RRunTexture2_ = 0;
+	uint32_t RRunTexture3_ = 0;
 
 	uint32_t LPlayerTexture_ = 0;
 	uint32_t LLeftPunchTexture_ = 0;
@@ -83,10 +86,16 @@ private:
 	uint32_t LUppercutTexture_ = 0;
 	uint32_t LKnockDownTexture_ = 0;
 	uint32_t LKnockDown2Texture_ = 0;
+	uint32_t LRunTexture1_ = 0;
+	uint32_t LRunTexture2_ = 0;
+	uint32_t LRunTexture3_ = 0;
 
 	// --- 移動関連 ---
 	KamataEngine::Vector3 move = {0, 0, 0};
-	float moveSpeed = 0.1f; // 通常移動速度
+	float moveSpeed = 0.05f; // 通常移動速度
+	int walkFrame_ = 0;         // 0〜3でループ
+	int walkFrameTimer_ = 0;    // テクスチャ切替タイマー
+	int walkFrameInterval_ = 6; // 何フレームごとに切り替えるか
 
 	// --- ステップ関連 ---
     bool isStepping_ = false;

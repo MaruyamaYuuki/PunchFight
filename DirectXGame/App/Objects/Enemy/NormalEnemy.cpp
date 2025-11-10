@@ -8,9 +8,9 @@ void NormalEnemy::Initialize(const EnemyData& data) { EnemyBase::Initialize(data
 
 void NormalEnemy::Update(const Vector3& playerPos) {
 	Vector3 diff = playerPos - worldTransform_.translation_;
-	float dist = std::sqrt(diff.x * diff.x + diff.z * diff.z);
+	/*float dist = std::sqrt(diff.x * diff.x + diff.z * diff.z);
 
-	if (dist > 2.0f && !isAttacking_) {
+	if (dist > 1.0f && !isAttacking_) {
 		diff = diff / dist; // 正規化
 		worldTransform_.translation_.x += diff.x * speed_;
 		worldTransform_.translation_.z += diff.z * speed_;
@@ -26,7 +26,8 @@ void NormalEnemy::Update(const Vector3& playerPos) {
 			attackTimer_ = 0.0f;
 			attackBox_.active = false;
 		}
-	}
+	}*/
+
 
 	worldTransform_.UpdateMatrix();
 }

@@ -8,7 +8,7 @@ void PowerEnemy::Initialize(const EnemyData& data) { EnemyBase::Initialize(data)
 
 void PowerEnemy::Update(const Vector3& playerPos) {
 	Vector3 diff = playerPos - worldTransform_.translation_;
-	float dist = sqrtf(diff.x * diff.x + diff.z * diff.z);
+	/*	float dist = sqrtf(diff.x * diff.x + diff.z * diff.z);
 
 	if (dist > 2.5f) {
 		diff = Normalize(diff);
@@ -24,7 +24,7 @@ void PowerEnemy::Update(const Vector3& playerPos) {
 			attackBox_.active = false;
 			attackCooldown_ = 0.0f;
 		}
-	}
+	}*/
 
 	worldTransform_.UpdateMatrix();
 }

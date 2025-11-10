@@ -4,7 +4,7 @@
 #include "../../Engine/Camera/CameraController.h"
 #include "../Objects/StageManager.h"
 #include "../Objects/Player.h"
-//#include "../Objects/Enemy/EnemyManager.h"
+#include "../Objects/Enemy/EnemyManager.h"
 
 struct AreData {
 	float startX;
@@ -93,7 +93,7 @@ private:
 
 	Phase phase_ = Phase::kFadeIn;
 
-	//EnemyManager* enemyManager_ = nullptr;
+	EnemyManager* enemyManager_ = nullptr;
 
 	// ---ファイトテキストアニメーション用---
 	float blinkTime_ = 0.0f;
@@ -119,4 +119,6 @@ private:
 	bool isGameOverFallFinished_ = false; // 落下完了フラグ
 
 	bool areaClearedFlag_[3] = {false, false, false};
+
+	float scrollArea[3] = {15.0f, 30.0f, 60.0f};
 };

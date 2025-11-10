@@ -28,10 +28,13 @@ public:
 	void AddArea(float triggerX);
 	void AddSpawnToArea(int areaIndex, EnemyType type, const KamataEngine::Vector3& pos);
 	bool IsAreaCleared(int areaIndex) const;
+	const std::vector<std::unique_ptr<EnemyBase>>& GetEnemies() const { return enemies_; }
 
 private:
 	void SpawnEnemy(EnemyType type, const KamataEngine::Vector3& pos);
 
 	std::vector<std::unique_ptr<EnemyBase>> enemies_;
 	std::vector<EnemyArea> areas_;
+
+	bool isHit_ = false;
 };
