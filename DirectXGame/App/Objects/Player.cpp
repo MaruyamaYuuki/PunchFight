@@ -71,6 +71,7 @@ void Player::Update() {
 
 void Player::Draw(Camera& camera) { 
 	model_->Draw(worldTransform_, camera, textureHandle_); 
+	#ifdef _DEBUG
 	if (attackHitBox_.active) {
 		worldTransformHitBox_.translation_ = attackHitBox_.pos;
 		worldTransformHitBox_.scale_ = attackHitBox_.size;
@@ -81,6 +82,7 @@ void Player::Draw(Camera& camera) {
 		worldTransformPHitBox_.scale_ = playerHitBox_.size;
 		modelHitBox_->Draw(worldTransformPHitBox_, camera);
 	}
+	#endif
 }
 
 void Player::Move() {

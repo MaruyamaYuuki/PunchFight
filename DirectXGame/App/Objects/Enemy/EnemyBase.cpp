@@ -63,6 +63,7 @@ void EnemyBase::Draw(Camera& camera) {
 	if (model_) {
 		model_->Draw(worldTransform_, camera, textureHandle_);
 	}
+	#ifdef _DEBUG
 	if (hitBox_.active) {
 		worldTransformEHitBox_.translation_ = hitBox_.pos;
 		worldTransformEHitBox_.scale_ = hitBox_.size;
@@ -73,6 +74,7 @@ void EnemyBase::Draw(Camera& camera) {
 		worldTransformAHitBox_.scale_ = attackHitBox_.size;
 		modelAHitBox_->Draw(worldTransformAHitBox_, camera);
 	}
+	#endif
 }
 
 void EnemyBase::OnHit(int damage, const Vector3& attackDir) {
