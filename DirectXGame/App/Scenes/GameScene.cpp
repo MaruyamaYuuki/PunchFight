@@ -207,9 +207,13 @@ void GameScene::ChangePhase() {
 		fade_->Update();
 		if (fade_->IsFinished()) {
 			fade_->Stop();
-			ResetGame();
-			phase_ = Phase::kFadeIn;
-			fade_->Start(Fade::Status::FadeIn, fadeTime_);
+			if (player_->IsDead()) {
+    			ResetGame();
+    			phase_ = Phase::kFadeIn;
+    			fade_->Start(Fade::Status::FadeIn, fadeTime_);
+			} else {
+				isFinished_ = true;
+			}
 		}
 		break;
 	}
@@ -337,9 +341,9 @@ void GameScene::EnemyGenerate() {
 	enemyManager_->Initialize();
 
 	// --- エリア追加（トリガー位置） ---
-	enemyManager_->AddArea(5.0f);   // area 0
-	enemyManager_->AddArea(20.0f);  // area 1
-	enemyManager_->AddArea(50.0f); // area 2
+	enemyManager_->AddArea(10.0f);   // area 0
+	enemyManager_->AddArea(25.0f);  // area 1
+	enemyManager_->AddArea(55.0f); // area 2
 
 	// --- 各エリアに敵を追加 ---
 	// エリア0
@@ -374,7 +378,8 @@ void GameScene::EnemyUpdate() {
 	}
 
     if (areaClearedFlag_[2]) {
-
+		phase_ = Phase::kFadeOut;
+		fade_->Start(Fade::Status::FadeOut, fadeTime_);
 	} else if (areaClearedFlag_[1]) {
 		CameraController::Rect area = {0.0f, scrollArea[2], -8.0f, -1.0f};
 		cameraController_->SetMovableArea(area);

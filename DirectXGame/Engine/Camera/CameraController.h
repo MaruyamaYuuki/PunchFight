@@ -32,6 +32,8 @@ public:
 
 	KamataEngine::Vector3 LerpVector3(const KamataEngine::Vector3& start, const KamataEngine::Vector3& end, float t);
 
+	KamataEngine::Vector3 GetPosition() const { return camera_.translation_; }
+
 private:
 	KamataEngine::Camera camera_;
 	Player* target_ = nullptr;
