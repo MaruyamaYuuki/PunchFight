@@ -36,7 +36,7 @@ void EnemyManager::SpawnEnemy(EnemyType type, const KamataEngine::Vector3& pos) 
 	case EnemyType::Normal:
 		data = {"enemy", 0.1f, 30, 5};
 		enemy = std::make_unique<NormalEnemy>();
-		enemy->SetHitBox(pos, {0.5f, 1.0f, 0.5f}); // 中心0.5f、高さ1
+		enemy->SetHitBox(pos, {0.5f, 1.0f, 0.025f}); // 中心0.5f、高さ1
 		enemy->SetScale({0.5f, 0.5f, 0.5f});
 		break;
 	case EnemyType::Power:

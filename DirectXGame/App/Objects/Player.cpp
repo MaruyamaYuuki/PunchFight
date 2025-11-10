@@ -13,11 +13,16 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelBox) {
 	model_ = model;
 	assert(modelBox);
 	modelDebugHitBox_ = modelBox;
+	modelHitBox_ = modelBox;
 
 	worldTransform_.Initialize();
 	worldTransform_.translation_.y += 1.0f;
 	worldTransform_.scale_ = {0.5f, 0.5f, 0.5f};
 	worldTransformHitBox_.Initialize();
+	worldTransformPHitBox_.Initialize();
+
+	playerHitBox_.active = true;
+	playerHitBox_.size = {0.3f, 0.5f, 0.3f};
 
 	textureHandle_ = TextureManager::Load("playerTextures/RPlayer.png");
 
@@ -58,6 +63,10 @@ void Player::Update() {
 	TextureUpdate();
 	worldTransform_.UpdateMatrix();
 	worldTransformHitBox_.UpdateMatrix();
+	worldTransformPHitBox_.UpdateMatrix();
+
+	// ヒットボックスをプレイヤーの位置に追従
+	playerHitBox_.pos = worldTransform_.translation_;
 }
 
 void Player::Draw(Camera& camera) { 
@@ -66,6 +75,11 @@ void Player::Draw(Camera& camera) {
 		worldTransformHitBox_.translation_ = attackHitBox_.pos;
 		worldTransformHitBox_.scale_ = attackHitBox_.size;
 		modelDebugHitBox_->Draw(worldTransformHitBox_, camera);
+	}
+	if (playerHitBox_.active) {
+		worldTransformPHitBox_.translation_ = playerHitBox_.pos;
+		worldTransformPHitBox_.scale_ = playerHitBox_.size;
+		modelHitBox_->Draw(worldTransformPHitBox_, camera);
 	}
 }
 
@@ -293,6 +307,15 @@ void Player::Reset() {
 	knockDownTimer_ = 2.0f;
 	isDead_ = false;
 	textureHandle_ = TextureManager::Load("playerTextures/RPlayer.png");
+}
+
+void Player::UpdateWorldTransform() {
+	worldTransform_.UpdateMatrix();
+	worldTransformHitBox_.UpdateMatrix();
+	worldTransformPHitBox_.UpdateMatrix();
+
+	// ヒットボックスをプレイヤーの位置に追従
+	playerHitBox_.pos = worldTransform_.translation_;
 }
 
 void Player::TakeDamage(int damage) {
