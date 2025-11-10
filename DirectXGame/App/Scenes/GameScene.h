@@ -83,6 +83,7 @@ private:
 
 	StageManager* stage_ = nullptr;
 	Player* player_ = nullptr;
+	float moveLimit[3] = {20.0f, 35.0f, 50.0f};
 
 	CameraController* cameraController_ = nullptr;
 
@@ -123,7 +124,7 @@ private:
 
 	bool areaClearedFlag_[3] = {false, false, false};
 
-	float scrollArea[3] = {15.0f, 30.0f, 60.0f};
+	float scrollArea[3] = {15.0f, 30.0f, 45.0f};
 
 	std::vector<EnemyBase*> hitEnemiesThisAttack_;
 };

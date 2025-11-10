@@ -1,6 +1,7 @@
 #include "EnemyBase.h"
 
 using namespace KamataEngine;
+using namespace KamataEngine::MathUtility;
 
 void EnemyBase::Initialize(const EnemyData& data) {
 	model_ = Model::CreateFromOBJ(data.modelPath, true);
@@ -8,11 +9,16 @@ void EnemyBase::Initialize(const EnemyData& data) {
 	hp_ = data.hp;
 	attackPower_ = data.attackPower;
 
+	modelEHitBox_ = Model::CreateFromOBJ("boxFrame", true);
+	modelAHitBox_ = Model::CreateFromOBJ("boxFrame", true);
+
 	worldTransform_.Initialize();
+	worldTransformEHitBox_.Initialize();
+	worldTransformAHitBox_.Initialize();
 }
 
 void EnemyBase::Update(const Vector3&) {
-	if (isKnockback_) {
+	if (isKnockBack_) {
 
 		knockbackTime_ += deltaTime;
 
@@ -29,13 +35,25 @@ void EnemyBase::Update(const Vector3&) {
 
 		// 規定時間で消滅
 		if (knockbackTime_ >= knockbackDuration_) {
-			isKnockback_ = false;
+			isKnockBack_ = false;
 			isDead_ = true;
 		}
 	}
 
+	// ===== スタン処理 =====
+	if (isStan_) {
+		stanTimer_ -= deltaTime;
+
+		if (stanTimer_ <= 0.0f) {
+			isStan_ = false;
+		}
+	}
+
 	worldTransform_.UpdateMatrix();
+	worldTransformEHitBox_.UpdateMatrix();
+	worldTransformAHitBox_.UpdateMatrix();
 	hitBox_.pos = worldTransform_.translation_;
+
 }
 
 
@@ -43,16 +61,30 @@ void EnemyBase::Update(const Vector3&) {
 
 void EnemyBase::Draw(Camera& camera) {
 	if (model_) {
-		model_->Draw(worldTransform_, camera);
+		model_->Draw(worldTransform_, camera, textureHandle_);
 	}
+	#ifdef _DEBUG
+	if (hitBox_.active) {
+		worldTransformEHitBox_.translation_ = hitBox_.pos;
+		worldTransformEHitBox_.scale_ = hitBox_.size;
+		modelEHitBox_->Draw(worldTransformEHitBox_, camera);
+	}
+	if (attackHitBox_.active) {
+		worldTransformAHitBox_.translation_ = attackHitBox_.pos;
+		worldTransformAHitBox_.scale_ = attackHitBox_.size;
+		modelAHitBox_->Draw(worldTransformAHitBox_, camera);
+	}
+	#endif
 }
 
 void EnemyBase::OnHit(int damage, const Vector3& attackDir) {
 	hp_ -= damage;
+	isStan_ = true;
+	stanTimer_ = stanDuration_;
 
-	if (hp_ <= 0 && !isKnockback_) {
+	if (hp_ <= 0 && !isKnockBack_) {
 		hp_ = 0;
-		isKnockback_ = true;
+		isKnockBack_ = true;
 		knockbackTime_ = 0.0f;
 
 		// スマブラ風 初速
@@ -67,6 +99,59 @@ void EnemyBase::OnHit(int damage, const Vector3& attackDir) {
 void EnemyBase::SetPosition(float x, float y, float z) { worldTransform_.translation_ = {x, y, z}; }
 
 void EnemyBase::SetScale(const Vector3& scale) { worldTransform_.scale_ = scale; }
+
+void EnemyBase::SetAttackHitBox(const Vector3& pos) {
+	attackHitBox_.pos = pos;
+	attackHitBox_.size = {0.2f, 0.5f, 0.5f};
+	attackHitBox_.active = true;
+}
+
+void EnemyBase::UpdateTextures() {
+	switch (state_) {
+	case EnemyState::Idle:
+		if (facingDir_ == 1.0f) {
+    		textureHandle_ = RIdleTexture_;
+		} else {
+			textureHandle_ = LIdleTexture_;
+		}
+		break;
+	case EnemyState::Walking:
+		if (facingDir_ == 1.0f) {
+			textureHandle_ = RIdleTexture_;
+		} else {
+			textureHandle_ = LIdleTexture_;
+		}
+		break;
+	case EnemyState::Attacking:
+		if (facingDir_ == 1.0f) {
+			textureHandle_ = RAttackTexture_;
+		} else {
+			textureHandle_ = LAttackTexture_;
+		}
+		break;
+	case EnemyState::Stunned:
+		if (facingDir_ == 1.0f) {
+			textureHandle_ = RIdleTexture_;
+		} else {
+			textureHandle_ = LIdleTexture_;
+		}
+		break;
+	case EnemyState::Knockback:
+		if (facingDir_ == 1.0f) {
+			textureHandle_ = RIdleTexture_;
+		} else {
+			textureHandle_ = LIdleTexture_;
+		}
+		break;
+	case EnemyState::Dead:
+		if (facingDir_ == 1.0f) {
+			textureHandle_ = RIdleTexture_;
+		} else {
+			textureHandle_ = LIdleTexture_;
+		}
+		break;
+	}
+}
 
 void EnemyBase::SetHitBox(const Vector3& center, const Vector3& size) {
 	hitBox_.pos = center;

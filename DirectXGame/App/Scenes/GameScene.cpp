@@ -51,6 +51,7 @@ void GameScene::Initialize() {
 
 	player_ = new Player();
 	player_->Initialize(modelPlayer_,modelBoxFrame_);
+	player_->SetEndMoveLimitX(moveLimit[0]);
 
 	EnemyGenerate();
 
@@ -345,7 +346,7 @@ void GameScene::EnemyGenerate() {
 	// --- エリア追加（トリガー位置） ---
 	enemyManager_->AddArea(10.0f);   // area 0
 	enemyManager_->AddArea(25.0f);  // area 1
-	enemyManager_->AddArea(55.0f); // area 2
+	enemyManager_->AddArea(40.0f); // area 2
 
 	// --- 各エリアに敵を追加 ---
 	// エリア0
@@ -355,7 +356,7 @@ void GameScene::EnemyGenerate() {
 	enemyManager_->AddSpawnToArea(1, EnemyType::Normal, {30, 1, 0});
 
 	// エリア2
-	enemyManager_->AddSpawnToArea(2, EnemyType::Normal, {60, 1, 0});
+	enemyManager_->AddSpawnToArea(2, EnemyType::Normal, {45, 1, 0});
 
 }
 
@@ -384,9 +385,11 @@ void GameScene::EnemyUpdate() {
 	} else if (areaClearedFlag_[1]) {
 		CameraController::Rect area = {0.0f, scrollArea[2], -8.0f, -1.0f};
 		cameraController_->SetMovableArea(area);
+		player_->SetEndMoveLimitX(moveLimit[2]);
 	} else if (areaClearedFlag_[0]) {
 		CameraController::Rect area = {0.0f, scrollArea[1], -8.0f, -1.0f};
 		cameraController_->SetMovableArea(area);
+		player_->SetEndMoveLimitX(moveLimit[1]);
 	}
 }
 

@@ -34,7 +34,7 @@ public:
 
 	const KamataEngine::Vector3& GetVelocity() const { return move; }
 
-	void UpdateWorldTransform() { worldTransform_.UpdateMatrix(); }
+	void UpdateWorldTransform();
 
 	bool IsDead() const { return isDead_; }
 
@@ -47,6 +47,8 @@ public:
 	int GetAttackPower() const { return attackPower_; }
 
 	float GetFacingDir() const { return facingDir_; }
+
+	void SetEndMoveLimitX(float limit) { endMoveLimitX = limit; }
 
 private:
 	void Move();
@@ -62,9 +64,11 @@ private:
 
 	WorldTransformEx worldTransform_;
 	WorldTransformEx worldTransformHitBox_;
+	WorldTransformEx worldTransformPHitBox_;
 
 	KamataEngine::Model* model_ = nullptr;
 	KamataEngine::Model* modelDebugHitBox_ = nullptr;
+	KamataEngine::Model* modelHitBox_ = nullptr;
 
 	bool isDead_ = false;
 	int HP_ = 100;
@@ -120,9 +124,12 @@ private:
 	float facingDir_ = 1.0f;      // 向き（1.0f：右, -1.0f：左）
 
 	// --- ヒットボックス ---
+	HitBox playerHitBox_;
 	HitBox attackHitBox_; // 現在のパンチのヒットボックス
 
 	// --- ノックダウン処理用 ---
 	float knockDownTimer_ = 2.0f;
 	float deltaTime = 1.0f / 60.0f;
+
+	float endMoveLimitX = 0;
 };
