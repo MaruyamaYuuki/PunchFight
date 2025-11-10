@@ -3,6 +3,7 @@
 #include <chrono>
 #include "../../Engine/Rendering/Fade.h"
 #include "../../Engine/Math/Easing.h"
+#include "../../Engine//Math/Collision.h"
 #include <algorithm>
 
 using namespace KamataEngine;
@@ -91,9 +92,8 @@ void GameScene::Update() {
 			isFinished_ = true;
 
 		}
-
-
 		EnemyUpdate();
+		AllCollision();
 		break;
 	case GameScene::Phase::kFadeOut:
 		break;
@@ -362,11 +362,10 @@ void GameScene::EnemyGenerate() {
 void GameScene::EnemyUpdate() {
 	// プレイヤー情報取得
 	KamataEngine::Vector3 playerPos = player_->GetWorldTransform().translation_;
-	HitBox attackBox = player_->GetAttackHitBox();
-	int attackPower = player_->GetAttackPower();
+
 
 	// ----- 敵管理の更新 -----
-	enemyManager_->Update(playerPos, attackBox, attackPower);
+	enemyManager_->Update(playerPos);
 
 	// ----- エリアクリア判定 -----
 	for (int i = 0; i < 3; i++) {
@@ -388,5 +387,35 @@ void GameScene::EnemyUpdate() {
 	} else if (areaClearedFlag_[0]) {
 		CameraController::Rect area = {0.0f, scrollArea[1], -8.0f, -1.0f};
 		cameraController_->SetMovableArea(area);
+	}
+}
+
+void GameScene::AllCollision() {
+	// ---プレイヤーの攻撃と敵の当たり判定---
+	const HitBox& atk = player_->GetAttackHitBox();
+
+	// 攻撃終了したら記録リセット
+	if (!atk.active) {
+		hitEnemiesThisAttack_.clear();
+		return;
+	}
+
+	auto& enemies = enemyManager_->GetEnemies();
+
+	for (auto& e : enemies) {
+		// この攻撃中に当たってたらスキップ
+		if (std::find(hitEnemiesThisAttack_.begin(), 
+			          hitEnemiesThisAttack_.end(), 
+			          e.get()) != hitEnemiesThisAttack_.end()) {
+			continue;
+		}
+
+		if (Collision::AABB(atk, e->GetHitBox())) {
+			// この攻撃中に当たった敵として記録
+			hitEnemiesThisAttack_.push_back(e.get());
+
+			Vector3 dir{player_->GetFacingDir(), 0, 0};
+			e->OnHit(player_->GetAttackPower(), dir);
+		}
 	}
 }

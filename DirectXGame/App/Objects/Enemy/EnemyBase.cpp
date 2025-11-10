@@ -12,12 +12,34 @@ void EnemyBase::Initialize(const EnemyData& data) {
 }
 
 void EnemyBase::Update(const Vector3&) {
-	// ワールド変換更新
-	worldTransform_.UpdateMatrix();
+	if (isKnockback_) {
 
-	// ヒットボックス座標を敵のワールド座標に合わせる
+		knockbackTime_ += deltaTime;
+
+		// 減速用の係数
+		float drag = 0.95f;
+
+		// X方向に加速して減速していく
+		knockbackVelocity_.x *= drag;
+		worldTransform_.translation_.x += knockbackVelocity_.x * deltaTime;
+
+		// Y方向は重力で落下させる
+		knockbackVelocity_.y -= gravity_ * deltaTime;
+		worldTransform_.translation_.y += knockbackVelocity_.y * deltaTime;
+
+		// 規定時間で消滅
+		if (knockbackTime_ >= knockbackDuration_) {
+			isKnockback_ = false;
+			isDead_ = true;
+		}
+	}
+
+	worldTransform_.UpdateMatrix();
 	hitBox_.pos = worldTransform_.translation_;
 }
+
+
+
 
 void EnemyBase::Draw(Camera& camera) {
 	if (model_) {
@@ -25,11 +47,22 @@ void EnemyBase::Draw(Camera& camera) {
 	}
 }
 
-void EnemyBase::OnHit(int damage) {
+void EnemyBase::OnHit(int damage, const Vector3& attackDir) {
 	hp_ -= damage;
-	if (hp_ < 0)
+
+	if (hp_ <= 0 && !isKnockback_) {
 		hp_ = 0;
+		isKnockback_ = true;
+		knockbackTime_ = 0.0f;
+
+		// スマブラ風 初速
+		float basePower = 25.0f;   // 吹っ飛び強さ
+		float upwardBoost = 12.0f; // 上方向の初速
+
+		knockbackVelocity_ = {attackDir.x * basePower, upwardBoost, 0.0f};
+	}
 }
+
 
 void EnemyBase::SetPosition(float x, float y, float z) { worldTransform_.translation_ = {x, y, z}; }
 

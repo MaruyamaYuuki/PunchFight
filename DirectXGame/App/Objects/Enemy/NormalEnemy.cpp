@@ -7,7 +7,9 @@ using namespace KamataEngine::MathUtility;
 void NormalEnemy::Initialize(const EnemyData& data) { EnemyBase::Initialize(data); }
 
 void NormalEnemy::Update(const Vector3& playerPos) {
+	EnemyBase::Update(playerPos);
 	Vector3 diff = playerPos - worldTransform_.translation_;
+	// 追尾処理保留
 	/*float dist = std::sqrt(diff.x * diff.x + diff.z * diff.z);
 
 	if (dist > 1.0f && !isAttacking_) {

@@ -42,6 +42,7 @@ public:
 
 	bool IsFinished() const { return isFinished_; }
 
+private:
 	void ChangePhase();
 
 	void FightAnimation();
@@ -53,6 +54,8 @@ public:
 	void EnemyGenerate();
 
 	void EnemyUpdate();
+
+	void AllCollision();
 
 private:
 	KamataEngine::DirectXCommon* dxCommon = nullptr;
@@ -121,4 +124,6 @@ private:
 	bool areaClearedFlag_[3] = {false, false, false};
 
 	float scrollArea[3] = {15.0f, 30.0f, 60.0f};
+
+	std::vector<EnemyBase*> hitEnemiesThisAttack_;
 };

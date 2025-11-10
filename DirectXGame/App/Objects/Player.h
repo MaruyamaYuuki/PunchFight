@@ -46,6 +46,8 @@ public:
 
 	int GetAttackPower() const { return attackPower_; }
 
+	float GetFacingDir() const { return facingDir_; }
+
 private:
 	void Move();
 

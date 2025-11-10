@@ -23,7 +23,7 @@ struct EnemyArea {
 class EnemyManager {
 public:
 	void Initialize();
-	void Update(const KamataEngine::Vector3& playerPos, const HitBox& playerAttackBox, int playerDamage);
+	void Update(const KamataEngine::Vector3& playerPos);
 	void Draw(KamataEngine::Camera& camera);
 	void BackDraw(KamataEngine::Camera& camera, const KamataEngine::Vector3& playerPos);
 	void FrontDraw(KamataEngine::Camera& camera, const KamataEngine::Vector3& playerPos);
