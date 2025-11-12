@@ -77,6 +77,7 @@ private:
 	KamataEngine::Sprite* gameOverTextSprite_ = nullptr;
 	KamataEngine::Sprite* blackSprite_ = nullptr;
 	KamataEngine::Sprite* resetTextSprite_ = nullptr;
+	KamataEngine::Sprite* guideTexture_ = nullptr;
 
 	uint32_t startGongSEDataHandle_ = 0;
 	uint32_t startGongSEVoiceHandle_ = 0;
@@ -127,4 +128,11 @@ private:
 	float scrollArea[3] = {15.0f, 30.0f, 45.0f};
 
 	std::vector<EnemyBase*> hitEnemiesThisAttack_;
+
+	float guideTimer_ = 0.0f;
+	float guideDuration_ = 3.0f;
+	bool guideOn_ = false;
+	float blinkInterval_ = 1.0f; // 1回の ON/OFF の長さ
+	int blinkCount_ = 0;         // 何回点滅したか
+	int maxBlinkCount_ = 3;      // 合計何回点滅させるか
 };

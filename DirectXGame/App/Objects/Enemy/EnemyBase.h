@@ -19,6 +19,9 @@ enum class EnemyState {
 	Dead 
 };
 
+/// <summary>
+/// 敵の基盤
+/// </summary>
 class EnemyBase {
 public:
 	EnemyBase() = default;

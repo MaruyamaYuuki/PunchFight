@@ -20,6 +20,9 @@ struct EnemyArea {
 	bool cleared = false;
 };
 
+/// <summary>
+/// 敵の管理
+/// </summary>
 class EnemyManager {
 public:
 	void Initialize();
