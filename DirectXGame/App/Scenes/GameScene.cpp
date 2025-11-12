@@ -46,6 +46,8 @@ void GameScene::Initialize() {
 	blackSprite_ = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1, 1, 1, 0});
 	textureHandle_ = TextureManager::Load("resetText.png");
 	resetTextSprite_ = Sprite::Create(textureHandle_, {640.0f, 500.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
+	textureHandle_ = TextureManager::Load("scrollGuide.png");
+	guideTexture_ = Sprite::Create(textureHandle_, {1100.0f, 500.0f},{1, 1, 1, 1}, {0.5f, 0.5f});
 
 	startGongSEDataHandle_ = audio->LoadWave("audio/SE/startGong.wav");
 
@@ -151,7 +153,12 @@ void GameScene::Draw() {
 		}
 		break;
 	case GameScene::Phase::kPlay:
-
+		if (guideOn_) {
+			// 半分より小さい時だけ表示する = 点滅
+			if (guideTimer_ < blinkInterval_ * 0.5f) {
+				guideTexture_->Draw();
+			}
+		}
 		if (player_->IsDead()) {
 			blackSprite_->Draw();
 			//gameOverTextSprite_->Draw();
@@ -160,7 +167,7 @@ void GameScene::Draw() {
 			//backTextSprite_->Draw();
 		}
 		if (isGameOverFallFinished_) {
-			//resetTextSprite_->Draw();
+			resetTextSprite_->Draw();
 		}
 		break;
 	case GameScene::Phase::kFadeOut:
@@ -344,19 +351,19 @@ void GameScene::EnemyGenerate() {
 	enemyManager_->Initialize();
 
 	// --- エリア追加（トリガー位置） ---
-	enemyManager_->AddArea(10.0f);   // area 0
-	enemyManager_->AddArea(25.0f);  // area 1
-	enemyManager_->AddArea(40.0f); // area 2
+	enemyManager_->AddArea(15.0f);   // area 0
+	enemyManager_->AddArea(30.0f);  // area 1
+	enemyManager_->AddArea(45.0f); // area 2
 
 	// --- 各エリアに敵を追加 ---
 	// エリア0
-	enemyManager_->AddSpawnToArea(0, EnemyType::Normal, {15, 1, 0});
+	enemyManager_->AddSpawnToArea(0, EnemyType::Normal, {20, 1, 0});
 
 	// エリア1
-	enemyManager_->AddSpawnToArea(1, EnemyType::Normal, {30, 1, 0});
+	enemyManager_->AddSpawnToArea(1, EnemyType::Normal, {35, 1, 0});
 
 	// エリア2
-	enemyManager_->AddSpawnToArea(2, EnemyType::Normal, {45, 1, 0});
+	enemyManager_->AddSpawnToArea(2, EnemyType::Normal, {50, 1, 0});
 
 }
 
@@ -373,11 +380,28 @@ void GameScene::EnemyUpdate() {
 		if (enemyManager_->IsAreaCleared(i) && !areaClearedFlag_[i]) {
 			areaClearedFlag_[i] = true;
 
-			// ここにクリア時のイベント（必要なら）
-			// 例：扉を開く、カメラロック解除
-			// Door[i].Open();
+			// ガイド矢印を表示させる
+			guideOn_ = true;
+			guideTimer_ = 0.0f;
+			blinkCount_ = 0;
 		}
 	}
+
+    // ----- ガイド矢印の点滅処理 -----
+	if (guideOn_) {
+		guideTimer_ += deltaTime_;
+
+		if (guideTimer_ >= blinkInterval_) {
+			guideTimer_ = 0.0f;
+			blinkCount_++;
+
+			// 点滅終了
+			if (blinkCount_ >= maxBlinkCount_) {
+				guideOn_ = false;
+			}
+		}
+	}
+
 
     if (areaClearedFlag_[2]) {
 		phase_ = Phase::kFadeOut;
