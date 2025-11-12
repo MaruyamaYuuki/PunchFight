@@ -8,17 +8,39 @@
 /// </summary>
 class StageManager {
 public:
+	/// <summary>
+	/// デフォルトコンストラクタ
+	/// </summary>
 	StageManager() = default;
 
+	/// <summary>
+	/// デフォルトデストラクタ
+	/// </summary>
 	~StageManager() = default;
 
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	/// <param name="stageNumber">ステージの番号</param>
+	/// <param name="repeatCount">生成するステージモデルの個数</param>
 	void Initialize(int stageNumber, int repeatCount);
 
+	/// <summary>
+	/// 更新
+	/// </summary>
+	/// <param name="cameraX">カメラのX座標</param>
 	void Update(float cameraX);
 
+	/// <summary>
+	/// 描画
+	/// </summary>
+	/// <param name="camera">カメラ</param>
 	void Draw(KamataEngine::Camera& camera);
 
 private:
+	/// <summary>
+	/// オブジェクトの読み込み
+	/// </summary>
 	void UpdateLoadedStages();
 
 private:

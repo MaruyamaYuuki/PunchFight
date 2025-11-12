@@ -3,6 +3,9 @@
 #include "../../../Engine/Math/WorldTransformEx.h"
 #include "KamataEngine.h"
 
+/// <summary>
+/// 敵の情報
+/// </summary>
 struct EnemyData {
 	std::string modelPath;
 	float speed;
@@ -10,6 +13,9 @@ struct EnemyData {
 	float attackPower;
 };
 
+/// <summary>
+/// 敵の状態
+/// </summary>
 enum class EnemyState { 
 	Idle, 
 	Walking, 
@@ -24,29 +30,101 @@ enum class EnemyState {
 /// </summary>
 class EnemyBase {
 public:
+	/// <summary>
+	/// デフォルトコンストラクタ
+	/// </summary>
 	EnemyBase() = default;
+
+	/// <summary>
+	/// デフォルトデストラクタ
+	/// </summary>
 	virtual ~EnemyBase() = default;
 
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	/// <param name="data">敵の情報</param>
 	virtual void Initialize(const EnemyData& data);
+
+	/// <summary>
+	/// 更新
+	/// </summary>
+	/// <param name="playerPos">プレイヤーの座標</param>
 	virtual void Update(const KamataEngine::Vector3& playerPos);
+
+	/// <summary>
+	/// 描画
+	/// </summary>
+	/// <param name="camera"></param>
 	virtual void Draw(KamataEngine::Camera& camera);
+
+	/// <summary>
+	/// 接触判定
+	/// </summary>
+	/// <param name="damage">ダメージ量</param>
+	/// <param name="attackDir">攻撃の方向	</param>
 	virtual void OnHit(int damage, const KamataEngine::Vector3& attackDir);
 
+	/// <summary>
+	/// 敵の死亡判定
+	/// </summary>
+	/// <returns>死亡していれば true、生存していれば false</returns>
 	bool IsDead() const { return isDead_; }
 
+	/// <summary>
+	/// 敵のヒットボックスを取得する
+	/// </summary>
+	/// <returns></returns>
 	const HitBox& GetHitBox() const { return hitBox_; }
+
+	/// <summary>
+	/// 敵のヒットボックスを設定する
+	/// </summary>
+	/// <param name="center">中心座標</param>
+	/// <param name="size">大きさ</param>
 	void SetHitBox(const KamataEngine::Vector3& center, const KamataEngine::Vector3& size);
 
-	void SetPosition(float x, float y, float z);
-	void SetScale(const KamataEngine::Vector3& scale);
-	KamataEngine::Vector3 GetPosition() const { return worldTransform_.translation_; }
-
-	int GetHP() const { return hp_; }
-
-	bool IsKnockBack() const { return isKnockBack_; }
-
+	/// <summary>
+	/// 攻撃のヒットボックスを設定する
+	/// </summary>
+	/// <param name="pos">座標</param>
 	void SetAttackHitBox(const KamataEngine::Vector3& pos);
 
+	/// <summary>
+	/// 敵の座標を取得する
+	/// </summary>
+	/// <returns></returns>
+	KamataEngine::Vector3 GetPosition() const { return worldTransform_.translation_; }
+
+	/// <summary>
+	/// 敵の座標を設定する
+	/// </summary>
+	/// <param name="x">X座標</param>
+	/// <param name="y">Y座標</param>
+	/// <param name="z">Z座標</param>
+	void SetPosition(float x, float y, float z);
+
+	/// <summary>
+	/// 敵の大きさを設定する
+	/// </summary>
+	/// <param name="scale">大きさ</param>
+	void SetScale(const KamataEngine::Vector3& scale);
+
+	/// <summary>
+	/// 敵のHPを取得する
+	/// </summary>
+	/// <returns></returns>
+	int GetHP() const { return hp_; }
+
+	/// <summary>
+	/// ノックバック判定
+	/// </summary>
+	/// <returns>ノックバックしていれば true、していなければ false</returns>
+	bool IsKnockBack() const { return isKnockBack_; }
+
+	/// <summary>
+	/// テクスチャの更新
+	/// </summary>
 	void UpdateTextures();
 
 protected:

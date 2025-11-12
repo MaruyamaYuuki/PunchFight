@@ -8,24 +8,45 @@
 class Fade;
 class TitleScene {
 public:
+	/// <summary>
+	/// コンストラクタ
+	/// </summary>
 	TitleScene();
 
+	/// <summary>
+	/// デストラクタ
+	/// </summary>
 	~TitleScene();
 
+	/// <summary>
+	/// 初期化
+	/// </summary>
 	void Initialize();
 
+	/// <summary>
+	/// 更新
+	/// </summary>
 	void Update();
 
+	/// <summary>
+	/// 描画
+	/// </summary>
 	void Draw();
 
+	/// <summary>
+	/// ゲーム開始時のタイトルロゴのアニメーション処理
+	/// </summary>
 	void TitleAnimation();
 
+	/// <summary>
+	/// タイトルロゴ点滅処理
+	/// </summary>
 	void SpriteFlashUpdate();
 
-	void FadeOutUpdate();
-	
-	void NowLoading();
-
+	/// <summary>
+	/// タイトルシーンの終了判定
+	/// </summary>
+	/// <returns>終了していれば true、進行中であれば false を返す。</returns>
 	bool IsFinished() { return isFinished_; }
 
 private:

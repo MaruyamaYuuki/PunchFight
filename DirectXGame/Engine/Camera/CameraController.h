@@ -18,20 +18,52 @@ public:
 	};
 
 public:
+	/// <summary>
+	/// 初期化
+	/// </summary>
 	void Initialize();
 
+	/// <summary>
+	/// 更新
+	/// </summary>
 	void Update();
 
+	/// <summary>
+	/// カメラのターゲットの設定
+	/// </summary>
+	/// <param name="target">ターゲット</param>
 	void SetTarget(Player* target) { target_ = target; }
 
+	/// <summary>
+	/// カメラを取得する
+	/// </summary>
+	/// <returns></returns>
 	const KamataEngine::Camera& GetCamera() const { return camera_; }
 
+	/// <summary>
+	/// カメラのリセット
+	/// </summary>
 	void Reset();
 
+	/// <summary>
+	/// カメラの移動範囲を取得する
+	/// </summary>
+	/// <param name="area">描画するエリア</param>
 	void SetMovableArea(Rect area) { movableArea_ = area; }
 
+    /// <summary>
+	/// 2つのベクトル間を線形補間（Lerp）する
+	/// </summary>
+	/// <param name="start">補間の開始座標</param>
+	/// <param name="end">補間の終了座標</param>
+	/// <param name="t">補間係数（0.0f ～ 1.0f）</param>
+	/// <returns>補間後のベクトル</returns>
 	KamataEngine::Vector3 LerpVector3(const KamataEngine::Vector3& start, const KamataEngine::Vector3& end, float t);
 
+	/// <summary>
+	/// カメラの現在位置を取得する
+	/// </summary>
+	/// <returns>カメラの現在位置</returns>
 	KamataEngine::Vector3 GetPosition() const { return camera_.translation_; }
 
 private:

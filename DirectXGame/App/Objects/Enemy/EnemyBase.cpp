@@ -56,9 +56,6 @@ void EnemyBase::Update(const Vector3&) {
 
 }
 
-
-
-
 void EnemyBase::Draw(Camera& camera) {
 	if (model_) {
 		model_->Draw(worldTransform_, camera, textureHandle_);
@@ -95,16 +92,21 @@ void EnemyBase::OnHit(int damage, const Vector3& attackDir) {
 	}
 }
 
-
-void EnemyBase::SetPosition(float x, float y, float z) { worldTransform_.translation_ = {x, y, z}; }
-
-void EnemyBase::SetScale(const Vector3& scale) { worldTransform_.scale_ = scale; }
+void EnemyBase::SetHitBox(const Vector3& center, const Vector3& size) {
+	hitBox_.pos = center;
+	hitBox_.size = size;
+	hitBox_.active = true;
+}
 
 void EnemyBase::SetAttackHitBox(const Vector3& pos) {
 	attackHitBox_.pos = pos;
 	attackHitBox_.size = {0.2f, 0.5f, 0.5f};
 	attackHitBox_.active = true;
 }
+
+void EnemyBase::SetPosition(float x, float y, float z) { worldTransform_.translation_ = {x, y, z}; }
+
+void EnemyBase::SetScale(const Vector3& scale) { worldTransform_.scale_ = scale; }
 
 void EnemyBase::UpdateTextures() {
 	switch (state_) {
@@ -151,10 +153,4 @@ void EnemyBase::UpdateTextures() {
 		}
 		break;
 	}
-}
-
-void EnemyBase::SetHitBox(const Vector3& center, const Vector3& size) {
-	hitBox_.pos = center;
-	hitBox_.size = size;
-	hitBox_.active = true;
 }
