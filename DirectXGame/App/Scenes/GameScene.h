@@ -150,7 +150,8 @@ private:
 
 	KamataEngine::Vector2 fightTextPos_ = {640.0f, 300.0f};
 	KamataEngine::Vector2 fightTextSize_ = {400, 150};
-	// ---------------------------------
+
+	// --- ゲームオーバー関連 ---
 	float alphaCounter_  = 0.0f;
 	float duration_ = 1.0f;
 	float gameOverFallTimer_ = 0.0f;    // テキスト落下の経過時間
@@ -163,6 +164,7 @@ private:
 
 	std::vector<EnemyBase*> hitEnemiesThisAttack_;
 
+	/// --- エリア解放時のガイド関連 ---
 	float guideTimer_ = 0.0f;
 	float guideDuration_ = 3.0f;
 	bool guideOn_ = false;

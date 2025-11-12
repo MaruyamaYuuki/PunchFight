@@ -143,7 +143,7 @@ protected:
 	int attackCooldownTimer_ = 0; // クールタイム残り時間
 	const int attackDuration_ = 15; // 攻撃の長さ
 	const int attackCooldown_ = 30;  // クールタイムの長さ
-	/// ---ひるみ---
+	/// --- ひるみ関連 ---
 	bool isStan_ = false;
 	float stanTimer_ = 0.0f;
 	float stanDuration_ = 0.2f; // ひるみ時間
@@ -163,6 +163,7 @@ protected:
 	KamataEngine::Vector3 knockbackVelocity_{0, 0, 0};
 	float gravity_ = 30.0f;
 
+	/// --- テクスチャ関連 ---
 	EnemyState state_ = EnemyState::Idle;
 	uint32_t RIdleTexture_ = 0;
 	uint32_t RAttackTexture_ = 0;
