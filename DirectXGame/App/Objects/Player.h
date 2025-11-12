@@ -9,6 +9,9 @@
 /// </summary>
 class Player {
 public:
+	/// <summary>
+	/// デフォルトデストラクタ
+	/// </summary>
 	~Player() = default;
 
 	/// <summary>
@@ -25,38 +28,92 @@ public:
 	/// <summary>
 	/// 描画
 	/// </summary>
-	/// <param name="camera"></param>
+	/// <param name="camera">カメラ</param>
 	void Draw(KamataEngine::Camera& camera);
 
+	/// <summary>
+	/// プレイヤーの状態のリセット
+	/// </summary>
 	void Reset();
 
+	/// <summary>
+	/// プレイヤーのWorldTransformを設定する
+	/// </summary>
+	/// <returns>プレイヤーのWorldTransform</returns>
 	const WorldTransformEx& GetWorldTransform() const { return worldTransform_; }
 
+	/// <summary>
+	/// プレイヤーの移動量を取得する
+	/// </summary>
+	/// <returns>プレイヤーの移動量</returns>
 	const KamataEngine::Vector3& GetVelocity() const { return move; }
 
+	/// <summary>
+	/// WorldTransformだけを更新
+	/// </summary>
 	void UpdateWorldTransform();
 
+	/// <summary>
+	/// プレイヤーの死亡判定
+	/// </summary>
+	/// <returns>死亡していれば true、生存していれば false</returns>
 	bool IsDead() const { return isDead_; }
 
+	/// <summary>
+	/// 受けるダメージ量を設定する
+	/// </summary>
+	/// <param name="damage"></param>
 	void TakeDamage(int damage);
 
+	/// <summary>
+	/// プレイヤーのHPを取得する
+	/// </summary>
+	/// <returns></returns>
 	int GetHP() const { return HP_; }
 
+	/// <summary>
+	/// 攻撃のヒットボックスを取得する
+	/// </summary>
+	/// <returns>攻撃判定の情報（位置・サイズ・有効状態など）</returns>
 	HitBox GetAttackHitBox() const { return attackHitBox_; }
 
+	/// <summary>
+	/// 攻撃力を取得する
+	/// </summary>
+	/// <returns>プレイヤーの攻撃力</returns>
 	int GetAttackPower() const { return attackPower_; }
 
+	/// <summary>
+	/// プレイヤーの向いてる方向を取得する
+	/// </summary>
+	/// <returns>右向きなら 1.0f、左向きなら -1.0f を返す</returns>
 	float GetFacingDir() const { return facingDir_; }
 
+	/// <summary>
+	/// X軸での移動限界座標を設定する
+	/// </summary>
+	/// <param name="limit">移動限界</param>
 	void SetEndMoveLimitX(float limit) { endMoveLimitX = limit; }
 
 private:
+	/// <summary>
+	/// 移動
+	/// </summary>
 	void Move();
 
+	/// <summary>
+	/// 攻撃
+	/// </summary>
 	void Attack();
 
+	/// <summary>
+	/// 攻撃の更新
+	/// </summary>
 	void AttackUpdate();
 
+	/// <summary>
+	/// テクスチャの更新
+	/// </summary>
 	void TextureUpdate();
 
 private:

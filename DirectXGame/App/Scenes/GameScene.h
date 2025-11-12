@@ -6,12 +6,6 @@
 #include "../Objects/Player.h"
 #include "../Objects/Enemy/EnemyManager.h"
 
-struct AreData {
-	float startX;
-	float endX;
-	bool cleared = false;
-};
-
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -30,31 +24,71 @@ public:
 	};
 
 public:
+	/// <summary>
+	/// コンストラクタ
+	/// </summary>
 	GameScene();
 
+	/// <summary>
+	/// デストラクタ
+	/// </summary>
 	~GameScene();
 
+	/// <summary>
+	/// 初期化
+	/// </summary>
 	void Initialize();
 
+	/// <summary>
+	/// 更新
+	/// </summary>
 	void Update();
 
+	/// <summary>
+	/// 描画
+	/// </summary>
 	void Draw();
 
+	/// <summary>
+	/// ゲームシーンの終了判定
+	/// </summary>
+	/// <returns>終了していれば true、進行中であれば false を返す。</returns>
 	bool IsFinished() const { return isFinished_; }
 
 private:
+	/// <summary>
+	/// シーン切り替え
+	/// </summary>
 	void ChangePhase();
 
+	/// <summary>
+	/// 開始時のアニメーション
+	/// </summary>
 	void FightAnimation();
 
+	/// <summary>
+	/// ゲームオーバー時の演出
+	/// </summary>
 	void GameOver();
 
+	/// <summary>
+	/// ゲームの状態をリセット
+	/// </summary>
 	void ResetGame();
 
+	/// <summary>
+	/// 敵の生成
+	/// </summary>
 	void EnemyGenerate();
 
+	/// <summary>
+	/// 敵の更新
+	/// </summary>
 	void EnemyUpdate();
 
+	/// <summary>
+	/// 当たり判定
+	/// </summary>
 	void AllCollision();
 
 private:

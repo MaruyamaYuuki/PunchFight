@@ -1,8 +1,17 @@
 #pragma once
 #include "Collider.h"
 
+/// <summary>
+/// 当たり判定を管理するための関数群をまとめた名前空間
+/// </summary>
 namespace Collision {
 
+/// <summary>
+/// AABB同士の当たり判定
+/// </summary>
+/// <param name="a">当たり判定1</param>
+/// <param name="b">当たり判定2</param>
+/// <returns>当たっていればtrue</returns>
 inline bool AABB(const HitBox& a, const HitBox& b) {
 	if (!a.active || !b.active)
 		return false;

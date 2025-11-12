@@ -19,10 +19,19 @@ enum class Scene {
 };
 Scene scene = Scene::kUnkown;
 
+/// <summary>
+/// シーンの切り替え
+/// </summary>
 void ChangeScene();
 
+/// <summary>
+/// 各シーンの更新
+/// </summary>
 void UpdateScene();
 
+/// <summary>
+/// 各シーンの描画
+/// </summary>
 void DrawScene();
 
 // Windowsアプリでのエントリーポイント(main関数)
@@ -32,10 +41,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	KamataEngine::Initialize(L"LE3C_16_マルヤマ_ユウキ_PunchFight");
 	// DirectXCommonインスタンス
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
-
-
-
-
 
 #ifdef _DEBUG
 	gameScene = new GameScene();
@@ -48,9 +53,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	scene = Scene::kTitle;
 #endif // DEBUG
-
-
-
 
 	// メインループ
 	while (true) {

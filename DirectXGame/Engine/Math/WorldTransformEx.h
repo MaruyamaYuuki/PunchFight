@@ -8,9 +8,13 @@ class WorldTransformEx :
 	public KamataEngine::WorldTransform {
 
 public:
-	// Affine変換行列の生成と定数バッファへの転送を行う
+	/// <summary>
+	/// Affine変換行列の生成と定数バッファへの転送を行う
+	/// </summary>
 	void UpdateMatrix();
 
-	// Affine変換行列の生成
+	/// <summary>
+	/// Affine変換行列の生成
+	/// </summary>
 	KamataEngine::Matrix4x4 MakeAffinMatrix();
 };
