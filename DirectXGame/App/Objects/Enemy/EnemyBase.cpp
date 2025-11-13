@@ -17,7 +17,7 @@ void EnemyBase::Initialize(const EnemyData& data) {
 	worldTransformAHitBox_.Initialize();
 }
 
-void EnemyBase::Update(const Vector3&) {
+void EnemyBase::Update(const Vector3&, const std::vector<std::unique_ptr<EnemyBase>>&) {
 	if (isKnockBack_) {
 
 		knockbackTime_ += deltaTime;
@@ -41,14 +41,15 @@ void EnemyBase::Update(const Vector3&) {
 	}
 
 	// ===== スタン処理 =====
-	if (isStan_) {
-		stanTimer_ -= deltaTime;
+	if (isStun_) {
+		stunTimer_ -= deltaTime;
 
-		if (stanTimer_ <= 0.0f) {
-			isStan_ = false;
+		if (stunTimer_ <= 0.0f) {
+			isStun_ = false;
 		}
 	}
 
+	UpdateTextures();
 	worldTransform_.UpdateMatrix();
 	worldTransformEHitBox_.UpdateMatrix();
 	worldTransformAHitBox_.UpdateMatrix();
@@ -76,8 +77,8 @@ void EnemyBase::Draw(Camera& camera) {
 
 void EnemyBase::OnHit(int damage, const Vector3& attackDir) {
 	hp_ -= damage;
-	isStan_ = true;
-	stanTimer_ = stanDuration_;
+	isStun_ = true;
+	stunTimer_ = stunDuration_;
 
 	if (hp_ <= 0 && !isKnockBack_) {
 		hp_ = 0;
@@ -133,24 +134,48 @@ void EnemyBase::UpdateTextures() {
 		break;
 	case EnemyState::Stunned:
 		if (facingDir_ == 1.0f) {
-			textureHandle_ = RIdleTexture_;
+			textureHandle_ = RStunTexture_;
 		} else {
-			textureHandle_ = LIdleTexture_;
+			textureHandle_ = LStunTexture_;
 		}
 		break;
 	case EnemyState::Knockback:
 		if (facingDir_ == 1.0f) {
-			textureHandle_ = RIdleTexture_;
+			textureHandle_ = RStunTexture_;
 		} else {
-			textureHandle_ = LIdleTexture_;
+			textureHandle_ = RStunTexture_;
 		}
 		break;
 	case EnemyState::Dead:
 		if (facingDir_ == 1.0f) {
-			textureHandle_ = RIdleTexture_;
+			textureHandle_ = RStunTexture_;
 		} else {
-			textureHandle_ = LIdleTexture_;
+			textureHandle_ = RStunTexture_;
 		}
 		break;
 	}
+}
+
+Vector3 EnemyBase::ComputeSeparation(const std::vector<std::unique_ptr<EnemyBase>>& allEnemies, float separationDistance) {
+	Vector3 offset{0.0f, 0.0f, 0.0f};
+
+	for (auto& other : allEnemies) {
+		if (other.get() == this)
+			continue;
+
+		Vector3 toOther = worldTransform_.translation_ - other->GetPosition();
+		float dist = std::sqrt(toOther.x * toOther.x + toOther.z * toOther.z); // xz平面
+
+		if (dist < separationDistance && dist > 0.001f) {
+			// 正規化して距離に応じて押し戻す
+			toOther.x /= dist;
+			toOther.z /= dist;
+
+			float pushFactor = separationDistance - dist;
+			offset.x += toOther.x * pushFactor;
+			offset.z += toOther.z * pushFactor;
+		}
+	}
+
+	return offset;
 }

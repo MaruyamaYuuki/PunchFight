@@ -17,7 +17,7 @@ struct EnemyData {
 /// 敵の状態
 /// </summary>
 enum class EnemyState { 
-	Idle, 
+	Idle = 0, 
 	Walking, 
 	Attacking, 
 	Stunned, 
@@ -50,7 +50,7 @@ public:
 	/// 更新
 	/// </summary>
 	/// <param name="playerPos">プレイヤーの座標</param>
-	virtual void Update(const KamataEngine::Vector3& playerPos);
+	virtual void Update(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies);
 
 	/// <summary>
 	/// 描画
@@ -127,6 +127,14 @@ public:
 	/// </summary>
 	void UpdateTextures();
 
+	/// <summary>
+	/// 他の敵との距離を見て分離ベクトルを計算
+	/// </summary>
+	/// <param name="allEnemies">全敵リスト</param>
+	/// <param name="separationDistance">最低距離</param>
+	/// <returns>分離用オフセットベクトル</returns>
+	KamataEngine::Vector3 ComputeSeparation(const std::vector<std::unique_ptr<EnemyBase>>& allEnemies, float separationDistance);
+
 protected:
 	WorldTransformEx worldTransform_;
 	WorldTransformEx worldTransformEHitBox_;
@@ -143,10 +151,10 @@ protected:
 	int attackCooldownTimer_ = 0; // クールタイム残り時間
 	const int attackDuration_ = 15; // 攻撃の長さ
 	const int attackCooldown_ = 30;  // クールタイムの長さ
-	/// ---ひるみ---
-	bool isStan_ = false;
-	float stanTimer_ = 0.0f;
-	float stanDuration_ = 0.2f; // ひるみ時間
+	/// --- ひるみ関連 ---
+	bool isStun_ = false;
+	float stunTimer_ = 0.0f;
+	float stunDuration_ = 1.0f; // ひるみ時間
 
 	HitBox hitBox_;
 	HitBox attackHitBox_;
@@ -163,9 +171,13 @@ protected:
 	KamataEngine::Vector3 knockbackVelocity_{0, 0, 0};
 	float gravity_ = 30.0f;
 
+	/// --- テクスチャ関連 ---
 	EnemyState state_ = EnemyState::Idle;
 	uint32_t RIdleTexture_ = 0;
 	uint32_t RAttackTexture_ = 0;
+	uint32_t RStunTexture_ = 0;
+
 	uint32_t LIdleTexture_ = 0;
 	uint32_t LAttackTexture_ = 0;
+	uint32_t LStunTexture_ = 0;
 };

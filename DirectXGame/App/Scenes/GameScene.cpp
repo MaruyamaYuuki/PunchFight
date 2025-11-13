@@ -358,6 +358,8 @@ void GameScene::EnemyGenerate() {
 	// --- 各エリアに敵を追加 ---
 	// エリア0
 	enemyManager_->AddSpawnToArea(0, EnemyType::Normal, {20, 1, 0});
+	enemyManager_->AddSpawnToArea(0, EnemyType::Normal, {20, 1, 2});
+	enemyManager_->AddSpawnToArea(0, EnemyType::Normal, {20, 1, -2});
 
 	// エリア1
 	enemyManager_->AddSpawnToArea(1, EnemyType::Normal, {35, 1, 0});
