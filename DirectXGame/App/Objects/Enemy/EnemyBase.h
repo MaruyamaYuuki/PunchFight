@@ -17,7 +17,7 @@ struct EnemyData {
 /// 敵の状態
 /// </summary>
 enum class EnemyState { 
-	Idle, 
+	Idle = 0, 
 	Walking, 
 	Attacking, 
 	Stunned, 
@@ -127,6 +127,10 @@ public:
 	/// </summary>
 	void UpdateTextures();
 
+	bool IsStun() const { return isStun_; }
+
+	EnemyState GetState() const { return state_; }
+
 protected:
 	WorldTransformEx worldTransform_;
 	WorldTransformEx worldTransformEHitBox_;
@@ -144,9 +148,9 @@ protected:
 	const int attackDuration_ = 15; // 攻撃の長さ
 	const int attackCooldown_ = 30;  // クールタイムの長さ
 	/// --- ひるみ関連 ---
-	bool isStan_ = false;
-	float stanTimer_ = 0.0f;
-	float stanDuration_ = 0.2f; // ひるみ時間
+	bool isStun_ = false;
+	float stunTimer_ = 0.0f;
+	float stunDuration_ = 1.0f; // ひるみ時間
 
 	HitBox hitBox_;
 	HitBox attackHitBox_;
@@ -167,6 +171,9 @@ protected:
 	EnemyState state_ = EnemyState::Idle;
 	uint32_t RIdleTexture_ = 0;
 	uint32_t RAttackTexture_ = 0;
+	uint32_t RStunTexture_ = 0;
+
 	uint32_t LIdleTexture_ = 0;
 	uint32_t LAttackTexture_ = 0;
+	uint32_t LStunTexture_ = 0;
 };

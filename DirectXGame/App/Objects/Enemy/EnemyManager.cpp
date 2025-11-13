@@ -34,7 +34,7 @@ void EnemyManager::SpawnEnemy(EnemyType type, const KamataEngine::Vector3& pos) 
 
 	switch (type) {
 	case EnemyType::Normal:
-		data = {"enemy", 0.1f, 30, 5};
+		data = {"enemy", 0.1f, 35, 5};
 		enemy = std::make_unique<NormalEnemy>();
 		enemy->SetHitBox(pos, {0.5f, 1.0f, 0.025f}); // 中心0.5f、高さ1
 		enemy->SetScale({0.5f, 0.5f, 0.5f});
@@ -70,7 +70,7 @@ void EnemyManager::Update(const Vector3& playerPos) {
 // ======== 敵のアップデートと被弾判定 ========
 	for (auto& e : enemies_) {
 		e->Update(playerPos);
-		DebugText::GetInstance()->ConsolePrintf("HP : %d\nIsDead : %d\n" ,e->GetHP(),e->IsDead());
+		DebugText::GetInstance()->ConsolePrintf("HP : %d\nIsStun : %d\nState : %d\n" ,e->GetHP(),e->IsStun(),e->GetState());
 	}
 
 	// ======== 死んだ敵を削除 ========

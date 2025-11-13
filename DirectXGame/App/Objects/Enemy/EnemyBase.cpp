@@ -41,14 +41,15 @@ void EnemyBase::Update(const Vector3&) {
 	}
 
 	// ===== スタン処理 =====
-	if (isStan_) {
-		stanTimer_ -= deltaTime;
+	if (isStun_) {
+		stunTimer_ -= deltaTime;
 
-		if (stanTimer_ <= 0.0f) {
-			isStan_ = false;
+		if (stunTimer_ <= 0.0f) {
+			isStun_ = false;
 		}
 	}
 
+	UpdateTextures();
 	worldTransform_.UpdateMatrix();
 	worldTransformEHitBox_.UpdateMatrix();
 	worldTransformAHitBox_.UpdateMatrix();
@@ -76,8 +77,8 @@ void EnemyBase::Draw(Camera& camera) {
 
 void EnemyBase::OnHit(int damage, const Vector3& attackDir) {
 	hp_ -= damage;
-	isStan_ = true;
-	stanTimer_ = stanDuration_;
+	isStun_ = true;
+	stunTimer_ = stunDuration_;
 
 	if (hp_ <= 0 && !isKnockBack_) {
 		hp_ = 0;
@@ -133,23 +134,23 @@ void EnemyBase::UpdateTextures() {
 		break;
 	case EnemyState::Stunned:
 		if (facingDir_ == 1.0f) {
-			textureHandle_ = RIdleTexture_;
+			textureHandle_ = RStunTexture_;
 		} else {
-			textureHandle_ = LIdleTexture_;
+			textureHandle_ = LStunTexture_;
 		}
 		break;
 	case EnemyState::Knockback:
 		if (facingDir_ == 1.0f) {
-			textureHandle_ = RIdleTexture_;
+			textureHandle_ = RStunTexture_;
 		} else {
-			textureHandle_ = LIdleTexture_;
+			textureHandle_ = RStunTexture_;
 		}
 		break;
 	case EnemyState::Dead:
 		if (facingDir_ == 1.0f) {
-			textureHandle_ = RIdleTexture_;
+			textureHandle_ = RStunTexture_;
 		} else {
-			textureHandle_ = LIdleTexture_;
+			textureHandle_ = RStunTexture_;
 		}
 		break;
 	}

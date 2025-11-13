@@ -9,19 +9,32 @@ void NormalEnemy::Initialize(const EnemyData& data) {
 
 	RIdleTexture_ = TextureManager::Load("enemies/REnemy.png");
 	RAttackTexture_ = TextureManager::Load("enemies/RPunch.png");
+	RStunTexture_ = TextureManager::Load("enemies/RStun.png");
 
 	LIdleTexture_ = TextureManager::Load("enemies/LEnemy.png");
 	LAttackTexture_ = TextureManager::Load("enemies/LPunch.png");
+	LStunTexture_ = TextureManager::Load("enemies/LStun.png");
 }
 
 void NormalEnemy::Update(const Vector3& playerPos) {
 
-	// ===== ノックバック中は何もしない =====
-	if (isKnockBack_ || isStan_) {
+    // ===== ノックバック中・スタン中・ノックアウト中は何もしない =====
+	if (isKnockBack_ || isStun_ || hp_ <= 0) {
 		EnemyBase::Update(playerPos);
+		isAttacking_ = false;
 		worldTransform_.UpdateMatrix();
+
+		// 状態をDeadまたはKnockbackに設定
+		if (isKnockBack_)
+			state_ = EnemyState::Knockback;
+		else if (hp_ <= 0)
+			state_ = EnemyState::Dead;
+		else if (isStun_)
+			state_ = EnemyState::Stunned;
+
 		return;
 	}
+
 
 	// ===== プレイヤーとの距離計算 =====
 	Vector3 toPlayer = playerPos - worldTransform_.translation_;
@@ -98,11 +111,7 @@ void NormalEnemy::Update(const Vector3& playerPos) {
 	}
 
     // 移動・攻撃などの状態判定
-	if (hp_ <= 0)
-		state_ = EnemyState::Dead;
-	else if (isKnockBack_)
-		state_ = EnemyState::Knockback;
-	else if (isAttacking_)
+    if (isAttacking_)
 		state_ = EnemyState::Attacking;
 	else if (speed_ > 0.0f)
 		state_ = EnemyState::Walking;
@@ -112,5 +121,4 @@ void NormalEnemy::Update(const Vector3& playerPos) {
 	// 親クラス処理
 	EnemyBase::Update(playerPos);
 	worldTransform_.UpdateMatrix();
-	UpdateTextures();
 }
