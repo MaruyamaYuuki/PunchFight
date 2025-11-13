@@ -109,20 +109,47 @@ void EnemyManager::Draw(Camera& camera) {
 }
 
 void EnemyManager::BackDraw(KamataEngine::Camera& camera, const KamataEngine::Vector3& playerPos) {
+	// 一旦リストをコピー（unique_ptrなのでポインタ参照で扱う）
+	std::vector<EnemyBase*> backEnemies;
+	backEnemies.reserve(enemies_.size());
+
+	// プレイヤーより奥にいる敵を抽出
 	for (auto& e : enemies_) {
 		if (e->GetPosition().z > playerPos.z) {
-    		e->Draw(camera);
+			backEnemies.push_back(e.get());
 		}
+	}
+
+	// Z座標が大きい順に（奥から手前へ）ソート
+	std::sort(backEnemies.begin(), backEnemies.end(), [](EnemyBase* a, EnemyBase* b) { return a->GetPosition().z > b->GetPosition().z; });
+
+	// 描画
+	for (auto& e : backEnemies) {
+		e->Draw(camera);
 	}
 }
 
 void EnemyManager::FrontDraw(KamataEngine::Camera& camera, const KamataEngine::Vector3& playerPos) {
+	// 一旦リストをコピー
+	std::vector<EnemyBase*> frontEnemies;
+	frontEnemies.reserve(enemies_.size());
+
+	// プレイヤーより手前にいる敵を抽出
 	for (auto& e : enemies_) {
 		if (e->GetPosition().z <= playerPos.z) {
-			e->Draw(camera);
+			frontEnemies.push_back(e.get());
 		}
 	}
+
+	// 手前にいる敵はZ座標が小さい順（手前から奥へ）に描画
+	std::sort(frontEnemies.begin(), frontEnemies.end(), [](EnemyBase* a, EnemyBase* b) { return a->GetPosition().z < b->GetPosition().z; });
+
+	// 描画
+	for (auto& e : frontEnemies) {
+		e->Draw(camera);
+	}
 }
+
 
 bool EnemyManager::IsAreaCleared(int areaIndex) const {
 	if (areaIndex < 0 || areaIndex >= static_cast<int>(areas_.size()))
