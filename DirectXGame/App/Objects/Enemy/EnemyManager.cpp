@@ -67,10 +67,9 @@ void EnemyManager::Update(const Vector3& playerPos) {
 		}
 	}
 
-// ======== 敵のアップデートと被弾判定 ========
+    // ======== 敵のアップデートと被弾判定 ========
 	for (auto& e : enemies_) {
-		e->Update(playerPos);
-		DebugText::GetInstance()->ConsolePrintf("HP : %d\nIsStun : %d\nState : %d\n" ,e->GetHP(),e->IsStun(),e->GetState());
+		e->Update(playerPos, enemies_);
 	}
 
 	// ======== 死んだ敵を削除 ========

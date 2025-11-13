@@ -21,7 +21,7 @@ public:
 	/// 更新
 	/// </summary>
 	/// <param name="playerPos">プレイヤーの座標</param>
-	void Update(const KamataEngine::Vector3& playerPos) override;
+	void Update(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) override;
 
 private:
 	float attackTimer_ = 0.0f;

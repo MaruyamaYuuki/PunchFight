@@ -16,12 +16,13 @@ void NormalEnemy::Initialize(const EnemyData& data) {
 	LStunTexture_ = TextureManager::Load("enemies/LStun.png");
 }
 
-void NormalEnemy::Update(const Vector3& playerPos) {
+void NormalEnemy::Update(const Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) {
 
     // ===== ノックバック中・スタン中・ノックアウト中は何もしない =====
 	if (isKnockBack_ || isStun_ || hp_ <= 0) {
-		EnemyBase::Update(playerPos);
+		EnemyBase::Update(playerPos, allEnemies);
 		isAttacking_ = false;
+		attackHitBox_.active = false;
 		worldTransform_.UpdateMatrix();
 
 		// 状態をDeadまたはKnockbackに設定
@@ -67,7 +68,7 @@ void NormalEnemy::Update(const Vector3& playerPos) {
 			SetAttackHitBox(hitPos);
 		}
 
-		EnemyBase::Update(playerPos);
+		EnemyBase::Update(playerPos,allEnemies);
 		worldTransform_.UpdateMatrix();
 		return;
 	}
@@ -88,6 +89,18 @@ void NormalEnemy::Update(const Vector3& playerPos) {
 		if (len > 0.001f) {
 			dir.x /= len;
 			dir.z /= len;
+		}
+
+	        // 分離オフセットを加算
+		KamataEngine::Vector3 separation = ComputeSeparation(allEnemies, 0.4f);
+		dir.x += separation.x;
+		dir.z += separation.z;
+
+		// 再正規化
+		float finalLen = std::sqrtf(dir.x * dir.x + dir.z * dir.z);
+		if (finalLen > 0.001f) {
+			dir.x /= finalLen;
+			dir.z /= finalLen;
 		}
 
 		// x,z 両方向へ移動
@@ -119,6 +132,6 @@ void NormalEnemy::Update(const Vector3& playerPos) {
 		state_ = EnemyState::Idle;
 
 	// 親クラス処理
-	EnemyBase::Update(playerPos);
+	EnemyBase::Update(playerPos,allEnemies);
 	worldTransform_.UpdateMatrix();
 }

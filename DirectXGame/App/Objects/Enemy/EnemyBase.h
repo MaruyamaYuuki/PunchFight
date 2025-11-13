@@ -50,7 +50,7 @@ public:
 	/// 更新
 	/// </summary>
 	/// <param name="playerPos">プレイヤーの座標</param>
-	virtual void Update(const KamataEngine::Vector3& playerPos);
+	virtual void Update(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies);
 
 	/// <summary>
 	/// 描画
@@ -127,9 +127,13 @@ public:
 	/// </summary>
 	void UpdateTextures();
 
-	bool IsStun() const { return isStun_; }
-
-	EnemyState GetState() const { return state_; }
+	/// <summary>
+	/// 他の敵との距離を見て分離ベクトルを計算
+	/// </summary>
+	/// <param name="allEnemies">全敵リスト</param>
+	/// <param name="separationDistance">最低距離</param>
+	/// <returns>分離用オフセットベクトル</returns>
+	KamataEngine::Vector3 ComputeSeparation(const std::vector<std::unique_ptr<EnemyBase>>& allEnemies, float separationDistance);
 
 protected:
 	WorldTransformEx worldTransform_;

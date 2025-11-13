@@ -17,7 +17,7 @@ void EnemyBase::Initialize(const EnemyData& data) {
 	worldTransformAHitBox_.Initialize();
 }
 
-void EnemyBase::Update(const Vector3&) {
+void EnemyBase::Update(const Vector3&, const std::vector<std::unique_ptr<EnemyBase>>&) {
 	if (isKnockBack_) {
 
 		knockbackTime_ += deltaTime;
@@ -154,4 +154,28 @@ void EnemyBase::UpdateTextures() {
 		}
 		break;
 	}
+}
+
+Vector3 EnemyBase::ComputeSeparation(const std::vector<std::unique_ptr<EnemyBase>>& allEnemies, float separationDistance) {
+	Vector3 offset{0.0f, 0.0f, 0.0f};
+
+	for (auto& other : allEnemies) {
+		if (other.get() == this)
+			continue;
+
+		Vector3 toOther = worldTransform_.translation_ - other->GetPosition();
+		float dist = std::sqrt(toOther.x * toOther.x + toOther.z * toOther.z); // xz平面
+
+		if (dist < separationDistance && dist > 0.001f) {
+			// 正規化して距離に応じて押し戻す
+			toOther.x /= dist;
+			toOther.z /= dist;
+
+			float pushFactor = separationDistance - dist;
+			offset.x += toOther.x * pushFactor;
+			offset.z += toOther.z * pushFactor;
+		}
+	}
+
+	return offset;
 }
