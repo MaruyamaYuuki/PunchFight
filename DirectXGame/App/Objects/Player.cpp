@@ -6,7 +6,7 @@
 using namespace KamataEngine;
 using namespace KamataEngine::MathUtility;
 
-void Player::Initialize(Model* model, KamataEngine::Model* modelBox) { 
+void Player::Initialize(Model* model, KamataEngine::Model* modelBox, KamataEngine::Vector3& pos) { 
 	input_ = Input::GetInstance(); 
 
 	assert(model);
@@ -16,7 +16,7 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelBox) {
 	modelHitBox_ = modelBox;
 
 	worldTransform_.Initialize();
-	worldTransform_.translation_.y += 1.0f;
+	worldTransform_.translation_ = pos;
 	worldTransform_.scale_ = {0.5f, 0.5f, 0.5f};
 	worldTransformHitBox_.Initialize();
 	worldTransformPHitBox_.Initialize();
