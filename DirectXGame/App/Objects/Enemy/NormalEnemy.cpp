@@ -14,6 +14,8 @@ void NormalEnemy::Initialize(const EnemyData& data) {
 	LIdleTexture_ = TextureManager::Load("enemies/LEnemy.png");
 	LAttackTexture_ = TextureManager::Load("enemies/LPunch.png");
 	LStunTexture_ = TextureManager::Load("enemies/LStun.png");
+
+	attackCooldownTimer_ = attackCooldown_;
 }
 
 void NormalEnemy::Update(const Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) {
@@ -46,13 +48,13 @@ void NormalEnemy::Update(const Vector3& playerPos, const std::vector<std::unique
 		facingDir_ = (toPlayer.x > 0) ? 1.0f : -1.0f;
 	}
 
-	const float ATTACK_RANGE = 1.2f;
+	const float ATTACK_RANGE = 1.0f;
 
 	// ===== 攻撃中の処理 =====
 	if (isAttacking_) {
 
 		// 攻撃中は移動しない！（ここが重要）
-		attackTimer_--;
+		attackTimer_ -= deltaTime;
 
 		if (attackTimer_ <= 0) {
 			// 攻撃終了
@@ -73,9 +75,12 @@ void NormalEnemy::Update(const Vector3& playerPos, const std::vector<std::unique
 		return;
 	}
 
-	// ===== クールタイム中 =====
+    // ===== クールタイム中 =====
 	if (attackCooldownTimer_ > 0) {
-		attackCooldownTimer_--;
+		// 攻撃範囲内にいる場合だけクールタイムを減らす
+		if (dist <= ATTACK_RANGE) {
+			attackCooldownTimer_ -= deltaTime;
+		} 
 	}
 
 	// ===== 攻撃中じゃない＆クールタイム中じゃない =====
@@ -91,7 +96,7 @@ void NormalEnemy::Update(const Vector3& playerPos, const std::vector<std::unique
 			dir.z /= len;
 		}
 
-	        // 分離オフセットを加算
+	    // 分離オフセットを加算
 		KamataEngine::Vector3 separation = ComputeSeparation(allEnemies, 0.4f);
 		dir.x += separation.x;
 		dir.z += separation.z;
@@ -111,7 +116,7 @@ void NormalEnemy::Update(const Vector3& playerPos, const std::vector<std::unique
 		if (attackCooldownTimer_ <= 0) {
 			// 攻撃開始
 			isAttacking_ = true;
-			attackTimer_ = float(attackDuration_);
+			attackTimer_ = attackDuration_;
 
 			float offsetX = 0.5f * facingDir_;
 			Vector3 hitPos = worldTransform_.translation_ + Vector3{offsetX, 0.1f, 0};
