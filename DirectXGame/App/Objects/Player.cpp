@@ -6,7 +6,7 @@
 using namespace KamataEngine;
 using namespace KamataEngine::MathUtility;
 
-void Player::Initialize(Model* model, KamataEngine::Model* modelBox, KamataEngine::Vector3& pos) { 
+void Player::Initialize(Model* model, KamataEngine::Model* modelBox, KamataEngine::Vector3 pos) { 
 	input_ = Input::GetInstance(); 
 
 	assert(model);
@@ -84,6 +84,74 @@ void Player::Draw(Camera& camera) {
 	}
 	#endif
 }
+
+void Player::ClearAnimation(bool isSpot) {
+	// ここでゴール地点を指定
+	const float targetX = 0.0f;
+
+	// --- まだゴールしてない時だけ移動 ---
+	if (!isGoal_) {
+
+		// 目的地にまだ着いていないなら右へ移動（今回は右向き想定）
+		if (worldTransform_.translation_.x < targetX) {
+			move.x = 1.0f; // 右へ移動
+		} else {
+			move.x = 0.0f; // 到達したら停止
+
+			// ★ ポーズに入るため勝利フラグON
+			isGoal_ = true;
+		}
+
+		// --- ベクトル正規化 ---
+		if (move.x != 0.0f || move.z != 0.0f) {
+			float length = std::sqrt(move.x * move.x + move.z * move.z);
+			move.x /= length;
+			move.z /= length;
+		}
+
+		// --- 向き ---
+		if (move.x > 0.0f)
+			facingDir_ = 1.0f;
+		if (move.x < 0.0f)
+			facingDir_ = -1.0f;
+
+		// --- 移動 ---
+		worldTransform_.translation_.x += move.x * moveSpeed;
+
+	} else {
+		// ★ 勝利フラグ時は移動しない
+		move.x = 0.0f;
+	}
+
+	// --- アニメ処理 ---
+	bool isMoving = (move.x != 0.0f || move.z != 0.0f);
+
+	if (isMoving && !isStepping_ && !isAttacking_ && HP_ > 0 && !isVictory_) {
+		walkFrameTimer_++;
+
+		if (walkFrameTimer_ >= walkFrameInterval_) {
+			walkFrameTimer_ = 0;
+			walkFrame_ = (walkFrame_ + 1) % 4; // 4枚ループ
+		}
+	} else {
+		// 止まったら初期フレーム
+		walkFrame_ = 0;
+		walkFrameTimer_ = 0;
+	}
+
+	if (isGoal_ && isSpot && !isVictory_) {
+		if (poseWaitTimer_ > 0) {
+			poseWaitTimer_ -= deltaTime;
+		} else if(poseWaitTimer_<=0) {
+			poseWaitTimer_ = 0;
+			isVictory_ = true;
+		}
+	}
+
+	TextureUpdate();
+	worldTransform_.UpdateMatrix();
+}
+
 
 void Player::Move() {
 	// 攻撃中なら移動をキャンセル
@@ -216,8 +284,12 @@ void Player::AttackUpdate() {
 
 void Player::TextureUpdate() {	
 	bool isMoving = (move.x != 0.0f || move.z != 0.0f);
+	// 勝利ポーズ
+	if (isVictory_) {
+		textureHandle_ = RUppercutTexture_;
+	}
 	// 攻撃
-	if (isAttacking_) {
+	else if (isAttacking_) {
 		if (attackFromRight_) {
 			if (facingDir_ == 1.0f) {
 				textureHandle_ = RRightPunchTexture_;

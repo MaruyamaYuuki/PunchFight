@@ -18,7 +18,7 @@ public:
 	/// 初期化
 	/// </summary>
 	/// <param name="model"></param>
-	void Initialize(KamataEngine::Model* model, KamataEngine::Model* modelBox, KamataEngine::Vector3& pos);
+	void Initialize(KamataEngine::Model* model, KamataEngine::Model* modelBox, KamataEngine::Vector3 pos);
 
 	/// <summary>
 	/// 更新
@@ -94,6 +94,24 @@ public:
 	/// </summary>
 	/// <param name="limit">移動限界</param>
 	void SetEndMoveLimitX(float limit) { endMoveLimitX = limit; }
+
+	/// <summary>
+	/// クリアシーンでのアニメーション
+	/// </summary>
+	/// <param name="isSpot">スポットライト</param>
+	void ClearAnimation(bool isSpot);
+
+	/// <summary>
+	/// 目標座標に着いたか
+	/// </summary>
+	/// <returns>目標座標に着いているなら true、着いてないなら false</returns>
+	bool IsGoal() { return isGoal_; }
+
+	/// <summary>
+	/// ポーズをとったか
+	/// </summary>
+	/// <returns>ポーズをとっているなら true、とってないなら false</returns>
+	bool IsVictory() { return isVictory_; }
 
 private:
 	/// <summary>
@@ -189,4 +207,9 @@ private:
 	float deltaTime = 1.0f / 60.0f;
 
 	float endMoveLimitX = 0;
+
+	// ---クリア演出用 ---
+	bool isGoal_ = false;
+	bool isVictory_ = false;
+	float poseWaitTimer_ = 1.0f;
 };
