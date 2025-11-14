@@ -148,9 +148,9 @@ protected:
 	int hp_ = 1;
 	float attackPower_ = 1.0f;
 	float facingDir_ = 1.0f; // 向き（1.0f：右, -1.0f：左）
-	int attackCooldownTimer_ = 0; // クールタイム残り時間
-	const int attackDuration_ = 15; // 攻撃の長さ
-	const int attackCooldown_ = 30;  // クールタイムの長さ
+	float attackCooldownTimer_ = 0; // クールタイム残り時間
+	const float attackDuration_ = 1.0f; // 攻撃の長さ
+	const float attackCooldown_ = 3.0f;  // クールタイムの長さ
 	/// --- ひるみ関連 ---
 	bool isStun_ = false;
 	float stunTimer_ = 0.0f;
