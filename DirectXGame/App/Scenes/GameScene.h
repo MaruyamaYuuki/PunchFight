@@ -118,6 +118,7 @@ private:
 
 	StageManager* stage_ = nullptr;
 	Player* player_ = nullptr;
+	KamataEngine::Vector3 position = {0.0f, 1.0f, 0.0f};
 	float moveLimit[3] = {20.0f, 35.0f, 50.0f};
 
 	CameraController* cameraController_ = nullptr;

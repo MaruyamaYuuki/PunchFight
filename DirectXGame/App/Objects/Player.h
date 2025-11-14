@@ -18,7 +18,7 @@ public:
 	/// 初期化
 	/// </summary>
 	/// <param name="model"></param>
-	void Initialize(KamataEngine::Model* model, KamataEngine::Model* modelBox);
+	void Initialize(KamataEngine::Model* model, KamataEngine::Model* modelBox, KamataEngine::Vector3& pos);
 
 	/// <summary>
 	/// 更新

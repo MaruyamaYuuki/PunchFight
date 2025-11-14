@@ -52,7 +52,7 @@ void GameScene::Initialize() {
 	startGongSEDataHandle_ = audio->LoadWave("audio/SE/startGong.wav");
 
 	player_ = new Player();
-	player_->Initialize(modelPlayer_,modelBoxFrame_);
+	player_->Initialize(modelPlayer_, modelBoxFrame_, position);
 	player_->SetEndMoveLimitX(moveLimit[0]);
 
 	EnemyGenerate();
