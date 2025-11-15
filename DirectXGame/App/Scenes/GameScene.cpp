@@ -212,6 +212,10 @@ void GameScene::ChangePhase() {
 		if (input->TriggerKey(DIK_T)) {
 			player_->TakeDamage(100);
 		}
+		if (player_->GetWorldTransform().translation_.x >= moveLimit[3]) {
+			phase_ = Phase::kFadeOut;
+			fade_->Start(Fade::Status::FadeOut, fadeTime_);
+		}
 		break;
 	case GameScene::Phase::kFadeOut:
 		fade_->Update();
@@ -406,8 +410,9 @@ void GameScene::EnemyUpdate() {
 
 
     if (areaClearedFlag_[2]) {
-		phase_ = Phase::kFadeOut;
-		fade_->Start(Fade::Status::FadeOut, fadeTime_);
+		player_->SetEndMoveLimitX(moveLimit[3]);
+		//phase_ = Phase::kFadeOut;
+		//fade_->Start(Fade::Status::FadeOut, fadeTime_);
 	} else if (areaClearedFlag_[1]) {
 		CameraController::Rect area = {0.0f, scrollArea[2], -8.0f, -1.0f};
 		cameraController_->SetMovableArea(area);

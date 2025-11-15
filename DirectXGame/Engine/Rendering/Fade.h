@@ -13,6 +13,7 @@ public:
 		None,
 		FadeIn,
 		FadeOut,
+		AlphaFadeOut,
 	};
 
 public:
@@ -55,6 +56,12 @@ public:
 	/// <returns>終了していれば true、進行中であれば false を返す。</returns>
 	bool IsFinished() const;
 
+	/// <summary>
+	/// アルファ値を設定する
+	/// </summary>
+	/// <param name="alpha">アルファ値</param>
+	void SetAlpha(float alpha) { sprite_->SetColor({1, 1, 1, alpha}); }
+
 private:
 	uint32_t textureHandle_ = 0;
 	KamataEngine::Sprite* sprite_ = nullptr;
@@ -63,4 +70,5 @@ private:
 	float duration_ = 0.0f;
 	float counter_ = 0.0f;
 	float scale_ = 0.0f;
+	float alpha_ = 0.0f;
 };

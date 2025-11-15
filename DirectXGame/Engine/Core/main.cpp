@@ -2,11 +2,13 @@
 #include "KamataEngine.h"
 #include "../../App/Scenes/TitleScene.h"
 #include  "../../App/Scenes/GameScene.h"
+#include "../../App/Scenes/ClearScene.h"
 
 using namespace KamataEngine;
 
 TitleScene* titleScene = nullptr;
 GameScene* gameScene = nullptr;
+ClearScene* clearScene = nullptr;
 
 /// <summary>
 /// シーンの状態
@@ -16,6 +18,7 @@ enum class Scene {
 
 	kTitle,
 	kGame,
+	kClear,
 };
 Scene scene = Scene::kUnkown;
 
@@ -94,10 +97,21 @@ void ChangeScene() {
 		break;
 	case Scene::kGame:
 		if (gameScene->IsFinished()) {
-			scene = Scene::kTitle;
+			scene = Scene::kClear;
 
 			delete gameScene;
 			gameScene = nullptr;
+
+			clearScene = new ClearScene();
+			clearScene->Initialize();
+		}
+		break;
+	case Scene::kClear:
+		if (clearScene->IsFinished()) {
+			scene = Scene::kTitle;
+
+			delete clearScene;
+			clearScene = nullptr;
 
 			titleScene = new TitleScene();
 			titleScene->Initialize();
@@ -114,6 +128,9 @@ void UpdateScene() {
 	case Scene::kGame:
 		gameScene->Update();
 		break;
+	case Scene::kClear:
+		clearScene->Update();
+		break;
 	}
 }
 
@@ -124,6 +141,9 @@ void DrawScene() {
 		break;
 	case Scene::kGame:
 		gameScene->Draw();
+		break;
+	case Scene::kClear:
+		clearScene->Draw();
 		break;
 	}
 }

@@ -159,6 +159,7 @@
     <ClCompile Include="App\Objects\Enemy\NormalEnemy.cpp" />
     <ClCompile Include="App\Objects\Enemy\PowerEnemy.cpp" />
     <ClCompile Include="App\Scenes\GameScene.cpp" />
+    <ClCompile Include="App\Scenes\ClearScene.cpp" />
     <ClCompile Include="Engine\Camera\CameraController.cpp" />
     <ClCompile Include="Engine\Core\main.cpp" />
     <ClCompile Include="App\Scenes\TitleScene.cpp" />
@@ -270,6 +271,7 @@
     <ClInclude Include="App\Objects\Enemy\EnemyManager.h" />
     <ClInclude Include="App\Objects\Enemy\NormalEnemy.h" />
     <ClInclude Include="App\Objects\Enemy\PowerEnemy.h" />
+    <ClInclude Include="App\Scenes\ClearScene.h" />
     <ClInclude Include="Engine\Math\Collision.h" />
     <ClInclude Include="Engine\Math\Collider.h" />
     <ClInclude Include="Engine\Camera\CameraController.h" />
