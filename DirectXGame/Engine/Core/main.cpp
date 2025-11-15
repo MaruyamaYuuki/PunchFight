@@ -46,10 +46,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
 
 #ifdef _DEBUG
-	clearScene = new ClearScene();
-	clearScene->Initialize();
+	gameScene = new GameScene();
+	gameScene->Initialize();
 
-	scene = Scene::kClear;
+	scene = Scene::kGame;
 #else
 	titleScene = new TitleScene();
 	titleScene->Initialize();

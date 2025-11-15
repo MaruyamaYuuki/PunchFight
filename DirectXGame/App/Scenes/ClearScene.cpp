@@ -28,7 +28,7 @@ void ClearScene::Initialize() {
 	clearTextTexture_ = Sprite::Create(textureHandle_, {640.0f, 200.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
 	clearScale_ = 0.2f;
 	clearTextTexture_->SetSize({0.0f, 0.0f}); // テクスチャサイズは拡大で調整するので0でOK
-	textureHandle_ = TextureManager::Load("clearScene/pushSpace.png");
+	textureHandle_ = TextureManager::Load("clearScene/keyGuide.png");
 	pushSpaceTexture_ = Sprite::Create(textureHandle_, {640.0f, 360.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
 
 	player_ = new Player();
@@ -36,6 +36,7 @@ void ClearScene::Initialize() {
 
 	fade_ = new Fade();
 	fade_->Initialize();
+	fade_->SetAlpha(0.0f);
 }
 
 void ClearScene::Update() {
@@ -91,9 +92,20 @@ void ClearScene::Update() {
 			}
 		}
 
+		if (pushSpaceShown_) {
+			if (input->TriggerKey(DIK_E)) {
+				fade_->Start(Fade::Status::AlphaFadeOut, 1.5f);
+				phase_ = Phase::kFadeOut;
 
+			}
+		}
 		break;
 	case ClearScene::Phase::kFadeOut:
+		player_->UpdateWorldTransform();
+		fade_->Update();
+		if (fade_->IsFinished()) {
+			isFinished_ = true;
+		}
 		break;
 	}
 }
@@ -125,6 +137,7 @@ void ClearScene::Draw() {
     		pushSpaceTexture_->Draw();
 		}
 	}
+	fade_->Draw();
 	// 前景スプライト描画後処理
 	Sprite::PostDraw();
 }

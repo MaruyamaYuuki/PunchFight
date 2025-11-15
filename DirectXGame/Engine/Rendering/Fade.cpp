@@ -45,6 +45,13 @@ void Fade::Update() {
 		sprite_->SetPosition({640.0f, 360.0f});
 		break;
 
+	case Fade::Status::AlphaFadeOut:
+		alpha_ = std::lerp(0.0f, 1.0f, t); // 徐々に暗くしていく
+		sprite_->SetSize({1280.0f, 720.0f});    // 画面全体を覆う
+		sprite_->SetPosition({640.0f, 360.0f});
+		sprite_->SetColor({1, 1, 1, alpha_}); // ← アルファ値だけ変化させる
+	  break;
+
 	default:
 		break;
 	}
@@ -69,6 +76,12 @@ void Fade::Start(Status status, float duration) {
 		sprite_->SetSize({1280.0f * scale_, 720.0f * scale_});
 		sprite_->SetColor({0, 0, 0, 1});
 		sprite_->SetPosition({640.0f, 360.0f});
+	} else if (status == Status::AlphaFadeOut) {
+		scale_ = 1.0f;
+		counter_ = 0.0f;
+		sprite_->SetSize({1280.0f, 720.0f});
+		sprite_->SetColor({1, 1, 1, 0}); // 最初は透明
+		sprite_->SetPosition({640.0f, 360.0f});
 	}
 }
 
@@ -78,6 +91,7 @@ bool Fade::IsFinished() const {
 	switch (status_) {
 	case Fade::Status::FadeIn:
 	case Fade::Status::FadeOut:
+	case Fade::Status::AlphaFadeOut:
 		return counter_ >= duration_;
 	default:
 		return true;
