@@ -32,7 +32,7 @@ void ClearScene::Initialize() {
 	pushSpaceTexture_ = Sprite::Create(textureHandle_, {640.0f, 360.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
 
 	player_ = new Player();
-	player_->Initialize(modelPlayer_, modelBoxFrame_, Vector3{-5.0f, -1.1f, -45.0f});
+	player_->Initialize(modelPlayer_, modelBoxFrame_, modelBoxFrame_, Vector3{-5.0f, -1.1f, -45.0f});
 
 	fade_ = new Fade();
 	fade_->Initialize();

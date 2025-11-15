@@ -6,18 +6,24 @@
 using namespace KamataEngine;
 using namespace KamataEngine::MathUtility;
 
-void Player::Initialize(Model* model, KamataEngine::Model* modelBox, KamataEngine::Vector3 pos) { 
+void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine::Model* modelBox, KamataEngine::Vector3 pos) { 
 	input_ = Input::GetInstance(); 
 
 	assert(model);
 	model_ = model;
+	assert(modelSP);
+	modelSpecial_ = modelSP;
 	assert(modelBox);
 	modelDebugHitBox_ = modelBox;
 	modelHitBox_ = modelBox;
+	modelSPHiyBox_ = modelBox;
 
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = pos;
 	worldTransform_.scale_ = {0.5f, 0.5f, 0.5f};
+	worldTransformSP_.Initialize();
+	worldTransformHitBox_.scale_ = {0.5f, 0.5f, 0.5f};
+	worldTransformSPHitBox_.Initialize();
 	worldTransformHitBox_.Initialize();
 	worldTransformPHitBox_.Initialize();
 
@@ -46,6 +52,10 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelBox, KamataEngin
 	LRunTexture1_ = TextureManager::Load("playerTextures/LRun1.png");
 	LRunTexture2_ = TextureManager::Load("playerTextures/LRun2.png");
 	LRunTexture3_ = TextureManager::Load("playerTextures/LRun3.png");
+	// 気弾テクスチャ
+	SPTextureHandle_ = TextureManager::Load("playerTextures/RSpecial.png");
+	RSpecialTexture_ = TextureManager::Load("playerTextures/RSpecial.png");
+	LSpecialTexture_ = TextureManager::Load("playerTextures/LSpecial.png");
 }
 
 void Player::Update() {
@@ -55,15 +65,20 @@ void Player::Update() {
     	// 攻撃入力チェック
     	if (input_->TriggerKey(DIK_J)) { // Jキーでパンチ
     		Attack();
-    	}
+		} else if (input_->TriggerKey(DIK_K)) {
+			SpecialAttack();
+		}
 	}
 
 	AttackUpdate();
+	SpecialAttackUpdate();
 
 	TextureUpdate();
 	worldTransform_.UpdateMatrix();
+	worldTransformSP_.UpdateMatrix();
 	worldTransformHitBox_.UpdateMatrix();
 	worldTransformPHitBox_.UpdateMatrix();
+	worldTransformSPHitBox_.UpdateMatrix();
 
 	// ヒットボックスをプレイヤーの位置に追従
 	playerHitBox_.pos = worldTransform_.translation_;
@@ -81,6 +96,23 @@ void Player::Draw(Camera& camera) {
 		worldTransformPHitBox_.translation_ = playerHitBox_.pos;
 		worldTransformPHitBox_.scale_ = playerHitBox_.size;
 		modelHitBox_->Draw(worldTransformPHitBox_, camera);
+	}
+
+	// --- 気弾の描画 ---
+	if (isSpecialAttacking_) {
+
+		// 気弾本体
+		modelSpecial_->Draw(worldTransformSP_, camera, SPTextureHandle_);
+
+		// デバッグ用ヒットボックスモデル
+		// （必要なら）
+		if (modelSPHiyBox_) {
+			worldTransformSPHitBox_.translation_ = spAttackHitBox_.pos;
+			worldTransformSPHitBox_.scale_ = spAttackHitBox_.size;
+			worldTransformSPHitBox_.UpdateMatrix();
+
+			modelSPHiyBox_->Draw(worldTransformSPHitBox_, camera);
+		}
 	}
 	#endif
 }
@@ -278,6 +310,72 @@ void Player::AttackUpdate() {
 		attackCooldownTimer_--;
 		if (attackCooldownTimer_ <= 0) {
 			canAttack_ = true;
+		}
+	}
+}
+
+void Player::SpecialAttack() {
+
+	if (!canSpecialAttack_ || isSpecialAttacking_)
+		return;
+
+	isSpecialAttacking_ = true;
+	canSpecialAttack_ = false;
+
+	spAttackTimer_ = spAttackDuration_;
+
+	// 1. 発射時のプレイヤーの向きを保存！
+	spAttackDirection_ = static_cast<float>(facingDir_);
+
+	// --- 気弾モデルの初期位置 ---
+	worldTransformSP_.translation_ = worldTransform_.translation_ + Vector3{spAttackDirection_ * 0.5f, 0.2f, 0.0f};
+	worldTransformSP_.UpdateMatrix();
+
+	// --- ヒットボックス初期化 ---
+	spAttackHitBox_.active = true;
+
+	float hitBoxOffsetX = spAttackDirection_ * 0.3f;
+	float hitBoxOffsetY = 0.0f;
+
+	spAttackHitBox_.pos = worldTransformSP_.translation_ + Vector3{hitBoxOffsetX, hitBoxOffsetY, 0.0f};
+	spAttackHitBox_.size = {0.5f, 0.5f, 1.0f};
+
+	// --- テクスチャ切替 ---
+	if (spAttackDirection_ > 0) {
+		SPTextureHandle_ = RSpecialTexture_;
+	} else {
+		SPTextureHandle_ = LSpecialTexture_;
+	}
+}
+
+void Player::SpecialAttackUpdate() {
+
+	if (isSpecialAttacking_) {
+
+		spAttackTimer_ -= deltaTime;
+
+		// 2. 発射時の向きを使って移動（←ここが重要！）
+		worldTransformSP_.translation_.x += spAttackMoveSpeed_ * spAttackDirection_;
+		worldTransformSP_.UpdateMatrix();
+
+		// --- ヒットボックスの追従 ---
+		float hitBoxForwardOffset = 0.3f;
+		spAttackHitBox_.pos = worldTransformSP_.translation_ + Vector3{spAttackDirection_ * hitBoxForwardOffset, 0.0f, 0.0f};
+
+		// --- 寿命切れ ---
+		if (spAttackTimer_ <= 0.0f) {
+			isSpecialAttacking_ = false;
+			spAttackHitBox_.active = false;
+
+			spAttackCooldownTimer_ = spAttackCoolDown_;
+		}
+	}
+
+	// クールタイム処理
+	if (!canSpecialAttack_ && !isSpecialAttacking_) {
+		spAttackCooldownTimer_ -= deltaTime;
+		if (spAttackCooldownTimer_ <= 0.0f) {
+			canSpecialAttack_ = true;
 		}
 	}
 }

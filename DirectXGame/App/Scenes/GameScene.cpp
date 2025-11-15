@@ -13,6 +13,8 @@ GameScene::GameScene() {}
 GameScene::~GameScene() {
 	delete modelLoad_;
 	delete modelPlayer_;
+	delete modelSPAttack_;
+	delete modelBoxFrame_;
 
 	delete player_;
 	delete stage_;
@@ -32,6 +34,7 @@ void GameScene::Initialize() {
 
 	modelLoad_ = Model::CreateFromOBJ("load", true);
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
+	modelSPAttack_ = Model::CreateFromOBJ("specialAttack", true);
 	modelBoxFrame_ = Model::CreateFromOBJ("boxFrame", true);
 
 	textureHandle_ = TextureManager::Load("gameSelect.png");
@@ -52,7 +55,7 @@ void GameScene::Initialize() {
 	startGongSEDataHandle_ = audio->LoadWave("audio/SE/startGong.wav");
 
 	player_ = new Player();
-	player_->Initialize(modelPlayer_, modelBoxFrame_, position);
+	player_->Initialize(modelPlayer_, modelSPAttack_, modelBoxFrame_, position);
 	player_->SetEndMoveLimitX(moveLimit[0]);
 
 	EnemyGenerate();
