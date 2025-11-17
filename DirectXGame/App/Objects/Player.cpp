@@ -490,7 +490,7 @@ void Player::UpdateWorldTransform() {
 	playerHitBox_.pos = worldTransform_.translation_;
 }
 
-void Player::TakeDamage(int damage) {
+void Player::OnHit(int damage) {
 	HP_ -= damage;
 	if (HP_ < 0) {
 		HP_ = 0;

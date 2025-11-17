@@ -60,16 +60,22 @@ public:
 	bool IsDead() const { return isDead_; }
 
 	/// <summary>
-	/// 受けるダメージ量を設定する
+	/// 接触判定
 	/// </summary>
-	/// <param name="damage"></param>
-	void TakeDamage(int damage);
+	/// <param name="damage">ダメージ量</param>
+	void OnHit(int damage);
 
 	/// <summary>
 	/// プレイヤーのHPを取得する
 	/// </summary>
 	/// <returns></returns>
 	int GetHP() const { return HP_; }
+
+	/// <summary>
+	/// プレイヤーのヒットボックスを取得する
+	/// </summary>
+	/// <returns>当たり判定の情報（位置・サイズ・有効状態など）</returns>
+	HitBox GetPlayerHitBox() const { return playerHitBox_; }
 
 	/// <summary>
 	/// 攻撃のヒットボックスを取得する
@@ -100,6 +106,12 @@ public:
 	/// </summary>
 	/// <returns>右向きなら 1.0f、左向きなら -1.0f を返す</returns>
 	float GetFacingDir() const { return facingDir_; }
+
+	/// <summary>
+	/// 強攻撃の発射方向を取得
+	/// </summary>
+	/// <returns>右方向なら 1.0f、左方向なら -1.0f を返す</returns>
+	float GetSPAttackDir() const { return spAttackDirection_; }
 
 	/// <summary>
 	/// X軸での移動限界座標を設定する

@@ -165,6 +165,7 @@ private:
 	float scrollArea[3] = {15.0f, 30.0f, 45.0f};
 
 	std::vector<EnemyBase*> hitEnemiesThisAttack_;
+	std::vector<EnemyBase*> hitEnemiesThisSPAttack_;
 
 	/// --- エリア解放時のガイド関連 ---
 	float guideTimer_ = 0.0f;
