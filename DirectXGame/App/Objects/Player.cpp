@@ -222,7 +222,7 @@ void Player::Move() {
 		stepTimer_--;
 
 	// ステップ開始判定
-	if (stepTimer_ <= 0 && input_->TriggerKey(DIK_R) && (move.x != 0.0f || move.z != 0.0f)) {
+	if (stepTimer_ <= 0 && input_->TriggerKey(DIK_H) && (move.x != 0.0f || move.z != 0.0f)) {
 		isStepping_ = true;
 		stepDirection_ = move;
 		stepTimer_ = stepCooldown_; // クールタイム開始

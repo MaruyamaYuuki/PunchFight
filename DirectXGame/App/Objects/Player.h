@@ -250,7 +250,7 @@ private:
 	float spAttackMoveSpeed_ = 0.05f;
 
 	const float spAttackDuration_ = 3.0f;
-	const float spAttackCoolDown_ = 10.0f;
+	const float spAttackCoolDown_ = 5.0f;
 	const float deltaTime = 1.0f / 60.0f;
 
 	float spAttackDirection_ = 1.0f; // 気弾の発射方向を記録
