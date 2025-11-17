@@ -37,6 +37,17 @@ public:
 	void Reset();
 
 	/// <summary>
+	/// WorldTransformだけを更新
+	/// </summary>
+	void UpdateWorldTransform();
+
+	/// <summary>
+	/// 接触判定
+	/// </summary>
+	/// <param name="damage">ダメージ量</param>
+	void OnHit(int damage);
+
+	/// <summary>
 	/// プレイヤーのWorldTransformを設定する
 	/// </summary>
 	/// <returns>プレイヤーのWorldTransform</returns>
@@ -49,21 +60,10 @@ public:
 	const KamataEngine::Vector3& GetVelocity() const { return move; }
 
 	/// <summary>
-	/// WorldTransformだけを更新
-	/// </summary>
-	void UpdateWorldTransform();
-
-	/// <summary>
 	/// プレイヤーの死亡判定
 	/// </summary>
 	/// <returns>死亡していれば true、生存していれば false</returns>
 	bool IsDead() const { return isDead_; }
-
-	/// <summary>
-	/// 接触判定
-	/// </summary>
-	/// <param name="damage">ダメージ量</param>
-	void OnHit(int damage);
 
 	/// <summary>
 	/// プレイヤーのHPを取得する
@@ -98,7 +98,7 @@ public:
 	/// <summary>
 	/// 強攻撃の攻撃力を取得する
 	/// </summary>
-	/// <returns></returns>
+	/// <returns>強攻撃の攻撃力</returns>
 	int GetSPAttackPower() const { return spAttackPower_; }
 
 	/// <summary>
@@ -114,18 +114,6 @@ public:
 	float GetSPAttackDir() const { return spAttackDirection_; }
 
 	/// <summary>
-	/// X軸での移動限界座標を設定する
-	/// </summary>
-	/// <param name="limit">移動限界</param>
-	void SetEndMoveLimitX(float limit) { endMoveLimitX = limit; }
-
-	/// <summary>
-	/// クリアシーンでのアニメーション
-	/// </summary>
-	/// <param name="isSpot">スポットライト</param>
-	void ClearAnimation(bool isSpot);
-
-	/// <summary>
 	/// 目標座標に着いたか
 	/// </summary>
 	/// <returns>目標座標に着いているなら true、着いてないなら false</returns>
@@ -136,6 +124,56 @@ public:
 	/// </summary>
 	/// <returns>ポーズをとっているなら true、とってないなら false</returns>
 	bool IsVictory() { return isVictory_; }
+
+	/// <summary>
+	/// ステップ中かを取得
+	/// </summary>
+	/// <returns>ステップ中なら true、してなければ false</returns>
+	bool CanStep() const { return !isStepping_ && stepTimer_ <= 0; }
+
+	/// <summary>
+	/// ステップのクールタイムを取得
+	/// </summary>
+	/// <returns>ステップのクールタイム</returns>
+	int GetStepCooldownTimer() const { return stepTimer_; }
+
+	/// <summary>
+	/// ステップのクールタイムの最大値を取得
+	/// </summary>
+	/// <returns>ステップのクールタイムの最大値</returns>
+	int GetStepCooldownMax() const { return stepCooldown_; }
+
+	/// <summary>
+	/// 強攻撃を使ったかを取得
+	/// </summary>
+	/// <returns>使っていれば true、いなければ false</returns>
+	bool CanSpecialAttack() const { return canSpecialAttack_; }
+
+	/// <summary>
+	/// 強攻撃のクールタイムを取得
+	/// </summary>
+	/// <returns>強攻撃のクールタイム</returns>
+	float GetSPAttackCooldownTimer() const { return spAttackCooldownTimer_; }
+
+	/// <summary>
+	/// 強攻撃のクールタイムの最大値を取得
+	/// </summary>
+	/// <returns>強攻撃のクールタイムの最大値</returns>
+	float GetSPAttackCooldownMax() const { return spAttackCoolDown_; }
+
+	bool DidSpecialAttack() const { return justSpecialAttacked_; }
+
+	/// <summary>
+	/// X軸での移動限界座標を設定する
+	/// </summary>
+	/// <param name="limit">移動限界</param>
+	void SetEndMoveLimitX(float limit) { endMoveLimitX = limit; }
+
+	/// <summary>
+	/// クリアシーンでのアニメーション
+	/// </summary>
+	/// <param name="isSpot">スポットライト</param>
+	void ClearAnimation(bool isSpot);
 
 private:
 	/// <summary>
@@ -254,6 +292,7 @@ private:
 	const float deltaTime = 1.0f / 60.0f;
 
 	float spAttackDirection_ = 1.0f; // 気弾の発射方向を記録
+	bool justSpecialAttacked_ = false;
 
 	// --- ヒットボックス ---
 	HitBox playerHitBox_;

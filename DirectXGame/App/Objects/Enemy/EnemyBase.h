@@ -90,23 +90,34 @@ public:
 	int GetAttackPower() const { return attackPower_; }
 
 	/// <summary>
-	/// 敵のヒットボックスを設定する
-	/// </summary>
-	/// <param name="center">中心座標</param>
-	/// <param name="size">大きさ</param>
-	void SetHitBox(const KamataEngine::Vector3& center, const KamataEngine::Vector3& size);
-
-	/// <summary>
-	/// 攻撃のヒットボックスを設定する
-	/// </summary>
-	/// <param name="pos">座標</param>
-	void SetAttackHitBox(const KamataEngine::Vector3& pos);
-
-	/// <summary>
 	/// 敵の座標を取得する
 	/// </summary>
 	/// <returns></returns>
 	KamataEngine::Vector3 GetPosition() const { return worldTransform_.translation_; }
+
+	/// <summary>
+	/// 敵のHPを取得する
+	/// </summary>
+	/// <returns></returns>
+	int GetHP() const { return hp_; }
+
+	/// <summary>
+	/// ノックバック判定
+	/// </summary>
+	/// <returns>ノックバックしていれば true、していなければ false</returns>
+	bool IsKnockBack() const { return isKnockBack_; }
+
+	/// <summary>
+	/// 攻撃中か判定
+	/// </summary>
+	/// <returns>攻撃中なら true、してなければ false</returns>
+	bool IsAttacking() const { return attackHitBox_.active; }
+
+	/// <summary>
+	/// ダメージを与えるか判定
+	/// </summary>
+	/// <returns>与えるなら true、与えないなら false</returns>
+	bool HasDealtDamage() const { return hasDealtDamage_; }
 
 	/// <summary>
 	/// 敵の座標を設定する
@@ -123,16 +134,23 @@ public:
 	void SetScale(const KamataEngine::Vector3& scale);
 
 	/// <summary>
-	/// 敵のHPを取得する
+	/// 敵のヒットボックスを設定する
 	/// </summary>
-	/// <returns></returns>
-	int GetHP() const { return hp_; }
+	/// <param name="center">中心座標</param>
+	/// <param name="size">大きさ</param>
+	void SetHitBox(const KamataEngine::Vector3& center, const KamataEngine::Vector3& size);
 
 	/// <summary>
-	/// ノックバック判定
+	/// 攻撃のヒットボックスを設定する
 	/// </summary>
-	/// <returns>ノックバックしていれば true、していなければ false</returns>
-	bool IsKnockBack() const { return isKnockBack_; }
+	/// <param name="pos">座標</param>
+	void SetAttackHitBox(const KamataEngine::Vector3& pos);
+
+	/// <summary>
+	/// ダメージを与えるか設定
+	/// </summary>
+	/// <param name="flag">フラグ</param>
+	void SetHasDealtDamage(bool flag) { hasDealtDamage_ = flag; }
 
 	/// <summary>
 	/// テクスチャの更新
@@ -147,64 +165,53 @@ public:
 	/// <returns>分離用オフセットベクトル</returns>
 	KamataEngine::Vector3 ComputeSeparation(const std::vector<std::unique_ptr<EnemyBase>>& allEnemies, float separationDistance);
 
-	/// <summary>
-	/// 攻撃中か判定
-	/// </summary>
-	/// <returns>攻撃中なら true、してなければ false</returns>
-	bool IsAttacking() const { return attackHitBox_.active; }
-
-	/// <summary>
-	/// ダメージを与えるか判定
-	/// </summary>
-	/// <returns>与えるなら true、与えないなら false</returns>
-	bool HasDealtDamage() const { return hasDealtDamage_; }
-
-	/// <summary>
-	/// ダメージを与えるか設定
-	/// </summary>
-	/// <param name="flag">フラグ</param>
-	void SetHasDealtDamage(bool flag) { hasDealtDamage_ = flag; }
-
 protected:
 	WorldTransformEx worldTransform_;
 	WorldTransformEx worldTransformEHitBox_;
 	WorldTransformEx worldTransformAHitBox_;
+
 	KamataEngine::Model* model_ = nullptr;
-	KamataEngine::Model* modelEHitBox_;
-	KamataEngine::Model* modelAHitBox_;
+	KamataEngine::Model* modelEHitBox_ = nullptr;
+	KamataEngine::Model* modelAHitBox_ = nullptr;
 	uint32_t textureHandle_ = 0;
 
+	// ---- ステータス ----
 	float speed_ = 0.0f;
 	int hp_ = 1;
 	int attackPower_ = 1;
-	float facingDir_ = 1.0f; // 向き（1.0f：右, -1.0f：左）
-	float attackCooldownTimer_ = 0; // クールタイム残り時間
-	const float attackDuration_ = 1.0f; // 攻撃の長さ
-	const float attackCooldown_ = 3.0f;  // クールタイムの長さ
-	/// --- ひるみ関連 ---
-	bool isStun_ = false;
-	float stunTimer_ = 0.0f;
-	float stunDuration_ = 1.0f; // ひるみ時間
+	float facingDir_ = 1.0f;
 
+	// ---- 攻撃 ----
 	HitBox hitBox_;
 	HitBox attackHitBox_;
 
-	float deltaTime = 1.0f / 60.0f;
+	float attackCooldownTimer_ = 0;
+	const float attackDuration_ = 1.0f;
+	const float attackCooldown_ = 3.0f;
 
-    bool isDead_ = false;      // 完全に消えたか
-    bool isKnockBack_ = false;
+	bool hasDealtDamage_ = false;
+
+	// ---- スタン ----
+	bool isStun_ = false;
+	float stunTimer_ = 0.0f;
+	float stunDuration_ = 1.0f;
+
+	// ---- ノックバック ----
+	bool isKnockBack_ = false;
+	bool isDead_ = false;
 	float knockbackTime_ = 0.0f;
-	float knockbackSpeed_ = 5.0f;    // X方向の吹っ飛び速度
-	float knockbackDuration_ = 0.5f; // 0.5秒間吹っ飛ぶ
-	float knockbackHeight_ = 2.0f;   // Y方向の少し浮く高さ
+	float knockbackSpeed_ = 5.0f;
+	float knockbackDuration_ = 0.5f;
+	float knockbackHeight_ = 2.0f;
 	KamataEngine::Vector3 knockbackDir_;
 	KamataEngine::Vector3 knockbackVelocity_{0, 0, 0};
 	float gravity_ = 30.0f;
 
-	bool hasDealtDamage_ = false;
+	float deltaTime = 1.0f / 60.0f;
 
-	/// --- テクスチャ関連 ---
+	// ---- テクスチャ ----
 	EnemyState state_ = EnemyState::Idle;
+
 	uint32_t RIdleTexture_ = 0;
 	uint32_t RAttackTexture_ = 0;
 	uint32_t RStunTexture_ = 0;

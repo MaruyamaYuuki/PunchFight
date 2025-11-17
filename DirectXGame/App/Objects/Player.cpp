@@ -70,6 +70,8 @@ void Player::Update() {
 		}
 	}
 
+	justSpecialAttacked_ = false;
+
 	AttackUpdate();
 	SpecialAttackUpdate();
 
@@ -323,9 +325,12 @@ void Player::SpecialAttack() {
 	isSpecialAttacking_ = true;
 	canSpecialAttack_ = false;
 
+	// --- クールタイムを即スタート ---
+	spAttackCooldownTimer_ = spAttackCoolDown_;
+
 	spAttackTimer_ = spAttackDuration_;
 
-	// 1. 発射時のプレイヤーの向きを保存！
+	// 発射時の向きを固定
 	spAttackDirection_ = static_cast<float>(facingDir_);
 
 	// --- 気弾モデルの初期位置 ---
@@ -334,52 +339,49 @@ void Player::SpecialAttack() {
 
 	// --- ヒットボックス初期化 ---
 	spAttackHitBox_.active = true;
-
-	float hitBoxOffsetX = spAttackDirection_ * 0.3f;
-	float hitBoxOffsetY = 0.0f;
-
-	spAttackHitBox_.pos = worldTransformSP_.translation_ + Vector3{hitBoxOffsetX, hitBoxOffsetY, 0.0f};
+	spAttackHitBox_.pos = worldTransformSP_.translation_ + Vector3{spAttackDirection_ * 0.3f, 0.0f, 0.0f};
 	spAttackHitBox_.size = {0.5f, 0.5f, 1.0f};
 
 	// --- テクスチャ切替 ---
-	if (spAttackDirection_ > 0) {
-		SPTextureHandle_ = RSpecialTexture_;
-	} else {
-		SPTextureHandle_ = LSpecialTexture_;
-	}
+	SPTextureHandle_ = (spAttackDirection_ > 0) ? RSpecialTexture_ : LSpecialTexture_;
 }
 
 void Player::SpecialAttackUpdate() {
 
+	// ---------------------
+	// 気弾の更新
+	// ---------------------
 	if (isSpecialAttacking_) {
 
 		spAttackTimer_ -= deltaTime;
 
-		// 2. 発射時の向きを使って移動（←ここが重要！）
+		// 発射時の向きで移動
 		worldTransformSP_.translation_.x += spAttackMoveSpeed_ * spAttackDirection_;
 		worldTransformSP_.UpdateMatrix();
 
-		// --- ヒットボックスの追従 ---
-		float hitBoxForwardOffset = 0.3f;
-		spAttackHitBox_.pos = worldTransformSP_.translation_ + Vector3{spAttackDirection_ * hitBoxForwardOffset, 0.0f, 0.0f};
+		// ヒットボックス追従
+		spAttackHitBox_.pos = worldTransformSP_.translation_ + Vector3{spAttackDirection_ * 0.3f, 0.0f, 0.0f};
 
-		// --- 寿命切れ ---
+		// 気弾が消える
 		if (spAttackTimer_ <= 0.0f) {
 			isSpecialAttacking_ = false;
 			spAttackHitBox_.active = false;
-
-			spAttackCooldownTimer_ = spAttackCoolDown_;
 		}
 	}
 
-	// クールタイム処理
-	if (!canSpecialAttack_ && !isSpecialAttacking_) {
+	// ---------------------
+	// クールタイム進行（気弾が生きていても進む）
+	// ---------------------
+	if (!canSpecialAttack_) {
 		spAttackCooldownTimer_ -= deltaTime;
+
 		if (spAttackCooldownTimer_ <= 0.0f) {
 			canSpecialAttack_ = true;
+			spAttackCooldownTimer_ = 0.0f;
 		}
 	}
 }
+
 
 void Player::TextureUpdate() {	
 	bool isMoving = (move.x != 0.0f || move.z != 0.0f);

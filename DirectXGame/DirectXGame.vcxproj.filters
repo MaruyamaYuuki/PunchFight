@@ -72,20 +72,23 @@
     <ClCompile Include="App\Objects\StageManager.cpp">
       <Filter>App\Objects</Filter>
     </ClCompile>
+    <ClCompile Include="App\Scenes\ClearScene.cpp">
+      <Filter>App\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Rendering\UI.cpp">
+      <Filter>Engine\Rendering</Filter>
+    </ClCompile>
     <ClCompile Include="App\Objects\Enemy\EnemyBase.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="App\Objects\Enemy\NormalEnemy.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="App\Objects\Enemy\PowerEnemy.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>App\Objects\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="App\Objects\Enemy\EnemyManager.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>App\Objects\Enemy</Filter>
     </ClCompile>
-    <ClCompile Include="App\Scenes\ClearScene.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="App\Objects\Enemy\NormalEnemy.cpp">
+      <Filter>App\Objects\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="App\Objects\Enemy\PowerEnemy.cpp">
+      <Filter>App\Objects\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -171,26 +174,29 @@
     <ClInclude Include="App\Objects\StageManager.h">
       <Filter>App\Objects</Filter>
     </ClInclude>
+    <ClInclude Include="App\Scenes\ClearScene.h">
+      <Filter>App\Scenes</Filter>
+    </ClInclude>
     <ClInclude Include="Engine\Math\Collider.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>Engine\Math</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Math\Collision.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Rendering\UI.h">
+      <Filter>Engine\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="App\Objects\Enemy\EnemyBase.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="App\Objects\Enemy\NormalEnemy.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="App\Objects\Enemy\PowerEnemy.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>App\Objects\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="App\Objects\Enemy\EnemyManager.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>App\Objects\Enemy</Filter>
     </ClInclude>
-    <ClInclude Include="App\Scenes\ClearScene.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="App\Objects\Enemy\NormalEnemy.h">
+      <Filter>App\Objects\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="App\Objects\Enemy\PowerEnemy.h">
+      <Filter>App\Objects\Enemy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

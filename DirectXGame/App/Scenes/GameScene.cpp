@@ -20,6 +20,8 @@ GameScene::~GameScene() {
 	delete stage_;
 	delete cameraController_;
 	delete fade_;
+	delete enemyManager_;
+	delete ui_;
 }
 
 void GameScene::Initialize() { 
@@ -74,6 +76,9 @@ void GameScene::Initialize() {
 	fade_->Initialize();
 	fade_->Start(Fade::Status::FadeIn, fadeTime_);
 
+	ui_ = new UI();
+	ui_->Initialize(player_);
+
 	prevTime_ = std::chrono::high_resolution_clock::now();
 	waitTimer_ = 0.0f;
 }
@@ -98,6 +103,8 @@ void GameScene::Update() {
 			isFinished_ = true;
 
 		}
+
+		ui_->Update();
 		EnemyUpdate();
 		AllCollision();
 		break;
@@ -140,6 +147,7 @@ void GameScene::Draw() {
 
 	//backTextSprite_->Draw();
 
+	ui_->Draw();
 
 	switch (phase_) {
 	case GameScene::Phase::kFadeIn:
@@ -164,7 +172,7 @@ void GameScene::Draw() {
 		}
 		if (player_->IsDead()) {
 			blackSprite_->Draw();
-			//gameOverTextSprite_->Draw();
+			gameOverTextSprite_->Draw();
 		} 
 		if (player_->GetHP() > 0) {
 			//backTextSprite_->Draw();
@@ -213,7 +221,7 @@ void GameScene::ChangePhase() {
 		break;
 	case GameScene::Phase::kPlay:
 		if (input->TriggerKey(DIK_T)) {
-			player_->OnHit(100);
+			player_->OnHit(5);
 		}
 		if (player_->GetWorldTransform().translation_.x >= moveLimit[3]) {
 			phase_ = Phase::kFadeOut;
@@ -502,7 +510,7 @@ void GameScene::AllCollision() {
 		if (Collision::AABB(enemyAtk, pHitBox)) {
 
 			// プレイヤーにダメージ処理
-			//player_->OnHit(e->GetAttackPower());
+			player_->OnHit(e->GetAttackPower());
 
 			// 1回の攻撃で多段ヒットしないよう enemy 側にフラグを付ける
 			e->SetHasDealtDamage(true);

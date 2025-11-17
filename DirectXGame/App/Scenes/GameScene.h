@@ -2,6 +2,7 @@
 #include "KamataEngine.h"
 #include "../../Engine/Math/WorldTransformEx.h"
 #include "../../Engine/Camera/CameraController.h"
+#include "../../Engine/Rendering/UI.h"
 #include "../Objects/StageManager.h"
 #include "../Objects/Player.h"
 #include "../Objects/Enemy/EnemyManager.h"
@@ -135,6 +136,8 @@ private:
 	Phase phase_ = Phase::kFadeIn;
 
 	EnemyManager* enemyManager_ = nullptr;
+
+	UI* ui_ = nullptr;
 
 	// ---ファイトテキストアニメーション用---
 	float blinkTime_ = 0.0f;
