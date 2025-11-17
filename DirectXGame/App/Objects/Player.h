@@ -18,7 +18,7 @@ public:
 	/// 初期化
 	/// </summary>
 	/// <param name="model"></param>
-	void Initialize(KamataEngine::Model* model, KamataEngine::Model* modelBox, KamataEngine::Vector3 pos);
+	void Initialize(KamataEngine::Model* model, KamataEngine::Model* modelSP, KamataEngine::Model* modelBox, KamataEngine::Vector3 pos);
 
 	/// <summary>
 	/// 更新
@@ -60,10 +60,10 @@ public:
 	bool IsDead() const { return isDead_; }
 
 	/// <summary>
-	/// 受けるダメージ量を設定する
+	/// 接触判定
 	/// </summary>
-	/// <param name="damage"></param>
-	void TakeDamage(int damage);
+	/// <param name="damage">ダメージ量</param>
+	void OnHit(int damage);
 
 	/// <summary>
 	/// プレイヤーのHPを取得する
@@ -72,10 +72,22 @@ public:
 	int GetHP() const { return HP_; }
 
 	/// <summary>
+	/// プレイヤーのヒットボックスを取得する
+	/// </summary>
+	/// <returns>当たり判定の情報（位置・サイズ・有効状態など）</returns>
+	HitBox GetPlayerHitBox() const { return playerHitBox_; }
+
+	/// <summary>
 	/// 攻撃のヒットボックスを取得する
 	/// </summary>
 	/// <returns>攻撃判定の情報（位置・サイズ・有効状態など）</returns>
 	HitBox GetAttackHitBox() const { return attackHitBox_; }
+
+	/// <summary>
+	/// 強攻撃のヒットボックスを取得する
+	/// </summary>
+	/// <returns>強攻撃判定の情報（位置・サイズ・有効状態など）</returns>
+	HitBox GetSPAttackHitBox() const { return spAttackHitBox_; }
 
 	/// <summary>
 	/// 攻撃力を取得する
@@ -84,10 +96,22 @@ public:
 	int GetAttackPower() const { return attackPower_; }
 
 	/// <summary>
+	/// 強攻撃の攻撃力を取得する
+	/// </summary>
+	/// <returns></returns>
+	int GetSPAttackPower() const { return spAttackPower_; }
+
+	/// <summary>
 	/// プレイヤーの向いてる方向を取得する
 	/// </summary>
 	/// <returns>右向きなら 1.0f、左向きなら -1.0f を返す</returns>
 	float GetFacingDir() const { return facingDir_; }
+
+	/// <summary>
+	/// 強攻撃の発射方向を取得
+	/// </summary>
+	/// <returns>右方向なら 1.0f、左方向なら -1.0f を返す</returns>
+	float GetSPAttackDir() const { return spAttackDirection_; }
 
 	/// <summary>
 	/// X軸での移動限界座標を設定する
@@ -130,6 +154,16 @@ private:
 	void AttackUpdate();
 
 	/// <summary>
+	/// 強攻撃
+	/// </summary>
+	void SpecialAttack();
+
+	/// <summary>
+	/// 強攻撃の更新
+	/// </summary>
+	void SpecialAttackUpdate();
+
+	/// <summary>
 	/// テクスチャの更新
 	/// </summary>
 	void TextureUpdate();
@@ -138,16 +172,21 @@ private:
 	KamataEngine::Input* input_ = nullptr;
 
 	WorldTransformEx worldTransform_;
+	WorldTransformEx worldTransformSP_;
 	WorldTransformEx worldTransformHitBox_;
+	WorldTransformEx worldTransformSPHitBox_;
 	WorldTransformEx worldTransformPHitBox_;
 
 	KamataEngine::Model* model_ = nullptr;
+	KamataEngine::Model* modelSpecial_ = nullptr;
 	KamataEngine::Model* modelDebugHitBox_ = nullptr;
 	KamataEngine::Model* modelHitBox_ = nullptr;
+	KamataEngine::Model* modelSPHiyBox_ = nullptr;
 
 	bool isDead_ = false;
 	int HP_ = 100;
 	int attackPower_ = 10;
+	int spAttackPower_ = 30;
 
 	// --- プレイヤーのテクスチャ ---
 	uint32_t textureHandle_ = 0;
@@ -170,6 +209,11 @@ private:
 	uint32_t LRunTexture1_ = 0;
 	uint32_t LRunTexture2_ = 0;
 	uint32_t LRunTexture3_ = 0;
+
+	// --- 強攻撃のテクスチャ ---
+	uint32_t SPTextureHandle_ = 0;
+	uint32_t RSpecialTexture_ = 0;
+	uint32_t LSpecialTexture_ = 0;
 
 	// --- 移動関連 ---
 	KamataEngine::Vector3 move = {0, 0, 0};
@@ -198,13 +242,26 @@ private:
 	bool attackFromRight_ = true; // 右 or 左パンチ切り替え
 	float facingDir_ = 1.0f;      // 向き（1.0f：右, -1.0f：左）
 
+	// --- 強攻撃管理 ---
+	bool isSpecialAttacking_ = false;
+	bool canSpecialAttack_ = false;
+	float spAttackTimer_ = 0.0f;
+	float spAttackCooldownTimer_ = 0.0f;
+	float spAttackMoveSpeed_ = 0.05f;
+
+	const float spAttackDuration_ = 3.0f;
+	const float spAttackCoolDown_ = 10.0f;
+	const float deltaTime = 1.0f / 60.0f;
+
+	float spAttackDirection_ = 1.0f; // 気弾の発射方向を記録
+
 	// --- ヒットボックス ---
 	HitBox playerHitBox_;
 	HitBox attackHitBox_; // 現在のパンチのヒットボックス
+	HitBox spAttackHitBox_;
 
 	// --- ノックダウン処理用 ---
 	float knockDownTimer_ = 2.0f;
-	float deltaTime = 1.0f / 60.0f;
 
 	float endMoveLimitX = 0;
 

@@ -13,6 +13,8 @@ GameScene::GameScene() {}
 GameScene::~GameScene() {
 	delete modelLoad_;
 	delete modelPlayer_;
+	delete modelSPAttack_;
+	delete modelBoxFrame_;
 
 	delete player_;
 	delete stage_;
@@ -32,6 +34,7 @@ void GameScene::Initialize() {
 
 	modelLoad_ = Model::CreateFromOBJ("load", true);
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
+	modelSPAttack_ = Model::CreateFromOBJ("specialAttack", true);
 	modelBoxFrame_ = Model::CreateFromOBJ("boxFrame", true);
 
 	textureHandle_ = TextureManager::Load("gameSelect.png");
@@ -52,7 +55,7 @@ void GameScene::Initialize() {
 	startGongSEDataHandle_ = audio->LoadWave("audio/SE/startGong.wav");
 
 	player_ = new Player();
-	player_->Initialize(modelPlayer_, modelBoxFrame_, position);
+	player_->Initialize(modelPlayer_, modelSPAttack_, modelBoxFrame_, position);
 	player_->SetEndMoveLimitX(moveLimit[0]);
 
 	EnemyGenerate();
@@ -210,7 +213,7 @@ void GameScene::ChangePhase() {
 		break;
 	case GameScene::Phase::kPlay:
 		if (input->TriggerKey(DIK_T)) {
-			player_->TakeDamage(100);
+			player_->OnHit(100);
 		}
 		if (player_->GetWorldTransform().translation_.x >= moveLimit[3]) {
 			phase_ = Phase::kFadeOut;
@@ -425,31 +428,85 @@ void GameScene::EnemyUpdate() {
 }
 
 void GameScene::AllCollision() {
-	// ---プレイヤーの攻撃と敵の当たり判定---
+
+	// プレイヤーのヒットボックスを取得する
+	const HitBox& pHitBox = player_->GetPlayerHitBox();
+	// プレイヤーの攻撃ヒットボックスの取得
 	const HitBox& atk = player_->GetAttackHitBox();
+	// プレイヤーの強攻撃ヒットボックスの取得
+	const HitBox& spAtk = player_->GetSPAttackHitBox();
 
-	// 攻撃終了したら記録リセット
-	if (!atk.active) {
-		hitEnemiesThisAttack_.clear();
-		return;
-	}
-
+	// 敵リストの取得
 	auto& enemies = enemyManager_->GetEnemies();
 
+	#pragma region プレイヤーの通常攻撃と敵の当たり判定
+	if (!atk.active) {
+		hitEnemiesThisAttack_.clear();
+	} else {
+		for (auto& e : enemies) {
+
+			if (std::find(hitEnemiesThisAttack_.begin(), hitEnemiesThisAttack_.end(), e.get()) != hitEnemiesThisAttack_.end()) {
+				continue;
+			}
+
+			if (Collision::AABB(atk, e->GetHitBox())) {
+
+				hitEnemiesThisAttack_.push_back(e.get());
+
+				Vector3 dir{player_->GetFacingDir(), 0, 0};
+				e->OnHit(player_->GetAttackPower(), dir);
+			}
+		}
+	}
+	#pragma endregion
+
+	#pragma region プレイヤーの強攻撃と敵の当たり判定
+	if (!spAtk.active) {
+		hitEnemiesThisSPAttack_.clear(); // ← 別リストを用意することを推奨
+	} else {
+
+		for (auto& e : enemies) {
+
+			if (std::find(hitEnemiesThisSPAttack_.begin(), hitEnemiesThisSPAttack_.end(), e.get()) != hitEnemiesThisSPAttack_.end()) {
+				continue;
+			}
+
+			if (Collision::AABB(spAtk, e->GetHitBox())) {
+
+				hitEnemiesThisSPAttack_.push_back(e.get());
+
+				Vector3 dir{player_->GetSPAttackDir(), 0, 0};
+				e->OnHit(player_->GetSPAttackPower(), dir);
+			}
+		}
+	}
+	#pragma endregion
+
+	#pragma region 敵の攻撃とプレイヤーの当たり判定
 	for (auto& e : enemies) {
-		// この攻撃中に当たってたらスキップ
-		if (std::find(hitEnemiesThisAttack_.begin(), 
-			          hitEnemiesThisAttack_.end(), 
-			          e.get()) != hitEnemiesThisAttack_.end()) {
+
+		// 敵が攻撃状態ではないならスルー
+		if (!e->IsAttacking()) {
 			continue;
 		}
 
-		if (Collision::AABB(atk, e->GetHitBox())) {
-			// この攻撃中に当たった敵として記録
-			hitEnemiesThisAttack_.push_back(e.get());
+		// 敵の攻撃ヒットボックス取得
+		const HitBox& enemyAtk = e->GetAttackHitBox();
 
-			Vector3 dir{player_->GetFacingDir(), 0, 0};
-			e->OnHit(player_->GetAttackPower(), dir);
+        // この攻撃でもうダメージを与えていたらスキップ
+		if (e->HasDealtDamage()) {
+			continue;
+		}
+
+		// AABB判定
+		if (Collision::AABB(enemyAtk, pHitBox)) {
+
+			// プレイヤーにダメージ処理
+			//player_->OnHit(e->GetAttackPower());
+
+			// 1回の攻撃で多段ヒットしないよう enemy 側にフラグを付ける
+			e->SetHasDealtDamage(true);
 		}
 	}
+	#pragma endregion
 }

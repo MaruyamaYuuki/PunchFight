@@ -10,7 +10,7 @@ struct EnemyData {
 	std::string modelPath;
 	float speed;
 	int hp;
-	float attackPower;
+	int attackPower;
 };
 
 /// <summary>
@@ -74,8 +74,20 @@ public:
 	/// <summary>
 	/// 敵のヒットボックスを取得する
 	/// </summary>
-	/// <returns></returns>
+	/// <returns>当たり判定の情報（位置・サイズ・有効状態など）</returns>
 	const HitBox& GetHitBox() const { return hitBox_; }
+
+	/// <summary>
+	/// 敵の攻撃のヒットボックスを取得する
+	/// </summary>
+	/// <returns>攻撃判定の情報（位置・サイズ・有効状態など）</returns>
+	const HitBox& GetAttackHitBox() const { return attackHitBox_; }
+
+	/// <summary>
+	/// 攻撃力を取得する
+	/// </summary>
+	/// <returns>敵の攻撃力</returns>
+	int GetAttackPower() const { return attackPower_; }
 
 	/// <summary>
 	/// 敵のヒットボックスを設定する
@@ -135,6 +147,24 @@ public:
 	/// <returns>分離用オフセットベクトル</returns>
 	KamataEngine::Vector3 ComputeSeparation(const std::vector<std::unique_ptr<EnemyBase>>& allEnemies, float separationDistance);
 
+	/// <summary>
+	/// 攻撃中か判定
+	/// </summary>
+	/// <returns>攻撃中なら true、してなければ false</returns>
+	bool IsAttacking() const { return attackHitBox_.active; }
+
+	/// <summary>
+	/// ダメージを与えるか判定
+	/// </summary>
+	/// <returns>与えるなら true、与えないなら false</returns>
+	bool HasDealtDamage() const { return hasDealtDamage_; }
+
+	/// <summary>
+	/// ダメージを与えるか設定
+	/// </summary>
+	/// <param name="flag">フラグ</param>
+	void SetHasDealtDamage(bool flag) { hasDealtDamage_ = flag; }
+
 protected:
 	WorldTransformEx worldTransform_;
 	WorldTransformEx worldTransformEHitBox_;
@@ -146,7 +176,7 @@ protected:
 
 	float speed_ = 0.0f;
 	int hp_ = 1;
-	float attackPower_ = 1.0f;
+	int attackPower_ = 1;
 	float facingDir_ = 1.0f; // 向き（1.0f：右, -1.0f：左）
 	float attackCooldownTimer_ = 0; // クールタイム残り時間
 	const float attackDuration_ = 1.0f; // 攻撃の長さ
@@ -170,6 +200,8 @@ protected:
 	KamataEngine::Vector3 knockbackDir_;
 	KamataEngine::Vector3 knockbackVelocity_{0, 0, 0};
 	float gravity_ = 30.0f;
+
+	bool hasDealtDamage_ = false;
 
 	/// --- テクスチャ関連 ---
 	EnemyState state_ = EnemyState::Idle;

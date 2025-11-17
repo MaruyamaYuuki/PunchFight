@@ -60,6 +60,7 @@ void NormalEnemy::Update(const Vector3& playerPos, const std::vector<std::unique
 			// 攻撃終了
 			isAttacking_ = false;
 			attackHitBox_.active = false;
+			hasDealtDamage_ = false;
 
 			// 攻撃したので必ずクールタイムに入る
 			attackCooldownTimer_ = attackCooldown_;
@@ -117,6 +118,7 @@ void NormalEnemy::Update(const Vector3& playerPos, const std::vector<std::unique
 			// 攻撃開始
 			isAttacking_ = true;
 			attackTimer_ = attackDuration_;
+			hasDealtDamage_ = false;
 
 			float offsetX = 0.5f * facingDir_;
 			Vector3 hitPos = worldTransform_.translation_ + Vector3{offsetX, 0.1f, 0};
