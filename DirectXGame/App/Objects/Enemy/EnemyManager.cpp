@@ -140,8 +140,8 @@ void EnemyManager::FrontDraw(KamataEngine::Camera& camera, const KamataEngine::V
 		}
 	}
 
-	// 手前にいる敵はZ座標が小さい順（手前から奥へ）に描画
-	std::sort(frontEnemies.begin(), frontEnemies.end(), [](EnemyBase* a, EnemyBase* b) { return a->GetPosition().z < b->GetPosition().z; });
+	// Z座標が大きい順に（奥から手前へ）ソート
+	std::sort(frontEnemies.begin(), frontEnemies.end(), [](EnemyBase* a, EnemyBase* b) { return a->GetPosition().z > b->GetPosition().z; });
 
 	// 描画
 	for (auto& e : frontEnemies) {

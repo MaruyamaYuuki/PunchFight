@@ -10,7 +10,7 @@ struct EnemyData {
 	std::string modelPath;
 	float speed;
 	int hp;
-	float attackPower;
+	int attackPower;
 };
 
 /// <summary>
@@ -176,7 +176,7 @@ protected:
 
 	float speed_ = 0.0f;
 	int hp_ = 1;
-	float attackPower_ = 1.0f;
+	int attackPower_ = 1;
 	float facingDir_ = 1.0f; // 向き（1.0f：右, -1.0f：左）
 	float attackCooldownTimer_ = 0; // クールタイム残り時間
 	const float attackDuration_ = 1.0f; // 攻撃の長さ

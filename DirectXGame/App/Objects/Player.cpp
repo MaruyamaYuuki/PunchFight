@@ -97,13 +97,14 @@ void Player::Draw(Camera& camera) {
 		worldTransformPHitBox_.scale_ = playerHitBox_.size;
 		modelHitBox_->Draw(worldTransformPHitBox_, camera);
 	}
-
+	#endif
 	// --- 気弾の描画 ---
 	if (isSpecialAttacking_) {
 
 		// 気弾本体
 		modelSpecial_->Draw(worldTransformSP_, camera, SPTextureHandle_);
 
+		#ifdef _DEBUG
 		// デバッグ用ヒットボックスモデル
 		// （必要なら）
 		if (modelSPHiyBox_) {
@@ -113,8 +114,8 @@ void Player::Draw(Camera& camera) {
 
 			modelSPHiyBox_->Draw(worldTransformSPHitBox_, camera);
 		}
+		#endif
 	}
-	#endif
 }
 
 void Player::ClearAnimation(bool isSpot) {
