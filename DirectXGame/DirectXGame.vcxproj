@@ -168,6 +168,7 @@
     <ClCompile Include="App\Objects\Stage.cpp" />
     <ClCompile Include="App\Objects\Player.cpp" />
     <ClCompile Include="App\Objects\StageManager.cpp" />
+    <ClCompile Include="Engine\Rendering\UI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
@@ -285,6 +286,7 @@
     <ClInclude Include="App\Objects\Stage.h" />
     <ClInclude Include="App\Objects\Player.h" />
     <ClInclude Include="App\Objects\StageManager.h" />
+    <ClInclude Include="Engine\Rendering\UI.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Engine\Core\IconResource.rc" />
