@@ -71,7 +71,7 @@ void NormalEnemy::Update(const Vector3& playerPos, const std::vector<std::unique
 			SetAttackHitBox(hitPos);
 		}
 
-		EnemyBase::Update(playerPos,allEnemies);
+		EnemyBase::Update(playerPos, allEnemies);
 		worldTransform_.UpdateMatrix();
 		return;
 	}
@@ -139,6 +139,6 @@ void NormalEnemy::Update(const Vector3& playerPos, const std::vector<std::unique
 		state_ = EnemyState::Idle;
 
 	// 親クラス処理
-	EnemyBase::Update(playerPos,allEnemies);
+	EnemyBase::Update(playerPos, allEnemies);
 	worldTransform_.UpdateMatrix();
 }

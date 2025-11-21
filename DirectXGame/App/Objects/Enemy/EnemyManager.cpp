@@ -9,6 +9,9 @@ using namespace KamataEngine::MathUtility;
 void EnemyManager::Initialize() {
 	enemies_.clear();
 	areas_.clear();
+
+    smokeManager_ = std::make_unique<SmokeParticleManager>();
+	smokeManager_->Initialize();
 }
 
 void EnemyManager::AddArea(float triggerX) {
@@ -72,6 +75,7 @@ void EnemyManager::Update(const Vector3& playerPos) {
 		e->Update(playerPos, enemies_);
 	}
 
+
 	// ======== 死んだ敵を削除 ========
 	enemies_.erase(
 	    std::remove_if(enemies_.begin(), enemies_.end(), [](auto& e) { return e->IsDead(); }), // knockback終了後に消す
@@ -102,6 +106,7 @@ void EnemyManager::Update(const Vector3& playerPos) {
 }
 
 void EnemyManager::Draw(Camera& camera) {
+	smokeManager_->Draw(camera);
 	for (auto& e : enemies_) {
 		e->Draw(camera);
 	}

@@ -15,6 +15,9 @@ void EnemyBase::Initialize(const EnemyData& data) {
 	worldTransform_.Initialize();
 	worldTransformEHitBox_.Initialize();
 	worldTransformAHitBox_.Initialize();
+
+	smokeManager_ = std::make_unique<SmokeParticleManager>();
+	smokeManager_->Initialize();
 }
 
 void EnemyBase::Update(const Vector3&, const std::vector<std::unique_ptr<EnemyBase>>&) {
@@ -22,6 +25,15 @@ void EnemyBase::Update(const Vector3&, const std::vector<std::unique_ptr<EnemyBa
 
 		knockbackTime_ += deltaTime;
 
+        // ======== パーティクル生成 ========
+		smokeSpawnTimer_ -= deltaTime;
+		if (smokeSpawnTimer_ <= 0.0f) {
+			smokeSpawnTimer_ = smokeSpawnInterval_; // 次の生成までの時間
+
+			smokeManager_->Spawn(worldTransform_.translation_);
+		}
+
+		// ======== ノックバック物理処理 ========
 		// 減速用の係数
 		float drag = 0.95f;
 
@@ -49,6 +61,9 @@ void EnemyBase::Update(const Vector3&, const std::vector<std::unique_ptr<EnemyBa
 		}
 	}
 
+    // ======== パーティクル更新 ========
+	smokeManager_->Update(deltaTime);
+
 	UpdateTextures();
 	worldTransform_.UpdateMatrix();
 	worldTransformEHitBox_.UpdateMatrix();
@@ -58,9 +73,11 @@ void EnemyBase::Update(const Vector3&, const std::vector<std::unique_ptr<EnemyBa
 }
 
 void EnemyBase::Draw(Camera& camera) {
+	smokeManager_->Draw(camera);
 	if (model_) {
 		model_->Draw(worldTransform_, camera, textureHandle_);
 	}
+
 	#ifdef _DEBUG
 	if (hitBox_.active) {
 		worldTransformEHitBox_.translation_ = hitBox_.pos;

@@ -17,4 +17,5 @@ public:
 	/// Affine変換行列の生成
 	/// </summary>
 	KamataEngine::Matrix4x4 MakeAffinMatrix();
+
 };

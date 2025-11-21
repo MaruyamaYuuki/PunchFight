@@ -470,7 +470,7 @@ void GameScene::AllCollision() {
 
 	#pragma region プレイヤーの強攻撃と敵の当たり判定
 	if (!spAtk.active) {
-		hitEnemiesThisSPAttack_.clear(); // ← 別リストを用意することを推奨
+		hitEnemiesThisSPAttack_.clear();
 	} else {
 
 		for (auto& e : enemies) {

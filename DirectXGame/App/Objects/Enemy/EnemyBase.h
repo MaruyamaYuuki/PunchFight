@@ -1,6 +1,9 @@
 #pragma once
+#include <memory>
 #include "../../../Engine/Math/Collider.h"
 #include "../../../Engine/Math/WorldTransformEx.h"
+#include "../../../Engine/Particle/SmokeParticle.h"
+#include "../../../Engine/Particle/SmokeParticleManager.h"
 #include "KamataEngine.h"
 
 /// <summary>
@@ -55,7 +58,7 @@ public:
 	/// <summary>
 	/// 描画
 	/// </summary>
-	/// <param name="camera"></param>
+	/// <param name="camera">カメラ</param>
 	virtual void Draw(KamataEngine::Camera& camera);
 
 	/// <summary>
@@ -208,6 +211,11 @@ protected:
 	float gravity_ = 30.0f;
 
 	float deltaTime = 1.0f / 60.0f;
+
+    // --- パーティクル用 ---
+	std::unique_ptr<SmokeParticleManager> smokeManager_;
+	float smokeSpawnTimer_ = 0.0f;
+	const float smokeSpawnInterval_ = 0.05f;
 
 	// ---- テクスチャ ----
 	EnemyState state_ = EnemyState::Idle;
