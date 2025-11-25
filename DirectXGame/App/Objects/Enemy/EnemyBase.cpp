@@ -18,6 +18,9 @@ void EnemyBase::Initialize(const EnemyData& data) {
 
 	smokeManager_ = std::make_unique<SmokeParticleManager>();
 	smokeManager_->Initialize();
+
+	dustManager_ = std::make_unique<DustParticleManager>();
+	dustManager_->Initialize();
 }
 
 void EnemyBase::Update(const Vector3&, const std::vector<std::unique_ptr<EnemyBase>>&) {
@@ -63,6 +66,7 @@ void EnemyBase::Update(const Vector3&, const std::vector<std::unique_ptr<EnemyBa
 
     // ======== パーティクル更新 ========
 	smokeManager_->Update(deltaTime);
+	dustManager_->Update(deltaTime);
 
 	UpdateTextures();
 	worldTransform_.UpdateMatrix();
@@ -77,7 +81,7 @@ void EnemyBase::Draw(Camera& camera) {
 	if (model_) {
 		model_->Draw(worldTransform_, camera, textureHandle_);
 	}
-
+	dustManager_->Draw(camera);
 	#ifdef _DEBUG
 	if (hitBox_.active) {
 		worldTransformEHitBox_.translation_ = hitBox_.pos;
@@ -93,6 +97,11 @@ void EnemyBase::Draw(Camera& camera) {
 }
 
 void EnemyBase::OnHit(int damage, const Vector3& attackDir) {
+	// ====== ダストパーティクル発生 ======
+	if (dustManager_) {
+		dustManager_->Spawn(worldTransform_.translation_);
+	}
+
 	hp_ -= damage;
 	isStun_ = true;
 	stunTimer_ = stunDuration_;
