@@ -1,19 +1,19 @@
 #pragma once
+#include "DustParticle.h"
 #include "KamataEngine.h"
-#include "SmokeParticle.h"
 
-class SmokeParticleManager {
+class DustParticleManager {
 public:
 
 	/// <summary>
 	/// デフォルトコンストラクタ
 	/// </summary>
-	SmokeParticleManager() = default;
+	DustParticleManager() = default;
 
 	/// <summary>
 	/// デフォルトデストラクタ
 	/// </summary>
-	~SmokeParticleManager() = default;
+	~DustParticleManager() = default;
 
 	/// <summary>
 	/// 初期化
@@ -27,7 +27,7 @@ public:
 	void Spawn(const KamataEngine::Vector3& pos);
 
 	/// <summary>
-	/// 更新
+	/// 描画
 	/// </summary>
 	/// <param name="deltaTime">デルタタイム</param>
 	void Update(float deltaTime);
@@ -38,8 +38,10 @@ public:
 	/// <param name="camera">カメラ</param>
 	void Draw(KamataEngine::Camera& camera);
 
+	float RandomRange(float min, float max);
+
 private:
-	std::vector<std::unique_ptr<SmokeParticle>> particles_;
+	std::vector<std::unique_ptr<DustParticle>> particles_;
 
 	KamataEngine::Model* model_ = nullptr;
 	uint32_t textureHandle_ = 0;

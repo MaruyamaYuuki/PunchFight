@@ -4,6 +4,7 @@
 #include "../../../Engine/Math/WorldTransformEx.h"
 #include "../../../Engine/Particle/SmokeParticle.h"
 #include "../../../Engine/Particle/SmokeParticleManager.h"
+#include "../../../Engine//Particle/DustParticleManager.h"
 #include "KamataEngine.h"
 
 /// <summary>
@@ -216,6 +217,7 @@ protected:
 	std::unique_ptr<SmokeParticleManager> smokeManager_;
 	float smokeSpawnTimer_ = 0.0f;
 	const float smokeSpawnInterval_ = 0.05f;
+	std::unique_ptr<DustParticleManager> dustManager_;
 
 	// ---- テクスチャ ----
 	EnemyState state_ = EnemyState::Idle;
