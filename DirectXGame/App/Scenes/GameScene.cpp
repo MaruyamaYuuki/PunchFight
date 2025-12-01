@@ -30,7 +30,6 @@ void GameScene::Initialize() {
 	audio = Audio::GetInstance();
 
 	camera_.Initialize();
-	//camera_.translation_ = {0.0f, 2.0f, -8.0f};
 
 	worldTransform_.Initialize();
 

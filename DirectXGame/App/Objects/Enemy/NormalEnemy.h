@@ -24,6 +24,13 @@ public:
 	void Update(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) override;
 
 private:
+	void MoveTowardPlayer(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies);
+
+	void AttackProcess(const KamataEngine::Vector3& playerPos);
+
+private:
 	float attackTimer_ = 0.0f;
 	bool isAttacking_ = false;
+	bool isAttackMode_ = false;
+	const float ATTACK_RANGE = 1.0f;
 };

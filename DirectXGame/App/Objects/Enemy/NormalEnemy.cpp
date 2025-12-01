@@ -23,6 +23,7 @@ void NormalEnemy::Update(const Vector3& playerPos, const std::vector<std::unique
     // ===== ノックバック中・スタン中・ノックアウト中は何もしない =====
 	if (isKnockBack_ || isStun_ || hp_ <= 0) {
 		EnemyBase::Update(playerPos, allEnemies);
+		isAttackMode_ = false;
 		isAttacking_ = false;
 		attackHitBox_.active = false;
 		worldTransform_.UpdateMatrix();
@@ -38,7 +39,6 @@ void NormalEnemy::Update(const Vector3& playerPos, const std::vector<std::unique
 		return;
 	}
 
-
 	// ===== プレイヤーとの距離計算 =====
 	Vector3 toPlayer = playerPos - worldTransform_.translation_;
 	float dist = std::sqrtf(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y + toPlayer.z * toPlayer.z);
@@ -48,87 +48,13 @@ void NormalEnemy::Update(const Vector3& playerPos, const std::vector<std::unique
 		facingDir_ = (toPlayer.x > 0) ? 1.0f : -1.0f;
 	}
 
-	const float ATTACK_RANGE = 1.0f;
-
-	// ===== 攻撃中の処理 =====
-	if (isAttacking_) {
-
-		// 攻撃中は移動しない！（ここが重要）
-		attackTimer_ -= deltaTime;
-
-		if (attackTimer_ <= 0) {
-			// 攻撃終了
-			isAttacking_ = false;
-			attackHitBox_.active = false;
-			hasDealtDamage_ = false;
-
-			// 攻撃したので必ずクールタイムに入る
-			attackCooldownTimer_ = attackCooldown_;
-		} else {
-			// 攻撃中はヒットボックスを維持
-			float hitOffsetX = 0.5f * facingDir_;
-			Vector3 hitPos = worldTransform_.translation_ + Vector3{hitOffsetX, 0.1f, 0.0f};
-			SetAttackHitBox(hitPos);
-		}
-
-		EnemyBase::Update(playerPos, allEnemies);
-		worldTransform_.UpdateMatrix();
-		return;
-	}
-
-    // ===== クールタイム中 =====
-	if (attackCooldownTimer_ > 0) {
-		// 攻撃範囲内にいる場合だけクールタイムを減らす
-		if (dist <= ATTACK_RANGE) {
-			attackCooldownTimer_ -= deltaTime;
-		} 
-	}
+	// ===== 攻撃処理 =====
+	AttackProcess(playerPos);
 
 	// ===== 攻撃中じゃない＆クールタイム中じゃない =====
-	if (dist > ATTACK_RANGE) {
-		float moveSpeed = 0.025f;
-
-		// プレイヤー方向を正規化
-		Vector3 dir = toPlayer;
-		float len = std::sqrtf(dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
-
-		if (len > 0.001f) {
-			dir.x /= len;
-			dir.z /= len;
-		}
-
-	    // 分離オフセットを加算
-		KamataEngine::Vector3 separation = ComputeSeparation(allEnemies, 0.4f);
-		dir.x += separation.x;
-		dir.z += separation.z;
-
-		// 再正規化
-		float finalLen = std::sqrtf(dir.x * dir.x + dir.z * dir.z);
-		if (finalLen > 0.001f) {
-			dir.x /= finalLen;
-			dir.z /= finalLen;
-		}
-
-		// x,z 両方向へ移動
-		worldTransform_.translation_.x += dir.x * moveSpeed;
-		worldTransform_.translation_.z += dir.z * moveSpeed;
-	} else {
-		// ===== 攻撃可能範囲 =====
-		if (attackCooldownTimer_ <= 0) {
-			// 攻撃開始
-			isAttacking_ = true;
-			attackTimer_ = attackDuration_;
-			hasDealtDamage_ = false;
-
-			float offsetX = 0.5f * facingDir_;
-			Vector3 hitPos = worldTransform_.translation_ + Vector3{offsetX, 0.1f, 0};
-
-			SetAttackHitBox(hitPos);
-
-			// 攻撃した時点でクールタイム開始
-			attackCooldownTimer_ = attackCooldown_;
-		}
-	}
+	if (dist > ATTACK_RANGE && !isAttackMode_) {
+		MoveTowardPlayer(playerPos, allEnemies);
+	} 
 
     // 移動・攻撃などの状態判定
     if (isAttacking_)
@@ -142,3 +68,86 @@ void NormalEnemy::Update(const Vector3& playerPos, const std::vector<std::unique
 	EnemyBase::Update(playerPos, allEnemies);
 	worldTransform_.UpdateMatrix();
 }
+
+void NormalEnemy::MoveTowardPlayer(const Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) {
+	Vector3 toPlayer = playerPos - worldTransform_.translation_;
+	float len = sqrtf(toPlayer.x * toPlayer.x + toPlayer.z * toPlayer.z);
+
+	if (len > 0.001f) {
+		toPlayer.x /= len;
+		toPlayer.z /= len;
+	}
+
+	// 分離処理
+	Vector3 sep = ComputeSeparation(allEnemies, 1.0f);
+	toPlayer.x += sep.x;
+	toPlayer.z += sep.z;
+
+	float finalLen = sqrtf(toPlayer.x * toPlayer.x + toPlayer.z * toPlayer.z);
+	if (finalLen > 0.001f) {
+		toPlayer.x /= finalLen;
+		toPlayer.z /= finalLen;
+	}
+
+	float moveSpeed = 0.025f;
+	worldTransform_.translation_.x += toPlayer.x * moveSpeed;
+	worldTransform_.translation_.z += toPlayer.z * moveSpeed;
+}
+
+void NormalEnemy::AttackProcess(const Vector3& playerPos) {
+	Vector3 toPlayer = playerPos - worldTransform_.translation_;
+	float dist = sqrtf(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y + toPlayer.z * toPlayer.z);
+
+	// プレイヤーの向き
+	if (fabs(toPlayer.x) > 0.01f)
+		facingDir_ = (toPlayer.x > 0) ? 1.0f : -1.0f;
+
+	// ===== 一定距離以内なら攻撃モードON（離れてもOFFにしない） =====
+	if (!isAttackMode_ && dist <= ATTACK_RANGE) {
+		isAttackMode_ = true;
+	}
+
+	// 攻撃モードじゃないなら何もしない
+	if (!isAttackMode_) {
+		return;
+	}
+
+	// ===== クールタイム =====
+	if (attackCooldownTimer_ > 0.0f) {
+		attackCooldownTimer_ -= deltaTime;
+		return; // 攻撃できないのでここで終了
+	}
+
+	// ===== 攻撃中処理 =====
+	if (isAttacking_) {
+		attackTimer_ -= deltaTime;
+
+		if (attackTimer_ <= 0) {
+			// 攻撃終了
+			isAttacking_ = false;
+			attackHitBox_.active = false;
+			hasDealtDamage_ = false;
+			attackCooldownTimer_ = attackCooldown_;
+			isAttackMode_ = false;
+		} else {
+			// 攻撃中：ヒットボックス追従
+			float offsetX = 0.5f * facingDir_;
+			SetAttackHitBox(worldTransform_.translation_ + Vector3{offsetX, 0.1f, 0});
+		}
+
+		return;
+	}
+
+	// ===== 攻撃開始 =====
+	isAttacking_ = true;
+	attackTimer_ = attackDuration_;
+	hasDealtDamage_ = false;
+
+	float offsetX = 0.5f * facingDir_;
+	SetAttackHitBox(worldTransform_.translation_ + Vector3{offsetX, 0.1f, 0});
+	attackHitBox_.active = true;
+}
+
+
+
+

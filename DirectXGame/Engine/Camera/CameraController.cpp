@@ -9,9 +9,11 @@ using namespace KamataEngine::MathUtility;
 
 void CameraController::Initialize() { 
 	camera_.Initialize(); 
+	camera_.rotation_.x += 0.4f;
 }
 
 void CameraController::Update() {
+
 	// 追従対象のワールドトランスフォームを参照
 	const WorldTransform& targetWorldTransform = target_->GetWorldTransform();
 	const Vector3& targetVelocity = target_->GetVelocity();
@@ -25,17 +27,11 @@ void CameraController::Update() {
 	// 座標補間でスムーズ追従
 	camera_.translation_ = LerpVector3(camera_.translation_, goalPos, kInterpolationRate);
 
-	/*
-	// 追従対象が画面外に出ないように補正
-	camera_.translation_.x = std::max(camera_.translation_.x, targetWorldTransform.translation_.x + kMargin.left);
-	camera_.translation_.x = std::min(camera_.translation_.x, targetWorldTransform.translation_.x + kMargin.right);
-	camera_.translation_.z = std::max(camera_.translation_.z, targetWorldTransform.translation_.z + kMargin.bottom);
-	camera_.translation_.z = std::min(camera_.translation_.z, targetWorldTransform.translation_.z + kMargin.top);
-	*/
-
 	// 移動範囲制限
 	camera_.translation_.x = std::max(camera_.translation_.x, movableArea_.left);
 	camera_.translation_.x = std::min(camera_.translation_.x, movableArea_.right);
+
+	camera_.translation_.y = 4.0f;
 
 	// 行列更新
 	camera_.UpdateMatrix();
