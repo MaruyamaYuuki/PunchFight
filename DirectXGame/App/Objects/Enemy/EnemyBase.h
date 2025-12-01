@@ -199,6 +199,10 @@ protected:
 	bool isStun_ = false;
 	float stunTimer_ = 0.0f;
 	float stunDuration_ = 1.0f;
+	float stunShakeTime_ = 0.0f;
+	float stunShakeAmplitude_ = 0.05f;
+	float stunShakeSpeed_ = 80.0f;
+	KamataEngine::Vector3 originalPosition_ = {0.0f, 0.0f, 0.0f};
 
 	// ---- ノックバック ----
 	bool isKnockBack_ = false;
@@ -217,6 +221,7 @@ protected:
 	std::unique_ptr<SmokeParticleManager> smokeManager_;
 	float smokeSpawnTimer_ = 0.0f;
 	const float smokeSpawnInterval_ = 0.05f;
+	KamataEngine::Vector3 smokeSize_ = {0.4f, 0.4f, 0.4f};
 	std::unique_ptr<DustParticleManager> dustManager_;
 
 	// ---- テクスチャ ----

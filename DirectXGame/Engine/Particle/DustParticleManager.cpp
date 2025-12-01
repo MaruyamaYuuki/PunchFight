@@ -7,24 +7,32 @@ void DustParticleManager::Initialize() {
 	model_ = Model::CreateFromOBJ("player", true);
 
 	// 粉塵用テクスチャを読み込む
-	textureHandle_ = TextureManager::Load("effects/smoke.png");
+	textureHandle_ = TextureManager::Load("effects/dust.png");
 }
 
 void DustParticleManager::Spawn(const Vector3& pos) {
-	auto p = std::make_unique<DustParticle>();
-	p->active = true;
-	p->age = 0.0f;
-	p->lifetime = 0.4f;
 
-	p->transform.Initialize();
-	p->transform.translation_ = pos;
-	p->transform.scale_ = {0.2f, 0.2f, 0.2f};
+	int count = 5 + (int)RandomRange(0, 5); // 5〜10個ランダム
 
-	// ランダムに横に飛ぶ感じ（粉っぽさ）
-	p->velocityX = RandomRange(-0.01f, 0.01f);
-	p->velocityY = 0.02f;
+	for (int i = 0; i < count; i++) {
+		auto p = std::make_unique<DustParticle>();
+		p->active = true;
+		p->age = 0.0f;
+		p->lifetime = RandomRange(0.3f, 0.6f); // 寿命もランダムに
 
-	particles_.push_back(std::move(p));
+		p->transform.Initialize();
+		p->transform.translation_ = pos;
+
+		// ランダムな大きさ
+		float s = RandomRange(0.05f, 0.1f);
+		p->transform.scale_ = {s, s, s};
+
+		// ランダム方向に散らばる
+		p->velocityX = RandomRange(-0.03f, 0.03f);
+		p->velocityY = RandomRange(0.03f, 0.08f);
+
+		particles_.push_back(std::move(p));
+	}
 }
 
 void DustParticleManager::Update(float deltaTime) {
@@ -46,8 +54,8 @@ void DustParticleManager::Update(float deltaTime) {
 		p->alpha = 1.0f - t;
 
 		// 少し大きくなる
-		float scale = 0.3f + t * 0.2f;
-		p->transform.scale_ = {scale, scale, scale};
+		//float scale = 0.03f + t * 0.02f;
+		//p->transform.scale_ = {scale, scale, scale};
 
 		// ふわっと上昇しつつ横に広がる
 		p->transform.translation_.x += p->velocityX;

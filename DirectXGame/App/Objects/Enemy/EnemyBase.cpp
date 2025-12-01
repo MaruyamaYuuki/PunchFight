@@ -33,7 +33,7 @@ void EnemyBase::Update(const Vector3&, const std::vector<std::unique_ptr<EnemyBa
 		if (smokeSpawnTimer_ <= 0.0f) {
 			smokeSpawnTimer_ = smokeSpawnInterval_; // 次の生成までの時間
 
-			smokeManager_->Spawn(worldTransform_.translation_);
+			smokeManager_->Spawn(worldTransform_.translation_, smokeSize_);
 		}
 
 		// ======== ノックバック物理処理 ========
@@ -56,11 +56,19 @@ void EnemyBase::Update(const Vector3&, const std::vector<std::unique_ptr<EnemyBa
 	}
 
 	// ===== スタン処理 =====
-	if (isStun_) {
+	if (isStun_ && hp_ > 0) {
 		stunTimer_ -= deltaTime;
+		stunShakeTime_ += deltaTime;
+
+		float shakeOffset = std::sin(stunShakeTime_ * stunShakeSpeed_) * stunShakeAmplitude_;
+
+		// 元の位置に振動を加える
+		worldTransform_.translation_.x = originalPosition_.x + shakeOffset;
+
 
 		if (stunTimer_ <= 0.0f) {
 			isStun_ = false;
+			worldTransform_.translation_ = originalPosition_;
 		}
 	}
 
@@ -103,8 +111,7 @@ void EnemyBase::OnHit(int damage, const Vector3& attackDir) {
 	}
 
 	hp_ -= damage;
-	isStun_ = true;
-	stunTimer_ = stunDuration_;
+
 
 	if (hp_ <= 0 && !isKnockBack_) {
 		hp_ = 0;
@@ -116,6 +123,11 @@ void EnemyBase::OnHit(int damage, const Vector3& attackDir) {
 		float upwardBoost = 12.0f; // 上方向の初速
 
 		knockbackVelocity_ = {attackDir.x * basePower, upwardBoost, 0.0f};
+	} else {
+    	isStun_ = true;
+     	stunTimer_ = stunDuration_;
+    	stunShakeTime_ = 0.0f;
+    	originalPosition_ = worldTransform_.translation_;
 	}
 }
 
