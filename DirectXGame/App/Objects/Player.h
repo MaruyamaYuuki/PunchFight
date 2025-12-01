@@ -3,6 +3,7 @@
 #include "KamataEngine.h"
 #include "../../Engine/Math/WorldTransformEx.h"
 #include "../../Engine//Math/Collider.h"
+#include "../../Engine/Particle/SmokeParticleManager.h"
 
 /// <summary>
 /// プレイヤー
@@ -253,6 +254,8 @@ private:
 	uint32_t RSpecialTexture_ = 0;
 	uint32_t LSpecialTexture_ = 0;
 
+	uint32_t smokeTexture_ = 0;
+
 	// --- 移動関連 ---
 	KamataEngine::Vector3 move = {0, 0, 0};
 	float moveSpeed = 0.05f; // 通常移動速度
@@ -308,4 +311,11 @@ private:
 	bool isGoal_ = false;
 	bool isVictory_ = false;
 	float poseWaitTimer_ = 1.0f;
+
+	// --- パーティクル用 ---
+	std::unique_ptr<SmokeParticleManager> smokeManager_;
+	float trailSpawnTimer_ = 0.0f;
+	const float trailSpawnInterval_ = 0.05f;
+	KamataEngine::Vector3 smokeSize_ = {0.05f, 0.05f, 0.05f};
+
 };

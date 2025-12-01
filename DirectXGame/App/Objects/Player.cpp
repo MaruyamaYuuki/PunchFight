@@ -30,6 +30,9 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 	playerHitBox_.active = true;
 	playerHitBox_.size = {0.3f, 0.5f, 0.3f};
 
+	smokeManager_ = std::make_unique<SmokeParticleManager>();
+	smokeManager_->Initialize();
+
 	textureHandle_ = TextureManager::Load("playerTextures/RPlayer.png");
 
 	// 右向きテクスチャ
@@ -56,6 +59,8 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 	SPTextureHandle_ = TextureManager::Load("playerTextures/RSpecial.png");
 	RSpecialTexture_ = TextureManager::Load("playerTextures/RSpecial.png");
 	LSpecialTexture_ = TextureManager::Load("playerTextures/LSpecial.png");
+
+	smokeTexture_ = TextureManager::Load("effects/dust2.png");
 }
 
 void Player::Update() {
@@ -75,6 +80,8 @@ void Player::Update() {
 	AttackUpdate();
 	SpecialAttackUpdate();
 
+	smokeManager_->Update(deltaTime);
+
 	TextureUpdate();
 	worldTransform_.UpdateMatrix();
 	worldTransformSP_.UpdateMatrix();
@@ -88,6 +95,7 @@ void Player::Update() {
 
 void Player::Draw(Camera& camera) { 
 	model_->Draw(worldTransform_, camera, textureHandle_); 
+	smokeManager_->Draw(camera);
 	#ifdef _DEBUG
 	if (attackHitBox_.active) {
 		worldTransformHitBox_.translation_ = attackHitBox_.pos;
@@ -211,6 +219,19 @@ void Player::Move() {
 		float length = std::sqrt(move.x * move.x + move.z * move.z);
 		move.x /= length;
 		move.z /= length;
+
+        // 一定間隔でパーティクル生成
+		trailSpawnTimer_ -= deltaTime;
+		if (trailSpawnTimer_ <= 0.0f) {
+			trailSpawnTimer_ = trailSpawnInterval_; // 例: 0.05f
+
+			if (smokeManager_) {
+				Vector3 pos = worldTransform_.translation_;
+				pos.y -= 0.4f; // 足元に出す場合
+				smokeManager_->SetTexture(smokeTexture_);
+				smokeManager_->Spawn(pos, smokeSize_);
+			}
+		}
 	}
 
 	// 向き更新（X方向に移動した場合のみ）
@@ -494,7 +515,9 @@ void Player::UpdateWorldTransform() {
 }
 
 void Player::OnHit(int damage) {
-	HP_ -= damage;
+	if (!isStepping_) {
+    	HP_ -= damage;
+	}
 	if (HP_ < 0) {
 		HP_ = 0;
 	}
