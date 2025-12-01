@@ -191,7 +191,7 @@ protected:
 
 	float attackCooldownTimer_ = 0;
 	const float attackDuration_ = 1.0f;
-	const float attackCooldown_ = 3.0f;
+	const float attackCooldown_ = 1.0f;
 
 	bool hasDealtDamage_ = false;
 

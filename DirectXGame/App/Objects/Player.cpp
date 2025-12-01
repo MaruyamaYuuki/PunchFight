@@ -21,6 +21,7 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = pos;
 	worldTransform_.scale_ = {0.5f, 0.5f, 0.5f};
+	worldTransform_.rotation_.x = 0.75f;
 	worldTransformSP_.Initialize();
 	worldTransformHitBox_.scale_ = {0.5f, 0.5f, 0.5f};
 	worldTransformSPHitBox_.Initialize();
@@ -64,6 +65,12 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 }
 
 void Player::Update() {
+
+	if (input_->TriggerKey(DIK_P)) {
+		worldTransform_.rotation_.x += 0.1f;
+		DebugText::GetInstance()->ConsolePrintf("Player X Rotation: %f\n", worldTransform_.rotation_.x);
+	}
+
 	if (HP_ > 0){
     	Move();
 
@@ -312,7 +319,7 @@ void Player::Attack() {
 	float hitboxOffsetX = 0.5f * facingDir_; // プレイヤーが右向きなら+0.8、左向きなら-0.8
 	attackHitBox_.active = true;
 	attackHitBox_.pos = worldTransform_.translation_ + Vector3{hitboxOffsetX, 0.1f, 0.0f};
-	attackHitBox_.size = {0.2f, 0.5f, 1.0f};
+	attackHitBox_.size = {0.2f, 0.5f, 1.5f};
 }
 
 
@@ -361,7 +368,7 @@ void Player::SpecialAttack() {
 	// --- ヒットボックス初期化 ---
 	spAttackHitBox_.active = true;
 	spAttackHitBox_.pos = worldTransformSP_.translation_ + Vector3{spAttackDirection_ * 0.3f, 0.0f, 0.0f};
-	spAttackHitBox_.size = {0.5f, 0.5f, 1.0f};
+	spAttackHitBox_.size = {0.5f, 0.5f, 1.5f};
 
 	// --- テクスチャ切替 ---
 	SPTextureHandle_ = (spAttackDirection_ > 0) ? RSpecialTexture_ : LSpecialTexture_;

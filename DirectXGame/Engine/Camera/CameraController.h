@@ -79,6 +79,4 @@ private:
 	static inline const float kInterpolationRate = 0.1f;
 	// 速度掛け率
 	static inline const float kVelocityBias = 2.0f;
-	// 追従対象の各方向へのカメラ移動範囲
-	static inline const Rect kMargin = {0.0f, 5.0f, -8.0f, 4.0f};
 };

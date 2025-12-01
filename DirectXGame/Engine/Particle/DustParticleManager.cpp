@@ -7,7 +7,7 @@ void DustParticleManager::Initialize() {
 	model_ = Model::CreateFromOBJ("player", true);
 
 	// 粉塵用テクスチャを読み込む
-	textureHandle_ = TextureManager::Load("effects/dust.png");
+	textureHandle_ = TextureManager::Load("effects/dust2.png");
 }
 
 void DustParticleManager::Spawn(const Vector3& pos) {

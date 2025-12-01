@@ -13,6 +13,7 @@ void EnemyBase::Initialize(const EnemyData& data) {
 	modelAHitBox_ = Model::CreateFromOBJ("boxFrame", true);
 
 	worldTransform_.Initialize();
+	worldTransform_.rotation_.x = 0.75f;
 	worldTransformEHitBox_.Initialize();
 	worldTransformAHitBox_.Initialize();
 
@@ -206,11 +207,11 @@ Vector3 EnemyBase::ComputeSeparation(const std::vector<std::unique_ptr<EnemyBase
 
 		if (dist < separationDistance && dist > 0.001f) {
 			// 正規化して距離に応じて押し戻す
-			toOther.x /= dist;
+			//toOther.x /= dist;
 			toOther.z /= dist;
 
 			float pushFactor = separationDistance - dist;
-			offset.x += toOther.x * pushFactor;
+			//offset.x += toOther.x * pushFactor;
 			offset.z += toOther.z * pushFactor;
 		}
 	}
