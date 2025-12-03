@@ -52,7 +52,7 @@ void NormalEnemy::Update(const Vector3& playerPos, const std::vector<std::unique
 	AttackProcess(playerPos);
 
 	// ===== 攻撃中じゃない＆クールタイム中じゃない =====
-	if (dist > ATTACK_RANGE && !isAttackMode_) {
+	if (dist > ATTACK_RANGE_ && !isAttackMode_) {
 		MoveTowardPlayer(playerPos, allEnemies);
 	} 
 
@@ -103,7 +103,7 @@ void NormalEnemy::AttackProcess(const Vector3& playerPos) {
 		facingDir_ = (toPlayer.x > 0) ? 1.0f : -1.0f;
 
 	// ===== 一定距離以内なら攻撃モードON（離れてもOFFにしない） =====
-	if (!isAttackMode_ && dist <= ATTACK_RANGE) {
+	if (!isAttackMode_ && dist <= ATTACK_RANGE_) {
 		isAttackMode_ = true;
 	}
 
@@ -114,13 +114,13 @@ void NormalEnemy::AttackProcess(const Vector3& playerPos) {
 
 	// ===== クールタイム =====
 	if (attackCooldownTimer_ > 0.0f) {
-		attackCooldownTimer_ -= deltaTime;
+		attackCooldownTimer_ -= deltaTime_;
 		return; // 攻撃できないのでここで終了
 	}
 
 	// ===== 攻撃中処理 =====
 	if (isAttacking_) {
-		attackTimer_ -= deltaTime;
+		attackTimer_ -= deltaTime_;
 
 		if (attackTimer_ <= 0) {
 			// 攻撃終了

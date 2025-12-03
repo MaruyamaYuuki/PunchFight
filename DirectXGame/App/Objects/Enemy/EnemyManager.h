@@ -78,14 +78,14 @@ public:
 	/// <param name="areaIndex">エリア番号</param>
 	/// <param name="type">敵の種類</param>
 	/// <param name="pos">出現座標</param>
-	void AddSpawnToArea(int areaIndex, EnemyType type, const KamataEngine::Vector3& pos);
+	void AddSpawnToArea(int32_t areaIndex, EnemyType type, const KamataEngine::Vector3& pos);
 
 	/// <summary>
 	/// エリア内にいる敵の全滅判定
 	/// </summary>
 	/// <param name="areaIndex">エリア番号</param>
 	/// <returns></returns>
-	bool IsAreaCleared(int areaIndex) const;
+	bool IsAreaCleared(int32_t areaIndex) const;
 
 	/// <summary>
 	/// 敵のリストを取得する

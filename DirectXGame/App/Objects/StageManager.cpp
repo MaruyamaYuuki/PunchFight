@@ -3,7 +3,7 @@
 
 using namespace KamataEngine;
 
-void StageManager::Initialize(int stageNumber, int repeatCount) {
+void StageManager::Initialize(int32_t stageNumber, int32_t repeatCount) {
 	stageCount_ = repeatCount;
 	currentIndex_ = INT32_MIN;
 
@@ -28,7 +28,7 @@ void StageManager::Update(float cameraX) {
 	// スクロールに対して余裕を持たせる
 	float preloadOffset = stageWidth * 0.3f; // 0.3倍の余裕を持って先読み
 
-	int newIndex = static_cast<int>(std::floor((cameraX + preloadOffset) / stageWidth));
+	int32_t newIndex = static_cast<int32_t>(std::floor((cameraX + preloadOffset) / stageWidth));
 
 	if (newIndex != currentIndex_) {
 		currentIndex_ = newIndex;
@@ -41,10 +41,10 @@ void StageManager::Update(float cameraX) {
 }
 
 void StageManager::UpdateLoadedStages() {
-	std::vector<int> requiredIndices;
+	std::vector<int32_t> requiredIndices;
 
-	for (int offset = -1; offset <= 1; ++offset) {
-		int index = currentIndex_ + offset;
+	for (int32_t offset = -1; offset <= 1; ++offset) {
+		int32_t index = currentIndex_ + offset;
 		if (index < 0 || index >= stageCount_)
 			continue;
 		requiredIndices.push_back(index);
@@ -60,7 +60,7 @@ void StageManager::UpdateLoadedStages() {
 	}
 
 	// 必要生成
-	for (int index : requiredIndices) {
+	for (int32_t index : requiredIndices) {
 		if (activeStages_.find(index) == activeStages_.end()) {
 
 			auto stage = std::make_unique<Stage>();

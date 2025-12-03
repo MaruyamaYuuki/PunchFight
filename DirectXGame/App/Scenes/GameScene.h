@@ -93,9 +93,9 @@ private:
 	void AllCollision();
 
 private:
-	KamataEngine::DirectXCommon* dxCommon = nullptr;
-	KamataEngine::Input* input = nullptr;
-	KamataEngine::Audio* audio = nullptr;
+	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
+	KamataEngine::Input* input_ = nullptr;
+	KamataEngine::Audio* audio_ = nullptr;
 
 	KamataEngine::Camera camera_;
 	WorldTransformEx worldTransform_;
@@ -120,8 +120,8 @@ private:
 
 	StageManager* stage_ = nullptr;
 	Player* player_ = nullptr;
-	KamataEngine::Vector3 position = {0.0f, 1.0f, 0.0f};
-	float moveLimit[4] = {20.0f, 35.0f, 50.0f, 53.0f};
+	KamataEngine::Vector3 position_ = {0.0f, 1.0f, 0.0f};
+	float moveLimit_[4] = {20.0f, 35.0f, 50.0f, 53.0f};
 
 	CameraController* cameraController_ = nullptr;
 
@@ -151,7 +151,6 @@ private:
 	bool fightTextVisible_ = false;
 	bool fightTextAnimeFinished_ = false;
 	float fadeInTimer_ = 0.0f;
-	//bool BGMStarted_ = false;
 
 	KamataEngine::Vector2 fightTextPos_ = {640.0f, 300.0f};
 	KamataEngine::Vector2 fightTextSize_ = {400, 150};
@@ -165,7 +164,7 @@ private:
 
 	bool areaClearedFlag_[3] = {false, false, false};
 
-	float scrollArea[3] = {15.0f, 30.0f, 45.0f};
+	float scrollArea_[3] = {15.0f, 30.0f, 45.0f};
 
 	std::vector<EnemyBase*> hitEnemiesThisAttack_;
 	std::vector<EnemyBase*> hitEnemiesThisSPAttack_;
@@ -175,6 +174,6 @@ private:
 	float guideDuration_ = 3.0f;
 	bool guideOn_ = false;
 	float blinkInterval_ = 1.0f; // 1回の ON/OFF の長さ
-	int blinkCount_ = 0;         // 何回点滅したか
-	int maxBlinkCount_ = 3;      // 合計何回点滅させるか
+	int32_t blinkCount_ = 0;         // 何回点滅したか
+	int32_t maxBlinkCount_ = 3;      // 合計何回点滅させるか
 };

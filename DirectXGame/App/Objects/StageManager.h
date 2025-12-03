@@ -23,7 +23,7 @@ public:
 	/// </summary>
 	/// <param name="stageNumber">ステージの番号</param>
 	/// <param name="repeatCount">生成するステージモデルの個数</param>
-	void Initialize(int stageNumber, int repeatCount);
+	void Initialize(int32_t stageNumber, int32_t repeatCount);
 
 	/// <summary>
 	/// 更新
@@ -44,13 +44,13 @@ private:
 	void UpdateLoadedStages();
 
 private:
-	std::unordered_map<int, std::unique_ptr<Stage>> activeStages_;
+	std::unordered_map<int32_t, std::unique_ptr<Stage>> activeStages_;
 	KamataEngine::Model* model_ = nullptr;
 	KamataEngine::Model* startModel_ = nullptr;
 	KamataEngine::Model* midModel_ = nullptr;
 	KamataEngine::Model* endModel_ = nullptr;
 
 	float stageWidth = 20.0f; // 区間の幅
-	int currentIndex_ = 0;    // 現在位置の区間インデックス
-	int stageCount_ = 0;      // ステージ全体の区間数
+	int32_t currentIndex_ = 0;    // 現在位置の区間インデックス
+	int32_t stageCount_ = 0;      // ステージ全体の区間数
 };

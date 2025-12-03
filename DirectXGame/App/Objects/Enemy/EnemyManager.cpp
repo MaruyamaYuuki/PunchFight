@@ -20,8 +20,8 @@ void EnemyManager::AddArea(float triggerX) {
 	areas_.push_back(area);
 }
 
-void EnemyManager::AddSpawnToArea(int areaIndex, EnemyType type, const Vector3& pos) {
-	if (areaIndex < 0 || areaIndex >= static_cast<int>(areas_.size()))
+void EnemyManager::AddSpawnToArea(int32_t areaIndex, EnemyType type, const Vector3& pos) {
+	if (areaIndex < 0 || areaIndex >= static_cast<int32_t>(areas_.size()))
 		return;
 
 	EnemySpawnTrigger spawn;
@@ -155,8 +155,8 @@ void EnemyManager::FrontDraw(KamataEngine::Camera& camera, const KamataEngine::V
 }
 
 
-bool EnemyManager::IsAreaCleared(int areaIndex) const {
-	if (areaIndex < 0 || areaIndex >= static_cast<int>(areas_.size()))
+bool EnemyManager::IsAreaCleared(int32_t areaIndex) const {
+	if (areaIndex < 0 || areaIndex >= static_cast<int32_t>(areas_.size()))
 		return false;
 	return areas_[areaIndex].cleared;
 }

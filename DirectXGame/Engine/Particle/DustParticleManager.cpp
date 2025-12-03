@@ -12,9 +12,9 @@ void DustParticleManager::Initialize() {
 
 void DustParticleManager::Spawn(const Vector3& pos) {
 
-	int count = 5 + (int)RandomRange(0, 5); // 5〜10個ランダム
+	int32_t count = 5 + (int32_t)RandomRange(0, 5); // 5〜10個ランダム
 
-	for (int i = 0; i < count; i++) {
+	for (int32_t i = 0; i < count; i++) {
 		auto p = std::make_unique<DustParticle>();
 		p->active = true;
 		p->age = 0.0f;

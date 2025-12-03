@@ -87,7 +87,7 @@ void Player::Update() {
 	AttackUpdate();
 	SpecialAttackUpdate();
 
-	smokeManager_->Update(deltaTime);
+	smokeManager_->Update(deltaTime_);
 
 	TextureUpdate();
 	worldTransform_.UpdateMatrix();
@@ -144,37 +144,37 @@ void Player::ClearAnimation(bool isSpot) {
 
 		// 目的地にまだ着いていないなら右へ移動（今回は右向き想定）
 		if (worldTransform_.translation_.x < targetX) {
-			move.x = 1.0f; // 右へ移動
+			move_.x = 1.0f; // 右へ移動
 		} else {
-			move.x = 0.0f; // 到達したら停止
+			move_.x = 0.0f; // 到達したら停止
 
 			// ★ ポーズに入るため勝利フラグON
 			isGoal_ = true;
 		}
 
 		// --- ベクトル正規化 ---
-		if (move.x != 0.0f || move.z != 0.0f) {
-			float length = std::sqrt(move.x * move.x + move.z * move.z);
-			move.x /= length;
-			move.z /= length;
+		if (move_.x != 0.0f || move_.z != 0.0f) {
+			float length = std::sqrt(move_.x * move_.x + move_.z * move_.z);
+			move_.x /= length;
+			move_.z /= length;
 		}
 
 		// --- 向き ---
-		if (move.x > 0.0f)
+		if (move_.x > 0.0f)
 			facingDir_ = 1.0f;
-		if (move.x < 0.0f)
+		if (move_.x < 0.0f)
 			facingDir_ = -1.0f;
 
 		// --- 移動 ---
-		worldTransform_.translation_.x += move.x * moveSpeed;
+		worldTransform_.translation_.x += move_.x * moveSpeed_;
 
 	} else {
 		// ★ 勝利フラグ時は移動しない
-		move.x = 0.0f;
+		move_.x = 0.0f;
 	}
 
 	// --- アニメ処理 ---
-	bool isMoving = (move.x != 0.0f || move.z != 0.0f);
+	bool isMoving = (move_.x != 0.0f || move_.z != 0.0f);
 
 	if (isMoving && !isStepping_ && !isAttacking_ && HP_ > 0 && !isVictory_) {
 		walkFrameTimer_++;
@@ -191,7 +191,7 @@ void Player::ClearAnimation(bool isSpot) {
 
 	if (isGoal_ && isSpot && !isVictory_) {
 		if (poseWaitTimer_ > 0) {
-			poseWaitTimer_ -= deltaTime;
+			poseWaitTimer_ -= deltaTime_;
 		} else if(poseWaitTimer_<=0) {
 			poseWaitTimer_ = 0;
 			isVictory_ = true;
@@ -209,26 +209,26 @@ void Player::Move() {
 		return;
 	}
 
-	move = {0, 0, 0};
+	move_ = {0, 0, 0};
 
 	// 入力処理
 	if (input_->PushKey(DIK_W))
-		move.z += 1.0f;
+		move_.z += 1.0f;
 	if (input_->PushKey(DIK_S))
-		move.z -= 1.0f;
+		move_.z -= 1.0f;
 	if (input_->PushKey(DIK_A))
-		move.x -= 1.0f;
+		move_.x -= 1.0f;
 	if (input_->PushKey(DIK_D))
-		move.x += 1.0f;
+		move_.x += 1.0f;
 
 	// ベクトル正規化
-	if (move.x != 0.0f || move.z != 0.0f) {
-		float length = std::sqrt(move.x * move.x + move.z * move.z);
-		move.x /= length;
-		move.z /= length;
+	if (move_.x != 0.0f || move_.z != 0.0f) {
+		float length = std::sqrt(move_.x * move_.x + move_.z * move_.z);
+		move_.x /= length;
+		move_.z /= length;
 
         // 一定間隔でパーティクル生成
-		trailSpawnTimer_ -= deltaTime;
+		trailSpawnTimer_ -= deltaTime_;
 		if (trailSpawnTimer_ <= 0.0f) {
 			trailSpawnTimer_ = trailSpawnInterval_; // 例: 0.05f
 
@@ -242,9 +242,9 @@ void Player::Move() {
 	}
 
 	// 向き更新（X方向に移動した場合のみ）
-	if (move.x > 0.0f)
+	if (move_.x > 0.0f)
 		facingDir_ = 1.0f;
-	if (move.x < 0.0f)
+	if (move_.x < 0.0f)
 		facingDir_ = -1.0f;
 
 	// クールタイム減少
@@ -252,16 +252,16 @@ void Player::Move() {
 		stepTimer_--;
 
 	// ステップ開始判定
-	if (stepTimer_ <= 0 && input_->TriggerKey(DIK_H) && (move.x != 0.0f || move.z != 0.0f)) {
+	if (stepTimer_ <= 0 && input_->TriggerKey(DIK_H) && (move_.x != 0.0f || move_.z != 0.0f)) {
 		isStepping_ = true;
-		stepDirection_ = move;
+		stepDirection_ = move_;
 		stepTimer_ = stepCooldown_; // クールタイム開始
 		stepFrame_ = 10;            // ステップ継続フレーム数
 	}
 
 	// ステップ中の処理
 	if (isStepping_) {
-		float stepSpeed = moveSpeed * stepPower_;
+		float stepSpeed = moveSpeed_ * stepPower_;
 		worldTransform_.translation_.x += stepDirection_.x * stepSpeed;
 		worldTransform_.translation_.z += stepDirection_.z * stepSpeed;
 
@@ -273,8 +273,8 @@ void Player::Move() {
 	}
 
 	// 通常移動
-	worldTransform_.translation_.x += move.x * moveSpeed;
-	worldTransform_.translation_.z += move.z * moveSpeed;
+	worldTransform_.translation_.x += move_.x * moveSpeed_;
+	worldTransform_.translation_.z += move_.z * moveSpeed_;
 
 	// 移動限界座標
 	const float kStartMoveLimitX = 3.0f;
@@ -283,11 +283,11 @@ void Player::Move() {
 
 	// 範囲を越えない処理
 	worldTransform_.translation_.x = std::max(worldTransform_.translation_.x, -kStartMoveLimitX);
-	worldTransform_.translation_.x = std::min(worldTransform_.translation_.x, +endMoveLimitX);
+	worldTransform_.translation_.x = std::min(worldTransform_.translation_.x, +endMoveLimitX_);
 	worldTransform_.translation_.z = std::max(worldTransform_.translation_.z, -kMoveLimitZ);
 	worldTransform_.translation_.z = std::min(worldTransform_.translation_.z, +kMinMoveLimitZ);
 
-	bool isMoving = (move.x != 0.0f || move.z != 0.0f);
+	bool isMoving = (move_.x != 0.0f || move_.z != 0.0f);
 
 	// 歩行アニメ進行
 	if (isMoving && !isStepping_ && !isAttacking_ && HP_ > 0) {
@@ -381,7 +381,7 @@ void Player::SpecialAttackUpdate() {
 	// ---------------------
 	if (isSpecialAttacking_) {
 
-		spAttackTimer_ -= deltaTime;
+		spAttackTimer_ -= deltaTime_;
 
 		// 発射時の向きで移動
 		worldTransformSP_.translation_.x += spAttackMoveSpeed_ * spAttackDirection_;
@@ -401,7 +401,7 @@ void Player::SpecialAttackUpdate() {
 	// クールタイム進行（気弾が生きていても進む）
 	// ---------------------
 	if (!canSpecialAttack_) {
-		spAttackCooldownTimer_ -= deltaTime;
+		spAttackCooldownTimer_ -= deltaTime_;
 
 		if (spAttackCooldownTimer_ <= 0.0f) {
 			canSpecialAttack_ = true;
@@ -412,7 +412,7 @@ void Player::SpecialAttackUpdate() {
 
 
 void Player::TextureUpdate() {	
-	bool isMoving = (move.x != 0.0f || move.z != 0.0f);
+	bool isMoving = (move_.x != 0.0f || move_.z != 0.0f);
 	// 勝利ポーズ
 	if (isVictory_) {
 		textureHandle_ = RUppercutTexture_;
@@ -435,7 +435,7 @@ void Player::TextureUpdate() {
 	}  
 	// ダウン
 	else if (HP_ <= 0) {
-		knockDownTimer_ -= deltaTime;
+		knockDownTimer_ -= deltaTime_;
 		if (knockDownTimer_ <= 0) {
 			isDead_ = true;
 		} else if (knockDownTimer_ <= 1.0f) {
@@ -521,7 +521,7 @@ void Player::UpdateWorldTransform() {
 	playerHitBox_.pos = worldTransform_.translation_;
 }
 
-void Player::OnHit(int damage) {
+void Player::OnHit(int32_t damage) {
 	if (!isStepping_) {
     	HP_ -= damage;
 	}

@@ -49,9 +49,9 @@ public:
 	bool IsFinished() const { return isFinished_; }
 
 private:
-	KamataEngine::DirectXCommon* dxCommon = nullptr;
-	KamataEngine::Input* input = nullptr;
-	KamataEngine::Audio* audio = nullptr;
+	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
+	KamataEngine::Input* input_ = nullptr;
+	KamataEngine::Audio* audio_ = nullptr;
 
 	KamataEngine::Camera camera_;
 

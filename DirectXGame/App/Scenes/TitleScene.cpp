@@ -10,16 +10,16 @@ TitleScene::TitleScene() {}
 TitleScene::~TitleScene() { 
 	delete titleSprite_; 
 	delete startSprite_;
-	for (int i = 0; i < 2; i++) {
+	for (int32_t i = 0; i < 2; i++) {
 		delete titleBackSprite[i];
 	}
-	audio->StopWave(titleBGMVoiceHandle_);
+	audio_->StopWave(titleBGMVoiceHandle_);
 }
 
 void TitleScene::Initialize() {
-	dxCommon = DirectXCommon::GetInstance();
-	input = Input::GetInstance();
-	audio = Audio::GetInstance();
+	dxCommon_ = DirectXCommon::GetInstance();
+	input_ = Input::GetInstance();
+	audio_ = Audio::GetInstance();
 
 	camera_.Initialize();
 	worldTransform_.Initialize();
@@ -27,8 +27,8 @@ void TitleScene::Initialize() {
 	worldTransform_.translation_.y -= 5.0f;
 
 	textureHandle_ = TextureManager::Load("brickWall.png");
-	for (int i = 0; i < 2; i++) {
-		titleBackSprite[i] = Sprite::Create(textureHandle_, {bgPosX[i], 0.0f});
+	for (int32_t i = 0; i < 2; i++) {
+		titleBackSprite[i] = Sprite::Create(textureHandle_, {bgPosX_[i], 0.0f});
 	}
 
 	textureHandle_ = TextureManager::Load("punchFightTitle.png");
@@ -39,9 +39,9 @@ void TitleScene::Initialize() {
 	startSprite_ = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1, 1, 1, 0}, {0.5f, 0.5f});
 	startSprite_->SetPosition({640.0f, 500.0f});
 
-	hitSEDataHandle_ = audio->LoadWave("audio/SE/hitSE.wav");
-	doubleHitSEDataHandle_ = audio->LoadWave("audio/SE/doubleHitSE.wav");
-	titleBGMDataHandle_ = audio->LoadWave("audio/BGM/titleBGM.wav");
+	hitSEDataHandle_ = audio_->LoadWave("audio/SE/hitSE.wav");
+	doubleHitSEDataHandle_ = audio_->LoadWave("audio/SE/doubleHitSE.wav");
+	titleBGMDataHandle_ = audio_->LoadWave("audio/BGM/titleBGM.wav");
 
 	prevTime_ = std::chrono::high_resolution_clock::now();
 	waitTimer_ = 0.0f;
@@ -52,17 +52,17 @@ void TitleScene::Initialize() {
 }
 
 void TitleScene::Update() { 
-	Input::GetInstance()->GetJoystickState(0, state);
-	Input::GetInstance()->GetJoystickStatePrevious(0, preState);
-	isAButtonPressed = (state.Gamepad.wButtons & XINPUT_GAMEPAD_A) && !(preState.Gamepad.wButtons & XINPUT_GAMEPAD_A);
+	Input::GetInstance()->GetJoystickState(0, state_);
+	Input::GetInstance()->GetJoystickStatePrevious(0, preState_);
+	isAButtonPressed_ = (state_.Gamepad.wButtons & XINPUT_GAMEPAD_A) && !(preState_.Gamepad.wButtons & XINPUT_GAMEPAD_A);
 
-	for (int i = 0; i < 2; i++) {
-		bgPosX[i] -= bgScrollSpeed_;
-		if (bgPosX[i] <= -1367.0f) {
-			bgPosX[i] = 1367.0f;
+	for (int32_t i = 0; i < 2; i++) {
+		bgPosX_[i] -= bgScrollSpeed_;
+		if (bgPosX_[i] <= -1367.0f) {
+			bgPosX_[i] = 1367.0f;
 		}
 
-		titleBackSprite[i]->SetPosition({bgPosX[i], 0.0f});
+		titleBackSprite[i]->SetPosition({bgPosX_[i], 0.0f});
 	}
 
 	TitleAnimation();
@@ -78,15 +78,15 @@ void TitleScene::Update() {
 
 void TitleScene::Draw() {
 	// 背景スプライト描画前処理
-	Sprite::PreDraw(dxCommon->GetCommandList());
+	Sprite::PreDraw(dxCommon_->GetCommandList());
 
-	for (int i = 0; i < 2; i++) {
+	for (int32_t i = 0; i < 2; i++) {
 		titleBackSprite[i]->Draw();
 	}
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
-	dxCommon->ClearDepthBuffer();
+	dxCommon_->ClearDepthBuffer();
 
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw();
@@ -95,7 +95,7 @@ void TitleScene::Draw() {
 	Model::PostDraw();
 
 	// 前景スプライト描画前処理
-	Sprite::PreDraw(dxCommon->GetCommandList());
+	Sprite::PreDraw(dxCommon_->GetCommandList());
 
 	if (titleVisible_) {
     	titleSprite_->Draw();
@@ -135,7 +135,7 @@ void TitleScene::TitleAnimation() {
 		titleVisible_ = true;
 		titleAnimeTimer_ = 0.0f;
 		titleSprite_->SetSize({titleSize_.x * startScale_, titleSize_.y * startScale_});
-        hitSEVoiceHandle_ = audio->PlayWave(hitSEDataHandle_, false, 1.0f);
+        hitSEVoiceHandle_ = audio_->PlayWave(hitSEDataHandle_, false, 1.0f);
 	}
 
 	if (titleVisible_) {
@@ -158,7 +158,7 @@ void TitleScene::TitleAnimation() {
 		if (t >= 1.0f) {
 			// 完全にアニメ終了
 			titleAnimeFinished_ = true;
-			audio->StopWave(hitSEVoiceHandle_);
+			audio_->StopWave(hitSEVoiceHandle_);
 		}
 	}
 	// -------------------------------------
@@ -167,9 +167,9 @@ void TitleScene::TitleAnimation() {
 void TitleScene::SpriteFlashUpdate() {
 	if (titleAnimeFinished_) {
 		if (!titleBlinking_ && !titleBlinkFinished_) {
-			if (input->TriggerKey(DIK_E) || isAButtonPressed) {
-				audio->StopWave(titleBGMVoiceHandle_);
-				doubleHitSEVoiceHandle_ = audio->PlayWave(doubleHitSEDataHandle_, false, 1.0f);
+			if (input_->TriggerKey(DIK_E) || isAButtonPressed_) {
+				audio_->StopWave(titleBGMVoiceHandle_);
+				doubleHitSEVoiceHandle_ = audio_->PlayWave(doubleHitSEDataHandle_, false, 1.0f);
 				titleBlinking_ = true;
 				blinkCount_ = 0;
 				blinkTimer_ = 0.0f;
@@ -178,7 +178,7 @@ void TitleScene::SpriteFlashUpdate() {
 
 		// BGM を一度だけ再生
 		if (!titleBGMStarted_) {
-			titleBGMVoiceHandle_ = audio->PlayWave(titleBGMDataHandle_, true, 0.25f);
+			titleBGMVoiceHandle_ = audio_->PlayWave(titleBGMDataHandle_, true, 0.25f);
 			titleBGMStarted_ = true;
 		}
 		// --- 点滅処理 ---

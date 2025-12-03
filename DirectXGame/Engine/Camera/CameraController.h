@@ -74,9 +74,9 @@ private:
 	// カメラの移動範囲
 	Rect movableArea_ = {0, 100, 0, 100};
 	// カメラの目標座標
-	KamataEngine::Vector3 goalPos;
+	KamataEngine::Vector3 goalPos_;
 	// 座標補間割合
-	static inline const float kInterpolationRate = 0.1f;
+	static inline const float kInterpolationRate_ = 0.1f;
 	// 速度掛け率
-	static inline const float kVelocityBias = 2.0f;
+	static inline const float kVelocityBias_ = 2.0f;
 };
