@@ -8,9 +8,9 @@ ClearScene::ClearScene() {}
 ClearScene::~ClearScene() {}
 
 void ClearScene::Initialize() {
-	dxCommon = DirectXCommon::GetInstance();
-	input = Input::GetInstance();
-	audio = Audio::GetInstance();
+	dxCommon_ = DirectXCommon::GetInstance();
+	input_ = Input::GetInstance();
+	audio_ = Audio::GetInstance();
 
 	camera_.Initialize();
 	// camera_.translation_ = {0.0f, 2.0f, -8.0f};
@@ -93,7 +93,7 @@ void ClearScene::Update() {
 		}
 
 		if (pushSpaceShown_) {
-			if (input->TriggerKey(DIK_E)) {
+			if (input_->TriggerKey(DIK_E)) {
 				fade_->Start(Fade::Status::AlphaFadeOut, 1.5f);
 				phase_ = Phase::kFadeOut;
 
@@ -112,14 +112,14 @@ void ClearScene::Update() {
 
 void ClearScene::Draw() {
 	// 背景スプライト描画前処理
-	Sprite::PreDraw(dxCommon->GetCommandList());
+	Sprite::PreDraw(dxCommon_->GetCommandList());
 	backTexture_->Draw();
 	if (isSpot_) {
 		spotlightTexture_->Draw();
 	}
 	// スプライト描画後処理
 	Sprite::PostDraw();
-	dxCommon->ClearDepthBuffer();
+	dxCommon_->ClearDepthBuffer();
 
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw();
@@ -128,7 +128,7 @@ void ClearScene::Draw() {
 	Model::PostDraw();
 
 	// 前景スプライト描画前処理
-	Sprite::PreDraw(dxCommon->GetCommandList());
+	Sprite::PreDraw(dxCommon_->GetCommandList());
 	if (!isSpot_) {
     	frontShadowTexture_->Draw();
 	} else {

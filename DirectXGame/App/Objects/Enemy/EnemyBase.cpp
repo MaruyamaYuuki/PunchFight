@@ -27,10 +27,10 @@ void EnemyBase::Initialize(const EnemyData& data) {
 void EnemyBase::Update(const Vector3&, const std::vector<std::unique_ptr<EnemyBase>>&) {
 	if (isKnockBack_) {
 
-		knockbackTime_ += deltaTime;
+		knockbackTime_ += deltaTime_;
 
         // ======== パーティクル生成 ========
-		smokeSpawnTimer_ -= deltaTime;
+		smokeSpawnTimer_ -= deltaTime_;
 		if (smokeSpawnTimer_ <= 0.0f) {
 			smokeSpawnTimer_ = smokeSpawnInterval_; // 次の生成までの時間
 
@@ -43,11 +43,11 @@ void EnemyBase::Update(const Vector3&, const std::vector<std::unique_ptr<EnemyBa
 
 		// X方向に加速して減速していく
 		knockbackVelocity_.x *= drag;
-		worldTransform_.translation_.x += knockbackVelocity_.x * deltaTime;
+		worldTransform_.translation_.x += knockbackVelocity_.x * deltaTime_;
 
 		// Y方向は重力で落下させる
-		knockbackVelocity_.y -= gravity_ * deltaTime;
-		worldTransform_.translation_.y += knockbackVelocity_.y * deltaTime;
+		knockbackVelocity_.y -= gravity_ * deltaTime_;
+		worldTransform_.translation_.y += knockbackVelocity_.y * deltaTime_;
 
 		// 規定時間で消滅
 		if (knockbackTime_ >= knockbackDuration_) {
@@ -58,8 +58,8 @@ void EnemyBase::Update(const Vector3&, const std::vector<std::unique_ptr<EnemyBa
 
 	// ===== スタン処理 =====
 	if (isStun_ && hp_ > 0) {
-		stunTimer_ -= deltaTime;
-		stunShakeTime_ += deltaTime;
+		stunTimer_ -= deltaTime_;
+		stunShakeTime_ += deltaTime_;
 
 		float shakeOffset = std::sin(stunShakeTime_ * stunShakeSpeed_) * stunShakeAmplitude_;
 
@@ -74,8 +74,8 @@ void EnemyBase::Update(const Vector3&, const std::vector<std::unique_ptr<EnemyBa
 	}
 
     // ======== パーティクル更新 ========
-	smokeManager_->Update(deltaTime);
-	dustManager_->Update(deltaTime);
+	smokeManager_->Update(deltaTime_);
+	dustManager_->Update(deltaTime_);
 
 	UpdateTextures();
 	worldTransform_.UpdateMatrix();
@@ -105,7 +105,7 @@ void EnemyBase::Draw(Camera& camera) {
 	#endif
 }
 
-void EnemyBase::OnHit(int damage, const Vector3& attackDir) {
+void EnemyBase::OnHit(int32_t damage, const Vector3& attackDir) {
 	// ====== ダストパーティクル発生 ======
 	if (dustManager_) {
 		dustManager_->Spawn(worldTransform_.translation_);

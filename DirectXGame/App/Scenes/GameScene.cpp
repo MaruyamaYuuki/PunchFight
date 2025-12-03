@@ -25,9 +25,9 @@ GameScene::~GameScene() {
 }
 
 void GameScene::Initialize() { 
-	dxCommon = DirectXCommon::GetInstance(); 
-	input = Input::GetInstance();
-	audio = Audio::GetInstance();
+	dxCommon_ = DirectXCommon::GetInstance(); 
+	input_ = Input::GetInstance();
+	audio_ = Audio::GetInstance();
 
 	camera_.Initialize();
 
@@ -53,11 +53,11 @@ void GameScene::Initialize() {
 	textureHandle_ = TextureManager::Load("scrollGuide.png");
 	guideTexture_ = Sprite::Create(textureHandle_, {1100.0f, 500.0f},{1, 1, 1, 1}, {0.5f, 0.5f});
 
-	startGongSEDataHandle_ = audio->LoadWave("audio/SE/startGong.wav");
+	startGongSEDataHandle_ = audio_->LoadWave("audio/SE/startGong.wav");
 
 	player_ = new Player();
-	player_->Initialize(modelPlayer_, modelSPAttack_, modelBoxFrame_, position);
-	player_->SetEndMoveLimitX(moveLimit[0]);
+	player_->Initialize(modelPlayer_, modelSPAttack_, modelBoxFrame_, position_);
+	player_->SetEndMoveLimitX(moveLimit_[0]);
 
 	EnemyGenerate();
 
@@ -68,7 +68,7 @@ void GameScene::Initialize() {
 	cameraController_->Initialize();            // 初期化
 	cameraController_->SetTarget(player_);      // 追従対象をセット
 	cameraController_->Reset();                 // リセット(瞬間合わせ)
-	CameraController::Rect cameraArea = {0.0f, scrollArea[0], -8.0f, -1.0f};
+	CameraController::Rect cameraArea = {0.0f, scrollArea_[0], -8.0f, -1.0f};
 	cameraController_->SetMovableArea(cameraArea);
 
 	fade_ = new Fade();
@@ -97,7 +97,7 @@ void GameScene::Update() {
 		DebugText::GetInstance()->ConsolePrintf("Camera.Translate.x : %f\n\n", cameraController_->GetCamera().translation_.x);
 		stage_->Update(cameraController_->GetCamera().translation_.x);
 		player_->Update();
-		if (input->TriggerKey(DIK_B)) {
+		if (input_->TriggerKey(DIK_B)) {
 
 			isFinished_ = true;
 
@@ -123,11 +123,11 @@ void GameScene::Update() {
 
 void GameScene::Draw() {
 	// 背景スプライト描画前処理
-	Sprite::PreDraw(dxCommon->GetCommandList());
+	Sprite::PreDraw(dxCommon_->GetCommandList());
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
-	dxCommon->ClearDepthBuffer();
+	dxCommon_->ClearDepthBuffer();
 
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw();
@@ -142,7 +142,7 @@ void GameScene::Draw() {
 	Model::PostDraw();
 
 	// 前景スプライト描画前処理
-	Sprite::PreDraw(dxCommon->GetCommandList());
+	Sprite::PreDraw(dxCommon_->GetCommandList());
 
 	//backTextSprite_->Draw();
 
@@ -212,17 +212,17 @@ void GameScene::ChangePhase() {
 		if (fightTextAnimeFinished_) {
     		startTime_ -= deltaTime_;
     		if (startTime_ <= 0.0f) {
-				audio->StopWave(startGongSEVoiceHandle_);
+				audio_->StopWave(startGongSEVoiceHandle_);
     			startTime_ = 4.0f;
     			phase_ = Phase::kPlay;
     		}
 		}
 		break;
 	case GameScene::Phase::kPlay:
-		if (input->TriggerKey(DIK_T)) {
+		if (input_->TriggerKey(DIK_T)) {
 			player_->OnHit(5);
 		}
-		if (player_->GetWorldTransform().translation_.x >= moveLimit[3]) {
+		if (player_->GetWorldTransform().translation_.x >= moveLimit_[3]) {
 			phase_ = Phase::kFadeOut;
 			fade_->Start(Fade::Status::FadeOut, fadeTime_);
 		}
@@ -265,7 +265,7 @@ void GameScene::FightAnimation() {
 		fightTextVisible_ = true;
 		fightTextAnimeTimer_ = 0.0f;
 		fightTextSprite_->SetSize({fightTextSize_.x * startScale_, fightTextSize_.y * startScale_});
-		startGongSEVoiceHandle_ = audio->PlayWave(startGongSEDataHandle_, false, 1.0f);
+		startGongSEVoiceHandle_ = audio_->PlayWave(startGongSEDataHandle_, false, 1.0f);
 	}
 
 	if (fightTextVisible_) {
@@ -336,7 +336,7 @@ void GameScene::GameOver() {
 		}
 
 		// リトライ入力
-		if (input->TriggerKey(DIK_R)) {
+		if (input_->TriggerKey(DIK_R)) {
 			phase_ = Phase::kFadeOut;
 			fade_->Start(Fade::Status::FadeOut, fadeTime_);
 		}
@@ -392,7 +392,7 @@ void GameScene::EnemyUpdate() {
 	enemyManager_->Update(playerPos);
 
 	// ----- エリアクリア判定 -----
-	for (int i = 0; i < 3; i++) {
+	for (int32_t i = 0; i < 3; i++) {
 		if (enemyManager_->IsAreaCleared(i) && !areaClearedFlag_[i]) {
 			areaClearedFlag_[i] = true;
 
@@ -420,17 +420,17 @@ void GameScene::EnemyUpdate() {
 
 
     if (areaClearedFlag_[2]) {
-		player_->SetEndMoveLimitX(moveLimit[3]);
+		player_->SetEndMoveLimitX(moveLimit_[3]);
 		//phase_ = Phase::kFadeOut;
 		//fade_->Start(Fade::Status::FadeOut, fadeTime_);
 	} else if (areaClearedFlag_[1]) {
-		CameraController::Rect area = {0.0f, scrollArea[2], -8.0f, -1.0f};
+		CameraController::Rect area = {0.0f, scrollArea_[2], -8.0f, -1.0f};
 		cameraController_->SetMovableArea(area);
-		player_->SetEndMoveLimitX(moveLimit[2]);
+		player_->SetEndMoveLimitX(moveLimit_[2]);
 	} else if (areaClearedFlag_[0]) {
-		CameraController::Rect area = {0.0f, scrollArea[1], -8.0f, -1.0f};
+		CameraController::Rect area = {0.0f, scrollArea_[1], -8.0f, -1.0f};
 		cameraController_->SetMovableArea(area);
-		player_->SetEndMoveLimitX(moveLimit[1]);
+		player_->SetEndMoveLimitX(moveLimit_[1]);
 	}
 }
 

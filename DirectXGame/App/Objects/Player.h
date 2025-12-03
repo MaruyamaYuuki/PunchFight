@@ -46,7 +46,7 @@ public:
 	/// 接触判定
 	/// </summary>
 	/// <param name="damage">ダメージ量</param>
-	void OnHit(int damage);
+	void OnHit(int32_t damage);
 
 	/// <summary>
 	/// プレイヤーのWorldTransformを設定する
@@ -58,7 +58,7 @@ public:
 	/// プレイヤーの移動量を取得する
 	/// </summary>
 	/// <returns>プレイヤーの移動量</returns>
-	const KamataEngine::Vector3& GetVelocity() const { return move; }
+	const KamataEngine::Vector3& GetVelocity() const { return move_; }
 
 	/// <summary>
 	/// プレイヤーの死亡判定
@@ -70,7 +70,7 @@ public:
 	/// プレイヤーのHPを取得する
 	/// </summary>
 	/// <returns></returns>
-	int GetHP() const { return HP_; }
+	int32_t GetHP() const { return HP_; }
 
 	/// <summary>
 	/// プレイヤーのヒットボックスを取得する
@@ -94,13 +94,13 @@ public:
 	/// 攻撃力を取得する
 	/// </summary>
 	/// <returns>プレイヤーの攻撃力</returns>
-	int GetAttackPower() const { return attackPower_; }
+	int32_t GetAttackPower() const { return attackPower_; }
 
 	/// <summary>
 	/// 強攻撃の攻撃力を取得する
 	/// </summary>
 	/// <returns>強攻撃の攻撃力</returns>
-	int GetSPAttackPower() const { return spAttackPower_; }
+	int32_t GetSPAttackPower() const { return spAttackPower_; }
 
 	/// <summary>
 	/// プレイヤーの向いてる方向を取得する
@@ -136,13 +136,13 @@ public:
 	/// ステップのクールタイムを取得
 	/// </summary>
 	/// <returns>ステップのクールタイム</returns>
-	int GetStepCooldownTimer() const { return stepTimer_; }
+	int32_t GetStepCooldownTimer() const { return stepTimer_; }
 
 	/// <summary>
 	/// ステップのクールタイムの最大値を取得
 	/// </summary>
 	/// <returns>ステップのクールタイムの最大値</returns>
-	int GetStepCooldownMax() const { return stepCooldown_; }
+	int32_t GetStepCooldownMax() const { return stepCooldown_; }
 
 	/// <summary>
 	/// 強攻撃を使ったかを取得
@@ -168,7 +168,7 @@ public:
 	/// X軸での移動限界座標を設定する
 	/// </summary>
 	/// <param name="limit">移動限界</param>
-	void SetEndMoveLimitX(float limit) { endMoveLimitX = limit; }
+	void SetEndMoveLimitX(float limit) { endMoveLimitX_ = limit; }
 
 	/// <summary>
 	/// クリアシーンでのアニメーション
@@ -223,9 +223,9 @@ private:
 	KamataEngine::Model* modelSPHiyBox_ = nullptr;
 
 	bool isDead_ = false;
-	int HP_ = 100;
-	int attackPower_ = 10;
-	int spAttackPower_ = 30;
+	int32_t HP_ = 100;
+	int32_t attackPower_ = 10;
+	int32_t spAttackPower_ = 30;
 
 	// --- プレイヤーのテクスチャ ---
 	uint32_t textureHandle_ = 0;
@@ -257,28 +257,28 @@ private:
 	uint32_t smokeTexture_ = 0;
 
 	// --- 移動関連 ---
-	KamataEngine::Vector3 move = {0, 0, 0};
-	float moveSpeed = 0.05f; // 通常移動速度
-	int walkFrame_ = 0;         // 0〜3でループ
-	int walkFrameTimer_ = 0;    // テクスチャ切替タイマー
-	int walkFrameInterval_ = 6; // 何フレームごとに切り替えるか
+	KamataEngine::Vector3 move_ = {0, 0, 0};
+	float moveSpeed_ = 0.05f; // 通常移動速度
+	int32_t walkFrame_ = 0;         // 0〜3でループ
+	int32_t walkFrameTimer_ = 0;    // テクスチャ切替タイマー
+	int32_t walkFrameInterval_ = 6; // 何フレームごとに切り替えるか
 
 	// --- ステップ関連 ---
     bool isStepping_ = false;
 	KamataEngine::Vector3 stepDirection_ = {0, 0, 0};
-	int stepTimer_ = 0;
-	int stepCooldown_ = 30; // 例：1秒クールタイム（60FPS想定）
-	int stepFrame_ = 0;
+	int32_t stepTimer_ = 0;
+	int32_t stepCooldown_ = 30; // 例：1秒クールタイム（60FPS想定）
+	int32_t stepFrame_ = 0;
 	float stepPower_ = 2.5f; // 通常移動の3倍速
 
     // --- 攻撃管理 ---
 	bool isAttacking_ = false;    // 攻撃中か
 	bool canAttack_ = true;       // 攻撃可能か
-	int attackTimer_ = 0;         // 攻撃残り時間
-	int attackCooldownTimer_ = 0; // クールタイム残り時間
+	int32_t attackTimer_ = 0;         // 攻撃残り時間
+	int32_t attackCooldownTimer_ = 0; // クールタイム残り時間
 
-	const int attackDuration_ = 15; // 攻撃の長さ
-	const int attackCooldown_ = 5; // クールタイムの長さ
+	const int32_t attackDuration_ = 15; // 攻撃の長さ
+	const int32_t attackCooldown_ = 5; // クールタイムの長さ
 
 	bool attackFromRight_ = true; // 右 or 左パンチ切り替え
 	float facingDir_ = 1.0f;      // 向き（1.0f：右, -1.0f：左）
@@ -292,7 +292,7 @@ private:
 
 	const float spAttackDuration_ = 3.0f;
 	const float spAttackCoolDown_ = 5.0f;
-	const float deltaTime = 1.0f / 60.0f;
+	const float deltaTime_ = 1.0f / 60.0f;
 
 	float spAttackDirection_ = 1.0f; // 気弾の発射方向を記録
 	bool justSpecialAttacked_ = false;
@@ -305,7 +305,7 @@ private:
 	// --- ノックダウン処理用 ---
 	float knockDownTimer_ = 2.0f;
 
-	float endMoveLimitX = 0;
+	float endMoveLimitX_ = 0;
 
 	// ---クリア演出用 ---
 	bool isGoal_ = false;

@@ -13,8 +13,8 @@
 struct EnemyData {
 	std::string modelPath;
 	float speed;
-	int hp;
-	int attackPower;
+	int32_t hp;
+	int32_t attackPower;
 };
 
 /// <summary>
@@ -67,7 +67,7 @@ public:
 	/// </summary>
 	/// <param name="damage">ダメージ量</param>
 	/// <param name="attackDir">攻撃の方向	</param>
-	virtual void OnHit(int damage, const KamataEngine::Vector3& attackDir);
+	virtual void OnHit(int32_t damage, const KamataEngine::Vector3& attackDir);
 
 	/// <summary>
 	/// 敵の死亡判定
@@ -91,7 +91,7 @@ public:
 	/// 攻撃力を取得する
 	/// </summary>
 	/// <returns>敵の攻撃力</returns>
-	int GetAttackPower() const { return attackPower_; }
+	int32_t GetAttackPower() const { return attackPower_; }
 
 	/// <summary>
 	/// 敵の座標を取得する
@@ -103,7 +103,7 @@ public:
 	/// 敵のHPを取得する
 	/// </summary>
 	/// <returns></returns>
-	int GetHP() const { return hp_; }
+	int32_t GetHP() const { return hp_; }
 
 	/// <summary>
 	/// ノックバック判定
@@ -181,8 +181,8 @@ protected:
 
 	// ---- ステータス ----
 	float speed_ = 0.0f;
-	int hp_ = 1;
-	int attackPower_ = 1;
+	int32_t hp_ = 1;
+	int32_t attackPower_ = 1;
 	float facingDir_ = 1.0f;
 
 	// ---- 攻撃 ----
@@ -215,7 +215,7 @@ protected:
 	KamataEngine::Vector3 knockbackVelocity_{0, 0, 0};
 	float gravity_ = 30.0f;
 
-	float deltaTime = 1.0f / 60.0f;
+	float deltaTime_ = 1.0f / 60.0f;
 
     // --- パーティクル用 ---
 	std::unique_ptr<SmokeParticleManager> smokeManager_;

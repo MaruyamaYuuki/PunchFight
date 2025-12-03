@@ -50,11 +50,11 @@ public:
 	bool IsFinished() { return isFinished_; }
 
 private:
-	XINPUT_STATE state, preState;
+	XINPUT_STATE state_, preState_;
 
-	KamataEngine::DirectXCommon* dxCommon = nullptr;
-	KamataEngine::Input* input = nullptr;
-	KamataEngine::Audio* audio = nullptr;
+	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
+	KamataEngine::Input* input_ = nullptr;
+	KamataEngine::Audio* audio_ = nullptr;
 
 	KamataEngine::Camera camera_;
 	WorldTransformEx worldTransform_;
@@ -88,7 +88,7 @@ private:
 
 	// ---背景スクロール用---
 	float bgScrollSpeed_ = 1.0f;
-	float bgPosX[2] = {{0.0f}, {1367.0f}};
+	float bgPosX_[2] = {{0.0f}, {1367.0f}};
 	// -----------------------
 
 	// ---シーン遷移用---
@@ -96,7 +96,7 @@ private:
 	bool titleBlinking_ = false;
 	bool titleBlinkFinished_ = false;
 	float blinkTimer_ = 0.0f;
-	int blinkCount_ = 0;
+	int32_t blinkCount_ = 0;
 	const int kMaxBlinkCount_ = 2;
 	// フェード用
 	Fade* fade_ = nullptr;
@@ -111,7 +111,7 @@ private:
 	uint32_t titleBGMDataHandle_ = 0;
 	uint32_t titleBGMVoiceHandle_ = 0;
 
-	bool isAButtonPressed = false;
+	bool isAButtonPressed_ = false;
 
 
 };
