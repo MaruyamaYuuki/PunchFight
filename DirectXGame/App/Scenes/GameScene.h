@@ -11,6 +11,7 @@
 /// ゲームシーン
 /// </summary>
 class Fade;
+class GameConfigManager;
 class GameScene {
 public:
 	/// <summary>
@@ -96,6 +97,7 @@ private:
 	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
 	KamataEngine::Input* input_ = nullptr;
 	KamataEngine::Audio* audio_ = nullptr;
+	GameConfigManager* cfg_ = nullptr;
 
 	KamataEngine::Camera camera_;
 	WorldTransformEx worldTransform_;
@@ -120,15 +122,18 @@ private:
 
 	StageManager* stage_ = nullptr;
 	Player* player_ = nullptr;
-	KamataEngine::Vector3 position_ = {0.0f, 1.0f, 0.0f};
+
 	float moveLimit_[4] = {20.0f, 35.0f, 50.0f, 53.0f};
+	float scrollArea_[3] = {15.0f, 30.0f, 45.0f};
+	float cameraLimitZMin_;
+	float cameraLimitZMax_;
 
 	CameraController* cameraController_ = nullptr;
 
 	Fade* fade_ = nullptr;
-	float fadeTime_ = 1.0f;
+	float fadeTime_;
 
-	float startTime_ = 3.0f;
+	float startTime_;
 	float deltaTime_ = 1.0f / 60.0f;
 
 	bool isFinished_ = false;
@@ -142,10 +147,10 @@ private:
 	// ---ファイトテキストアニメーション用---
 	float blinkTime_ = 0.0f;
 	float fightTextAnimeTimer_ = 0.0f;
-	float animeDuration_ = 0.1f; // アニメ時間（秒） — 好みで調整
-	float startScale_ = 1.6f;    // 初期スケール（大きめ）
+	float animeDuration_; // アニメ時間（秒） — 好みで調整
+	float startScale_;    // 初期スケール（大きめ）
 	float waitTimer_ = 0.0f;     // 最初に待つ時間
-	float waitDuration_ = 0.5f;  // 1秒待つ
+	float waitDuration_;  // 0.5秒待つ
 	std::chrono::high_resolution_clock::time_point prevTime_;
 
 	bool fightTextVisible_ = false;
@@ -153,27 +158,27 @@ private:
 	float fadeInTimer_ = 0.0f;
 
 	KamataEngine::Vector2 fightTextPos_ = {640.0f, 300.0f};
-	KamataEngine::Vector2 fightTextSize_ = {400, 150};
+	KamataEngine::Vector2 fightTextSize_ = {400.0f, 150.0f};
 
 	// --- ゲームオーバー関連 ---
 	float alphaCounter_  = 0.0f;
-	float duration_ = 1.0f;
+	float alphaDuration_;
 	float gameOverFallTimer_ = 0.0f;    // テキスト落下の経過時間
-	float gameOverFallDuration_ = 1.0f; // 落下にかける時間（秒）
+	float gameOverFallDuration_; // 落下にかける時間（秒）
 	bool isGameOverFallFinished_ = false; // 落下完了フラグ
 
 	bool areaClearedFlag_[3] = {false, false, false};
 
-	float scrollArea_[3] = {15.0f, 30.0f, 45.0f};
+
 
 	std::vector<EnemyBase*> hitEnemiesThisAttack_;
 	std::vector<EnemyBase*> hitEnemiesThisSPAttack_;
 
 	/// --- エリア解放時のガイド関連 ---
 	float guideTimer_ = 0.0f;
-	float guideDuration_ = 3.0f;
+	float guideDuration_;
 	bool guideOn_ = false;
-	float blinkInterval_ = 1.0f; // 1回の ON/OFF の長さ
+	float blinkInterval_; // 1回の ON/OFF の長さ
 	int32_t blinkCount_ = 0;         // 何回点滅したか
-	int32_t maxBlinkCount_ = 3;      // 合計何回点滅させるか
+	int32_t maxBlinkCount_;      // 合計何回点滅させるか
 };

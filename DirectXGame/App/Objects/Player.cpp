@@ -2,6 +2,7 @@
 #include "Player.h"
 #include <cassert>
 #include <algorithm>
+#include "../../Engine/Utility/GameConfigManager.h"
 
 using namespace KamataEngine;
 using namespace KamataEngine::MathUtility;
@@ -20,19 +21,45 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = pos;
-	worldTransform_.scale_ = {0.5f, 0.5f, 0.5f};
-	worldTransform_.rotation_.x = 0.75f;
 	worldTransformSP_.Initialize();
-	worldTransformHitBox_.scale_ = {0.5f, 0.5f, 0.5f};
 	worldTransformSPHitBox_.Initialize();
-	worldTransformHitBox_.Initialize();
+	worldTransformNormalAttackHitBox_.Initialize();
 	worldTransformPHitBox_.Initialize();
 
 	playerHitBox_.active = true;
-	playerHitBox_.size = {0.3f, 0.5f, 0.3f};
 
 	smokeManager_ = std::make_unique<SmokeParticleManager>();
 	smokeManager_->Initialize();
+
+	cfg_ = GameConfigManager::GetInstance();
+
+	// 基本設定
+	HP_ = cfg_->getInt("Player.kInitialHP");
+	worldTransform_.scale_ = cfg_->getVector3("Global.kPlaneModelScale");
+	worldTransform_.rotation_.x = cfg_->getFloat("Global.kPlaneModelRotateX");
+	moveSpeed_ = cfg_->getFloat("Player.kMoveSpeed");
+	walkFrameInterval_ = cfg_->getInt("Player.kWalkFrameInterval");
+	playerHitBox_.size = cfg_->getVector3("Player.kHitBoxSize");
+
+	stepCooldown_ = cfg_->getInt("Player.Step.kStepCoolDown");
+	stepPower_ = cfg_->getFloat("Player.Step.kStepPower");
+	nAttackPower_ = cfg_->getInt("Player.Attack.kNormalAttackPower");
+	nAttackDuration_ = cfg_->getInt("Player.Attack.kNormalAttackDuration");
+	nAttackCooldown_ = cfg_->getInt("Player.Attack.kNormalAttackCoolDown");
+	nAttackHitBox_.size = cfg_->getVector3("Player.Attack.kNormalAttackHitBoxSize");
+	worldTransformSP_.rotation_.x = cfg_->getFloat("Global.kPlaneModelRotateX");
+	spAttackPower_ = cfg_->getInt("Player.Attack.kSPAttackPower");
+	spAttackDuration_ = cfg_->getFloat("Player.Attack.kSPAttackDuration");
+	spAttackCoolDown_ = cfg_->getFloat("Player.Attack.kSPAttackCoolDown");
+	spAttackMoveSpeed_ = cfg_->getFloat("Player.Attack.kSPAttackMoveSpeed");
+	spAttackHitBox_.size = cfg_->getVector3("Player.Attack.kSPAttackHitBoxSize");
+	
+	poseWaitTimer_ = cfg_->getFloat("Player.Clear.kPoseWaitTimer");
+	knockDownTimer_ = cfg_->getFloat("Player.KnockDown.kKnockDownTimer");
+	trailSpawnInterval_ = cfg_->getFloat("Player.Particle.kTrailSpawnInterval");
+	smokeSize_ = cfg_->getVector3("Player.Particle.kSmokeSize");
+
+
 
 	textureHandle_ = TextureManager::Load("playerTextures/RPlayer.png");
 
@@ -66,10 +93,7 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 
 void Player::Update() {
 
-	if (input_->TriggerKey(DIK_P)) {
-		worldTransform_.rotation_.x += 0.1f;
-		DebugText::GetInstance()->ConsolePrintf("Player X Rotation: %f\n", worldTransform_.rotation_.x);
-	}
+	DebugText::GetInstance()->ConsolePrintf("Player HP: %d\n", HP_);
 
 	if (HP_ > 0){
     	Move();
@@ -92,7 +116,7 @@ void Player::Update() {
 	TextureUpdate();
 	worldTransform_.UpdateMatrix();
 	worldTransformSP_.UpdateMatrix();
-	worldTransformHitBox_.UpdateMatrix();
+	worldTransformNormalAttackHitBox_.UpdateMatrix();
 	worldTransformPHitBox_.UpdateMatrix();
 	worldTransformSPHitBox_.UpdateMatrix();
 
@@ -104,10 +128,10 @@ void Player::Draw(Camera& camera) {
 	model_->Draw(worldTransform_, camera, textureHandle_); 
 	smokeManager_->Draw(camera);
 	#ifdef _DEBUG
-	if (attackHitBox_.active) {
-		worldTransformHitBox_.translation_ = attackHitBox_.pos;
-		worldTransformHitBox_.scale_ = attackHitBox_.size;
-		modelDebugHitBox_->Draw(worldTransformHitBox_, camera);
+	if (nAttackHitBox_.active) {
+		worldTransformNormalAttackHitBox_.translation_ = nAttackHitBox_.pos;
+		worldTransformNormalAttackHitBox_.scale_ = nAttackHitBox_.size;
+		modelDebugHitBox_->Draw(worldTransformNormalAttackHitBox_, camera);
 	}
 	if (playerHitBox_.active) {
 		worldTransformPHitBox_.translation_ = playerHitBox_.pos;
@@ -176,7 +200,7 @@ void Player::ClearAnimation(bool isSpot) {
 	// --- アニメ処理 ---
 	bool isMoving = (move_.x != 0.0f || move_.z != 0.0f);
 
-	if (isMoving && !isStepping_ && !isAttacking_ && HP_ > 0 && !isVictory_) {
+	if (isMoving && !isStepping_ && !isNormalAttacking_ && HP_ > 0 && !isVictory_) {
 		walkFrameTimer_++;
 
 		if (walkFrameTimer_ >= walkFrameInterval_) {
@@ -205,7 +229,7 @@ void Player::ClearAnimation(bool isSpot) {
 
 void Player::Move() {
 	// 攻撃中なら移動をキャンセル
-	if (isAttacking_) {
+	if (isNormalAttacking_) {
 		return;
 	}
 
@@ -290,7 +314,7 @@ void Player::Move() {
 	bool isMoving = (move_.x != 0.0f || move_.z != 0.0f);
 
 	// 歩行アニメ進行
-	if (isMoving && !isStepping_ && !isAttacking_ && HP_ > 0) {
+	if (isMoving && !isStepping_ && !isNormalAttacking_ && HP_ > 0) {
 		walkFrameTimer_++;
 
 		if (walkFrameTimer_ >= walkFrameInterval_) {
@@ -305,42 +329,42 @@ void Player::Move() {
 }
 
 void Player::Attack() {
-	if (!canAttack_ || isAttacking_)
+	if (!canNormalAttack_ || isNormalAttacking_)
 		return;
 
-	isAttacking_ = true;
-	canAttack_ = false;
-	attackTimer_ = attackDuration_;
+	isNormalAttacking_ = true;
+	canNormalAttack_ = false;
+	nAttackTimer_ = nAttackDuration_;
 
 	// パンチテクスチャ切り替え（右左交互）
-	attackFromRight_ = !attackFromRight_;
+	nAttackFromRight_ = !nAttackFromRight_;
 
 	// ヒットボックスはプレイヤーの向きに依存
 	float hitboxOffsetX = 0.5f * facingDir_; // プレイヤーが右向きなら+0.8、左向きなら-0.8
-	attackHitBox_.active = true;
-	attackHitBox_.pos = worldTransform_.translation_ + Vector3{hitboxOffsetX, 0.1f, 0.0f};
-	attackHitBox_.size = {0.2f, 0.5f, 1.5f};
+	nAttackHitBox_.active = true;
+	nAttackHitBox_.pos = worldTransform_.translation_ + Vector3{hitboxOffsetX, 0.1f, 0.0f};
+	nAttackHitBox_.size = cfg_->getVector3("Player.Attack.kNormalAttackHitBoxSize");
 }
 
 
 void Player::AttackUpdate() {
-	if (isAttacking_) {
-		attackTimer_--;
-		if (attackTimer_ <= 0) {
-			isAttacking_ = false;
-			attackHitBox_.active = false;
-			attackCooldownTimer_ = attackCooldown_;
+	if (isNormalAttacking_) {
+		nAttackTimer_--;
+		if (nAttackTimer_ <= 0) {
+			isNormalAttacking_ = false;
+			nAttackHitBox_.active = false;
+			nAttackCooldownTimer_ = nAttackCooldown_;
 		} else {
 			float hitboxOffsetX = 0.5f * facingDir_; // プレイヤーが右向きなら+0.8、左向きなら-0.8
-			attackHitBox_.pos = worldTransform_.translation_ + Vector3{hitboxOffsetX, 0.1f, 0.0f};
+			nAttackHitBox_.pos = worldTransform_.translation_ + Vector3{hitboxOffsetX, 0.1f, 0.0f};
 		}
 	}
 
 	// クールタイム中
-	else if (!canAttack_) {
-		attackCooldownTimer_--;
-		if (attackCooldownTimer_ <= 0) {
-			canAttack_ = true;
+	else if (!canNormalAttack_) {
+		nAttackCooldownTimer_--;
+		if (nAttackCooldownTimer_ <= 0) {
+			canNormalAttack_ = true;
 		}
 	}
 }
@@ -368,7 +392,7 @@ void Player::SpecialAttack() {
 	// --- ヒットボックス初期化 ---
 	spAttackHitBox_.active = true;
 	spAttackHitBox_.pos = worldTransformSP_.translation_ + Vector3{spAttackDirection_ * 0.3f, 0.0f, 0.0f};
-	spAttackHitBox_.size = {0.5f, 0.5f, 1.5f};
+	spAttackHitBox_.size = cfg_->getVector3("Player.Attack.kSPAttackHitBoxSize");
 
 	// --- テクスチャ切替 ---
 	SPTextureHandle_ = (spAttackDirection_ > 0) ? RSpecialTexture_ : LSpecialTexture_;
@@ -418,8 +442,8 @@ void Player::TextureUpdate() {
 		textureHandle_ = RUppercutTexture_;
 	}
 	// 攻撃
-	else if (isAttacking_) {
-		if (attackFromRight_) {
+	else if (isNormalAttacking_) {
+		if (nAttackFromRight_) {
 			if (facingDir_ == 1.0f) {
 				textureHandle_ = RRightPunchTexture_;
 			} else {
@@ -505,16 +529,16 @@ void Player::TextureUpdate() {
 }
 
 void Player::Reset() { 
-	worldTransform_.translation_ = {0.0f, 1.0f, 0.0f};
-	HP_ = 100;
-	knockDownTimer_ = 2.0f;
+	worldTransform_.translation_ = cfg_->getVector3("Player.kGameInitialPos");
+	HP_ = cfg_->getInt("Player.kInitialHP");
+	knockDownTimer_ = cfg_->getFloat("Player.KnockDown,kKockDownTimer");
 	isDead_ = false;
 	textureHandle_ = TextureManager::Load("playerTextures/RPlayer.png");
 }
 
 void Player::UpdateWorldTransform() {
 	worldTransform_.UpdateMatrix();
-	worldTransformHitBox_.UpdateMatrix();
+	worldTransformNormalAttackHitBox_.UpdateMatrix();
 	worldTransformPHitBox_.UpdateMatrix();
 
 	// ヒットボックスをプレイヤーの位置に追従

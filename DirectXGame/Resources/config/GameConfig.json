@@ -1,0 +1,185 @@
+{
+  "Global": {
+    "kDeltaTime": 0.01666666,
+    "kAnchorCenter": [0.5, 0.5],
+    "kPlaneModelScale": [0.5, 0.5, 0.5],
+    "kPlaneModelRotateX": 0.75,
+    "kFadeTime": 1.0
+  },
+
+  "Scene": {
+    "Game": {
+      "kReadyTime": 3.0,
+      "kDebugPlayerDamage": 5,
+
+      "Area": {
+        "kMoveLimitX_Area": [20.0, 35.0, 50.0, 53.0],
+        "kScrollAreaLimitX": [15.0, 30.0, 45.0],
+        "kCameraLimitZMin": -8.0,
+        "kCameraLimitZMax": -1.0
+      },
+
+      "FightTextAnime": {
+        "kFightTextCenterPos": [640.0, 300.0],
+        "kFightTextBaseSize": [400.0, 150.0],
+        "kFightTextWaitDuration": 0.5,
+        "kFightTextAnimeDuration": 0.1,
+        "kFightTextStartScale": 1.6
+      },
+
+      "GameOver": {
+        "kBlackSpriteMaxAlpha": 0.8,
+        "kGameOverTextStartY": -200.0,
+        "kGameOverTextEndY": 300.0,
+        "kBlackSpriteAlphaDuration": 1.0,
+        "kGameOverFallDuration": 1.0
+      },
+
+      "Guide": {
+        "kGuideDisplayDuration": 3.0,
+        "kGuideBlinkInterval": 1.0,
+        "kGuideMaxBlinkCount": 3
+      }
+    },
+
+    "Title": {
+      "kTitleWaitDuration": 0.5,
+
+      "Anime": {
+        "kTitleAnimeDuration": 0.4,
+        "kTitleAnimeStartScale": 1.6,
+        "kTitleAnimeEndScale": 1.0,
+        "kMaxBlinkCount": 2,
+        "kTitleBGMVolume": 0.25,
+        "kTitleSEVolume": 1.0
+      },
+
+      "Background": {
+        "kBGScrollSpeed": 1.0,
+        "kBGResetPosX": 1367.0
+      },
+
+      "Sprites": {
+        "kTitleSpriteCenterPos": [640.0, 200.0],
+        "kTitleSpriteBaseSize": [600, 364],
+        "kStartSpriteDisplayPos": [640.0, 500.0]
+      }
+    },
+
+    "Clear": {
+      "kInitialWaitTime": 2.0,
+      "kSpotlightAppearWaitTime": 2.0,
+      "kClearAnimeStartWaitTime": 1.0,
+      "kPushSpaceDisplayWaitTime": 2.0,
+      "kFadeOutDuration": 1.5,
+
+      "ClearText": {
+        "kClearScaleStart": 0.0,
+        "kClearScaleEnd": 1.0,
+        "kClearScaleSpeed": 2.0,
+        "kClearTextBaseWidth": 696.0,
+        "kClearTextBaseHeight": 144.0
+      }
+    }
+  },
+
+  "Player": {
+    "kInitialHP": 100,
+    "kGameInitialPos": [0.0, 1.0, 0.0],
+    "kClearInitialPos": [-5.0, -1.1, -45.0],
+    "kMoveSpeed": 0.05,
+    "kHitBoxSize": [0.3, 0.5, 0.3],
+    "kWalkFrameInterval": 6,
+
+    "Step":{
+      "kStepCoolDown": 30,
+      "kStepPower": 2.5
+    },
+
+    "Attack": {
+      "kNormalAttackPower": 10,
+      "kNormalAttackDuration": 15,
+      "kNormalAttackCoolDown": 5,
+      "kNormalAttackHitBoxSize": [0.2, 0.5, 1.5],
+
+      "kSPAttackPower": 30,
+      "kSPAttackDuration": 3.0,
+      "kSPAttackCoolDown": 5.0,
+      "kSPAttackMoveSpeed": 0.05,
+      "kSPAttackHitBoxSize": [0.5, 0.5, 1.5]
+    },
+
+    "Clear": {
+      "kPoseWaitTimer": 1.0
+    },
+
+    "KnockDown": {
+      "kKnockDownTimer": 2.0
+    },
+
+    "Particle": {
+      "kTrailSpawnInterval": 0.05,
+      "kSmokeSize": [0.05, 0.05, 0.05]
+    }
+
+  },
+
+  "Enemy": {
+    "Default": {
+      "kGravityAcceleration": 30.0,
+      "kKnockbackDuration": 0.5,
+      "kKnockbackBasePower": 25.0,
+      "kKnockbackUpwardBoost": 12.0,
+      "kKnockbackDragFactor": 0.95,
+      "kAttackDuration": 1.0,
+      "kAttackCooldown": 1.0,
+      "kStunDuration": 1.0,
+      "kStunShakeAmplitude": 0.05,
+      "kStunShakeSpeed": 80.0,
+      "kSmokeSpawnInterval": 0.05,
+      "kSmokeSize":[0.4, 0.4, 0.4]
+    },
+
+    "Types": {
+      "Normal": {
+        "modelPath": "enemy",
+        "speed": 0.1,
+        "hp": 35,
+        "attackPower": 5,
+        "hitBoxSize": [0.5, 1.0, 0.025],
+        "scale": [0.5, 0.5, 0.5]
+      },
+      "Power": {
+        "modelPath": "enemy",
+        "speed": 0.1,
+        "hp": 30,
+        "attackPower": 10,
+        "hitBoxSize": [1.0, 2.0, 1.0],
+        "scale": [2.0, 2.0, 2.0]
+      }
+    }
+  },
+
+  "Stage":{
+    "kStageWidth": 20.0,
+
+    "Models":{
+      "Stage1": {
+        "startModelPath": "load",
+        "midModelPath": "load",
+        "endModelPath": "load"
+      },
+
+      "Stage2": {
+        "startModelPath": "load",
+        "midModelPath": "load",
+        "endModelPath": "load"
+      }
+    }
+  },
+
+  "UI": {
+    "kDashIconSize": [64.0, 64.0],
+    "kSPIconSize": [64.0, 64.0]
+  }
+}

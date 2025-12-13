@@ -5,6 +5,7 @@
 /// UI
 /// </summary>
 class Player;
+class GameConfigManager;
 class UI {
 public:
 
@@ -21,6 +22,8 @@ private:
 	void UpdateAbilityCoolTime();
 
 private:
+	GameConfigManager* cfg_ = nullptr;
+
 	uint32_t textureHandle_ = 0;
 
 	KamataEngine::Sprite* hpBarSprite_ = nullptr;

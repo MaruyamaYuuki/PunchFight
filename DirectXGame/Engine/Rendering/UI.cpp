@@ -1,12 +1,18 @@
 #include "UI.h"
 #include <cassert>
 #include "../../App/Objects/Player.h"
+#include "../Utility/GameConfigManager.h"
 
 using namespace KamataEngine;
 
 void UI::Initialize(Player* player) {
+	cfg_ = GameConfigManager::GetInstance();
+
 	assert(player);
 	player_ = player;
+
+	dashIconSize_ = cfg_->getVector2("UI.kDashIconSize");
+	spIconSize = cfg_->getVector2("UI.kSPIconSize");
 
 	textureHandle_ = TextureManager::Load("UI/HPBar.png");
 	hpBarSprite_ = Sprite::Create(textureHandle_, {5.0f, 5.0f});

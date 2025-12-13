@@ -1,5 +1,6 @@
 #include <Windows.h>
 #include "KamataEngine.h"
+#include "../Utility/GameConfigManager.h"
 #include "../../App/Scenes/TitleScene.h"
 #include  "../../App/Scenes/GameScene.h"
 #include "../../App/Scenes/ClearScene.h"
@@ -44,6 +45,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	KamataEngine::Initialize(L"LE3C_16_マルヤマ_ユウキ_PunchFight");
 	// DirectXCommonインスタンス
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
+
+	GameConfigManager::GetInstance()->Initialize();
 
 #ifdef _DEBUG
 	gameScene = new GameScene();

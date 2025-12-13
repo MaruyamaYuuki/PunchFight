@@ -1,6 +1,7 @@
 #include "TitleScene.h"
 #include "../../Engine/Math/Easing.h"
 #include "../../Engine/Rendering/Fade.h"
+#include "../../Engine/Utility/GameConfigManager.h"
 #include <chrono>
 
 using namespace KamataEngine;
@@ -20,11 +21,31 @@ void TitleScene::Initialize() {
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
+	cfg_ = GameConfigManager::GetInstance();
 
 	camera_.Initialize();
 	worldTransform_.Initialize();
 	worldTransform_.rotation_.x -= 0.3f;
 	worldTransform_.translation_.y -= 5.0f;
+
+	
+	fadeTime_ = cfg_->getFloat("Global.kFadeTime");
+
+	waitDuration_ = cfg_->getFloat("Scene.Title.kTitleWaitDuration");
+	animeDuration_ = cfg_->getFloat("Scene.Title.Anime.kTitleAnimeDuration");
+	startScale_ = cfg_->getFloat("Scene.Title.Anime.kTitleAnimeStartScale");
+	animeEndSize_ = cfg_->getFloat("Scene.Title.Anime.kTitleAnimeEndScale");
+	bgmVolume_ = cfg_->getFloat("Scene.Title.Anime.kTitleBGMVolume");
+	seVolume_ = cfg_->getFloat("Scene.Title.Anime.kTitleSEVolume");
+	maxBlinkCount_ = cfg_->getInt("Scene.Title.Anime.kMaxBlinkCount");
+	
+	bgScrollSpeed_ = cfg_->getFloat("Scene.Title.Background.kBGScrollSpeed");
+	bgResetPosX_ = cfg_->getFloat("Scene.Title.Background.kBGResetPosX");
+
+	titlePos_ = cfg_->getVector2("Scene.Title.Sprites.kTitleSpriteCenterPos");
+	titleSize_ = cfg_->getVector2("Scene.Title.Sprites.kTitleSpriteBaseSize");
+
+	
 
 	textureHandle_ = TextureManager::Load("brickWall.png");
 	for (int32_t i = 0; i < 2; i++) {
@@ -58,8 +79,8 @@ void TitleScene::Update() {
 
 	for (int32_t i = 0; i < 2; i++) {
 		bgPosX_[i] -= bgScrollSpeed_;
-		if (bgPosX_[i] <= -1367.0f) {
-			bgPosX_[i] = 1367.0f;
+		if (bgPosX_[i] <= -bgResetPosX_) {
+			bgPosX_[i] = bgResetPosX_;
 		}
 
 		titleBackSprite[i]->SetPosition({bgPosX_[i], 0.0f});
@@ -135,7 +156,7 @@ void TitleScene::TitleAnimation() {
 		titleVisible_ = true;
 		titleAnimeTimer_ = 0.0f;
 		titleSprite_->SetSize({titleSize_.x * startScale_, titleSize_.y * startScale_});
-        hitSEVoiceHandle_ = audio_->PlayWave(hitSEDataHandle_, false, 1.0f);
+        hitSEVoiceHandle_ = audio_->PlayWave(hitSEDataHandle_, false, seVolume_);
 	}
 
 	if (titleVisible_) {
@@ -169,7 +190,7 @@ void TitleScene::SpriteFlashUpdate() {
 		if (!titleBlinking_ && !titleBlinkFinished_) {
 			if (input_->TriggerKey(DIK_E) || isAButtonPressed_) {
 				audio_->StopWave(titleBGMVoiceHandle_);
-				doubleHitSEVoiceHandle_ = audio_->PlayWave(doubleHitSEDataHandle_, false, 1.0f);
+				doubleHitSEVoiceHandle_ = audio_->PlayWave(doubleHitSEDataHandle_, false, seVolume_);
 				titleBlinking_ = true;
 				blinkCount_ = 0;
 				blinkTimer_ = 0.0f;
@@ -178,7 +199,7 @@ void TitleScene::SpriteFlashUpdate() {
 
 		// BGM を一度だけ再生
 		if (!titleBGMStarted_) {
-			titleBGMVoiceHandle_ = audio_->PlayWave(titleBGMDataHandle_, true, 0.25f);
+			titleBGMVoiceHandle_ = audio_->PlayWave(titleBGMDataHandle_, true, bgmVolume_);
 			titleBGMStarted_ = true;
 		}
 		// --- 点滅処理 ---
@@ -194,7 +215,7 @@ void TitleScene::SpriteFlashUpdate() {
 				blinkTimer_ = 0.0f;
 				blinkCount_++;
 
-				if (blinkCount_ >= kMaxBlinkCount_) {
+				if (blinkCount_ >= maxBlinkCount_) {
 					titleBlinking_ = false;
 					titleBlinkFinished_ = true;
 					titleSprite_->SetColor({1, 1, 1, 1}); // 最後は表示状態に戻す

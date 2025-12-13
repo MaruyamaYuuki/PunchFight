@@ -6,6 +6,7 @@
 /// タイトルシーン
 /// </summary>
 class Fade;
+class GameConfigManager;
 class TitleScene {
 public:
 	/// <summary>
@@ -55,6 +56,7 @@ private:
 	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
 	KamataEngine::Input* input_ = nullptr;
 	KamataEngine::Audio* audio_ = nullptr;
+	GameConfigManager* cfg_ = nullptr;
 
 	KamataEngine::Camera camera_;
 	WorldTransformEx worldTransform_;
@@ -71,25 +73,27 @@ private:
 	// ---タイトルロゴアニメーション用---
 	float blinkTime_ = 0.0f;
 	float titleAnimeTimer_ = 0.0f;
-	float animeDuration_ = 0.4f; // アニメ時間（秒） — 好みで調整
-	float startScale_ = 1.6f;   // 初期スケール（大きめ）
+	float animeDuration_; // アニメ時間（秒） — 好みで調整
+	float startScale_;   // 初期スケール（大きめ）
 	float waitTimer_ = 0.0f;    // 最初に待つ時間
-	float waitDuration_ = 0.5f; // 1秒待つ
+	float waitDuration_; // 1秒待つ
+	float animeEndSize_;
 	std::chrono::high_resolution_clock::time_point prevTime_;
 
 	bool titleVisible_ = false;
 	bool titleAnimeFinished_ = false;
 	float fadeInTimer_ = 0.0f;
 	bool titleBGMStarted_ = false;
+	float bgmVolume_ ;
+	float seVolume_;
 
-	KamataEngine::Vector2 titlePos_ = {640.0f, 200.0f};
-	KamataEngine::Vector2 titleSize_ = {600, 364};
-	// ---------------------------------
+	KamataEngine::Vector2 titlePos_;
+	KamataEngine::Vector2 titleSize_ ;
 
 	// ---背景スクロール用---
-	float bgScrollSpeed_ = 1.0f;
+	float bgScrollSpeed_;
 	float bgPosX_[2] = {{0.0f}, {1367.0f}};
-	// -----------------------
+	float bgResetPosX_;
 
 	// ---シーン遷移用---
 	// タイトル点滅制御用
@@ -97,12 +101,13 @@ private:
 	bool titleBlinkFinished_ = false;
 	float blinkTimer_ = 0.0f;
 	int32_t blinkCount_ = 0;
-	const int kMaxBlinkCount_ = 2;
+	int maxBlinkCount_ ;
 	// フェード用
 	Fade* fade_ = nullptr;
-	float fadeTime_ = 1.0f;
+	float fadeTime_;
 	bool isFinished_ = false;
-	// -----------------
+
+
 
 	uint32_t hitSEDataHandle_ = 0;
 	uint32_t hitSEVoiceHandle_ = 0;

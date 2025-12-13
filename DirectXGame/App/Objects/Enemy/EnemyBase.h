@@ -32,6 +32,7 @@ enum class EnemyState {
 /// <summary>
 /// 敵の基盤
 /// </summary>
+class GameConfigManager;
 class EnemyBase {
 public:
 	/// <summary>
@@ -170,6 +171,8 @@ public:
 	KamataEngine::Vector3 ComputeSeparation(const std::vector<std::unique_ptr<EnemyBase>>& allEnemies, float separationDistance);
 
 protected:
+	GameConfigManager* cfg_ = nullptr;
+
 	WorldTransformEx worldTransform_;
 	WorldTransformEx worldTransformEHitBox_;
 	WorldTransformEx worldTransformAHitBox_;
@@ -189,39 +192,39 @@ protected:
 	HitBox hitBox_;
 	HitBox attackHitBox_;
 
-	float attackCooldownTimer_ = 0;
-	const float attackDuration_ = 1.0f;
-	const float attackCooldown_ = 1.0f;
+	float attackCooldownTimer_ = 0;	
+	float attackDuration_ ;
+	float attackCooldown_;
 
 	bool hasDealtDamage_ = false;
 
 	// ---- スタン ----
 	bool isStun_ = false;
 	float stunTimer_ = 0.0f;
-	float stunDuration_ = 1.0f;
+	float stunDuration_;
 	float stunShakeTime_ = 0.0f;
-	float stunShakeAmplitude_ = 0.05f;
-	float stunShakeSpeed_ = 80.0f;
+	float stunShakeAmplitude_;
+	float stunShakeSpeed_;
 	KamataEngine::Vector3 originalPosition_ = {0.0f, 0.0f, 0.0f};
 
 	// ---- ノックバック ----
 	bool isKnockBack_ = false;
 	bool isDead_ = false;
 	float knockbackTime_ = 0.0f;
-	float knockbackSpeed_ = 5.0f;
-	float knockbackDuration_ = 0.5f;
-	float knockbackHeight_ = 2.0f;
+	float knockbackSpeed_f;
+	float knockbackDuration_;
+	float knockbackHeight_;
 	KamataEngine::Vector3 knockbackDir_;
 	KamataEngine::Vector3 knockbackVelocity_{0, 0, 0};
-	float gravity_ = 30.0f;
+	float gravity_;
 
 	float deltaTime_ = 1.0f / 60.0f;
 
     // --- パーティクル用 ---
 	std::unique_ptr<SmokeParticleManager> smokeManager_;
 	float smokeSpawnTimer_ = 0.0f;
-	const float smokeSpawnInterval_ = 0.05f;
-	KamataEngine::Vector3 smokeSize_ = {0.4f, 0.4f, 0.4f};
+	float smokeSpawnInterval_;
+	KamataEngine::Vector3 smokeSize_;
 	std::unique_ptr<DustParticleManager> dustManager_;
 
 	// ---- テクスチャ ----
