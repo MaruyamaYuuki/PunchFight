@@ -1,9 +1,12 @@
 #include "EnemyBase.h"
+#include "../../../Engine/Utility/GameConfigManager.h"
 
 using namespace KamataEngine;
 using namespace KamataEngine::MathUtility;
 
 void EnemyBase::Initialize(const EnemyData& data) {
+	cfg_ = GameConfigManager::GetInstance();
+
 	model_ = Model::CreateFromOBJ(data.modelPath, true);
 	speed_ = data.speed;
 	hp_ = data.hp;
@@ -22,6 +25,18 @@ void EnemyBase::Initialize(const EnemyData& data) {
 
 	dustManager_ = std::make_unique<DustParticleManager>();
 	dustManager_->Initialize();
+
+	worldTransform_.rotation_.x = cfg_->getFloat("Global.kPlaneModelRotateX");
+	gravity_ = cfg_->getFloat("Enemy.Default.kGravityAcceleration");
+	knockbackDuration_ = cfg_->getFloat("Enemy.Default.kKnockbackDuration");
+	attackDuration_ = cfg_->getFloat("Enemy.Default.kAttackDuration");
+	attackCooldown_ = cfg_->getFloat("Enemy.Default.kAttackCooldown");
+	stunDuration_ = cfg_->getFloat("Enemy.Default.kStunDuration");
+	stunShakeAmplitude_ = cfg_->getFloat("Enemy.Default.kStunShakeAmplitude");
+	stunShakeSpeed_ = cfg_->getFloat("Enemy.Default.kStunShakeSpeed");
+	smokeSpawnInterval_ = cfg_->getFloat("Enemy.Default.kSmokeSpawnInterval");
+	smokeSize_ = cfg_->getVector3("Enemy.Default.kSmokeSize");
+
 }
 
 void EnemyBase::Update(const Vector3&, const std::vector<std::unique_ptr<EnemyBase>>&) {
@@ -39,7 +54,7 @@ void EnemyBase::Update(const Vector3&, const std::vector<std::unique_ptr<EnemyBa
 
 		// ======== ノックバック物理処理 ========
 		// 減速用の係数
-		float drag = 0.95f;
+		float drag = cfg_->getFloat("Enemy.Default.kKnockbackDragFactor");
 
 		// X方向に加速して減速していく
 		knockbackVelocity_.x *= drag;
@@ -120,8 +135,8 @@ void EnemyBase::OnHit(int32_t damage, const Vector3& attackDir) {
 		knockbackTime_ = 0.0f;
 
 		// スマブラ風 初速
-		float basePower = 25.0f;   // 吹っ飛び強さ
-		float upwardBoost = 12.0f; // 上方向の初速
+		float basePower = cfg_->getFloat("Enemy.Default.kKnockbackBasePower"); // 吹っ飛び強さ
+		float upwardBoost = cfg_->getFloat("Enemy.Default.kKnockbackUpwardBoost"); // 上方向の初速
 
 		knockbackVelocity_ = {attackDir.x * basePower, upwardBoost, 0.0f};
 	} else {

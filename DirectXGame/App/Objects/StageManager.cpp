@@ -1,34 +1,39 @@
 #include "StageManager.h"
 #include <cmath>
+#include "../../Engine/Utility/GameConfigManager.h"
 
 using namespace KamataEngine;
 
 void StageManager::Initialize(int32_t stageNumber, int32_t repeatCount) {
+	cfg_ = GameConfigManager::GetInstance();
+
 	stageCount_ = repeatCount;
 	currentIndex_ = INT32_MIN;
 
 	// モデルパス設定
 	switch (stageNumber) {
 	case 1:
-		startModel_ = KamataEngine::Model::CreateFromOBJ("load", true);
-		midModel_ = KamataEngine::Model::CreateFromOBJ("load", true);
-		endModel_ = KamataEngine::Model::CreateFromOBJ("load", true);
+		startModel_ = KamataEngine::Model::CreateFromOBJ(cfg_->getString("Stage.Models.Stage1.startModelPath"), true);
+		midModel_ = KamataEngine::Model::CreateFromOBJ(cfg_->getString("Stage.Models.Stage1.midModelPath"), true);
+		endModel_ = KamataEngine::Model::CreateFromOBJ(cfg_->getString("Stage.Models.Stage1.endModelPath"), true);
 		break;
 
 	case 2:
-		startModel_ = KamataEngine::Model::CreateFromOBJ("stage_cave_start.obj", true);
-		midModel_ = KamataEngine::Model::CreateFromOBJ("stage_cave.obj", true);
-		endModel_ = KamataEngine::Model::CreateFromOBJ("stage_cave_end.obj", true);
+		startModel_ = KamataEngine::Model::CreateFromOBJ(cfg_->getString("Stage.Models.Stage2.startModelPath"), true);
+		midModel_ = KamataEngine::Model::CreateFromOBJ(cfg_->getString("Stage.Models.Stage2.midModelPath"), true);
+		endModel_ = KamataEngine::Model::CreateFromOBJ(cfg_->getString("Stage.Models.Stage2.endModelPath"), true);
 		break;
 	}
+
+	stageWidth_ = cfg_->getFloat("Stage.kStageWidth");
 }
 
 
 void StageManager::Update(float cameraX) {
 	// スクロールに対して余裕を持たせる
-	float preloadOffset = stageWidth * 0.3f; // 0.3倍の余裕を持って先読み
+	float preloadOffset = stageWidth_ * 0.3f; // 0.3倍の余裕を持って先読み
 
-	int32_t newIndex = static_cast<int32_t>(std::floor((cameraX + preloadOffset) / stageWidth));
+	int32_t newIndex = static_cast<int32_t>(std::floor((cameraX + preloadOffset) / stageWidth_));
 
 	if (newIndex != currentIndex_) {
 		currentIndex_ = newIndex;
@@ -76,7 +81,7 @@ void StageManager::UpdateLoadedStages() {
 			}
 
 			stage->Initialize(modelToUse);
-			stage->SetPosition(index * stageWidth);
+			stage->SetPosition(index * stageWidth_);
 			activeStages_[index] = std::move(stage);
 		}
 	}

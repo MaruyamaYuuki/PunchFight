@@ -8,6 +8,7 @@
 /// <summary>
 /// プレイヤー
 /// </summary>
+class GameConfigManager;
 class Player {
 public:
 	/// <summary>
@@ -82,7 +83,7 @@ public:
 	/// 攻撃のヒットボックスを取得する
 	/// </summary>
 	/// <returns>攻撃判定の情報（位置・サイズ・有効状態など）</returns>
-	HitBox GetAttackHitBox() const { return attackHitBox_; }
+	HitBox GetAttackHitBox() const { return nAttackHitBox_; }
 
 	/// <summary>
 	/// 強攻撃のヒットボックスを取得する
@@ -94,7 +95,7 @@ public:
 	/// 攻撃力を取得する
 	/// </summary>
 	/// <returns>プレイヤーの攻撃力</returns>
-	int32_t GetAttackPower() const { return attackPower_; }
+	int32_t GetAttackPower() const { return nAttackPower_; }
 
 	/// <summary>
 	/// 強攻撃の攻撃力を取得する
@@ -209,10 +210,11 @@ private:
 
 private:
 	KamataEngine::Input* input_ = nullptr;
+	GameConfigManager* cfg_ = nullptr;
 
 	WorldTransformEx worldTransform_;
 	WorldTransformEx worldTransformSP_;
-	WorldTransformEx worldTransformHitBox_;
+	WorldTransformEx worldTransformNormalAttackHitBox_;
 	WorldTransformEx worldTransformSPHitBox_;
 	WorldTransformEx worldTransformPHitBox_;
 
@@ -221,11 +223,6 @@ private:
 	KamataEngine::Model* modelDebugHitBox_ = nullptr;
 	KamataEngine::Model* modelHitBox_ = nullptr;
 	KamataEngine::Model* modelSPHiyBox_ = nullptr;
-
-	bool isDead_ = false;
-	int32_t HP_ = 100;
-	int32_t attackPower_ = 10;
-	int32_t spAttackPower_ = 30;
 
 	// --- プレイヤーのテクスチャ ---
 	uint32_t textureHandle_ = 0;
@@ -256,31 +253,35 @@ private:
 
 	uint32_t smokeTexture_ = 0;
 
+	bool isDead_ = false;
+	int32_t HP_;
+
 	// --- 移動関連 ---
 	KamataEngine::Vector3 move_ = {0, 0, 0};
-	float moveSpeed_ = 0.05f; // 通常移動速度
+	float moveSpeed_; // 通常移動速度
 	int32_t walkFrame_ = 0;         // 0〜3でループ
 	int32_t walkFrameTimer_ = 0;    // テクスチャ切替タイマー
-	int32_t walkFrameInterval_ = 6; // 何フレームごとに切り替えるか
+	int32_t walkFrameInterval_; // 何フレームごとに切り替えるか
 
 	// --- ステップ関連 ---
     bool isStepping_ = false;
 	KamataEngine::Vector3 stepDirection_ = {0, 0, 0};
 	int32_t stepTimer_ = 0;
-	int32_t stepCooldown_ = 30; // 例：1秒クールタイム（60FPS想定）
+	int32_t stepCooldown_; // 例：1秒クールタイム（60FPS想定）
 	int32_t stepFrame_ = 0;
-	float stepPower_ = 2.5f; // 通常移動の3倍速
+	float stepPower_ ; // 通常移動の3倍速
 
     // --- 攻撃管理 ---
-	bool isAttacking_ = false;    // 攻撃中か
-	bool canAttack_ = true;       // 攻撃可能か
-	int32_t attackTimer_ = 0;         // 攻撃残り時間
-	int32_t attackCooldownTimer_ = 0; // クールタイム残り時間
+	bool isNormalAttacking_ = false;    // 攻撃中か
+	bool canNormalAttack_ = true;       // 攻撃可能か
+	int32_t nAttackTimer_ = 0;         // 攻撃残り時間
+	int32_t nAttackCooldownTimer_ = 0; // クールタイム残り時間
+	int32_t nAttackPower_;
 
-	const int32_t attackDuration_ = 15; // 攻撃の長さ
-	const int32_t attackCooldown_ = 5; // クールタイムの長さ
+	int32_t nAttackDuration_; // 攻撃の長さ
+	int32_t nAttackCooldown_; // クールタイムの長さ
 
-	bool attackFromRight_ = true; // 右 or 左パンチ切り替え
+	bool nAttackFromRight_ = true; // 右 or 左パンチ切り替え
 	float facingDir_ = 1.0f;      // 向き（1.0f：右, -1.0f：左）
 
 	// --- 強攻撃管理 ---
@@ -288,10 +289,11 @@ private:
 	bool canSpecialAttack_ = false;
 	float spAttackTimer_ = 0.0f;
 	float spAttackCooldownTimer_ = 0.0f;
-	float spAttackMoveSpeed_ = 0.05f;
+	float spAttackMoveSpeed_;
+	int32_t spAttackPower_;
 
-	const float spAttackDuration_ = 3.0f;
-	const float spAttackCoolDown_ = 5.0f;
+	float spAttackDuration_;
+	float spAttackCoolDown_;
 	const float deltaTime_ = 1.0f / 60.0f;
 
 	float spAttackDirection_ = 1.0f; // 気弾の発射方向を記録
@@ -299,23 +301,23 @@ private:
 
 	// --- ヒットボックス ---
 	HitBox playerHitBox_;
-	HitBox attackHitBox_; // 現在のパンチのヒットボックス
+	HitBox nAttackHitBox_; // 現在のパンチのヒットボックス
 	HitBox spAttackHitBox_;
 
 	// --- ノックダウン処理用 ---
-	float knockDownTimer_ = 2.0f;
+	float knockDownTimer_;
 
 	float endMoveLimitX_ = 0;
 
 	// ---クリア演出用 ---
 	bool isGoal_ = false;
 	bool isVictory_ = false;
-	float poseWaitTimer_ = 1.0f;
+	float poseWaitTimer_;
 
 	// --- パーティクル用 ---
 	std::unique_ptr<SmokeParticleManager> smokeManager_;
 	float trailSpawnTimer_ = 0.0f;
-	const float trailSpawnInterval_ = 0.05f;
-	KamataEngine::Vector3 smokeSize_ = {0.05f, 0.05f, 0.05f};
+	float trailSpawnInterval_;
+	KamataEngine::Vector3 smokeSize_;
 
 };

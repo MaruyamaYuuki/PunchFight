@@ -6,6 +6,7 @@
 /// <summary>
 /// ステージ管理
 /// </summary>
+class GameConfigManager;
 class StageManager {
 public:
 	/// <summary>
@@ -44,13 +45,15 @@ private:
 	void UpdateLoadedStages();
 
 private:
+	GameConfigManager* cfg_ = nullptr;
+
 	std::unordered_map<int32_t, std::unique_ptr<Stage>> activeStages_;
 	KamataEngine::Model* model_ = nullptr;
 	KamataEngine::Model* startModel_ = nullptr;
 	KamataEngine::Model* midModel_ = nullptr;
 	KamataEngine::Model* endModel_ = nullptr;
 
-	float stageWidth = 20.0f; // 区間の幅
+	float stageWidth_; // 区間の幅
 	int32_t currentIndex_ = 0;    // 現在位置の区間インデックス
 	int32_t stageCount_ = 0;      // ステージ全体の区間数
 };

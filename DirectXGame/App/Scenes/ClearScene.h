@@ -6,6 +6,7 @@
 /// クリアシーン
 /// </summary>
 class Fade;
+class GameConfigManager;
 class ClearScene {
 	/// <summary>
 	/// クリアシーンの進行状態
@@ -49,9 +50,42 @@ public:
 	bool IsFinished() const { return isFinished_; }
 
 private:
+
+	/// <summary>
+	/// 待機フェースの更新
+	/// </summary>
+	void UpdateWait();
+
+	/// <summary>
+	/// プレイフェースの更新
+	/// </summary>
+	void UpdatePlay();
+
+	/// <summary>
+	/// ゴール待機処理の更新
+	/// </summary>
+	void UpdateGoalWaite();
+
+	/// <summary>
+	/// クリアテキストの更新
+	/// </summary>
+	void UpdateClearText();
+
+	/// <summary>
+	/// 入力処理の更新
+	/// </summary>
+	void UpdateInput();
+
+	/// <summary>
+	/// フェードアウトフェーズの更新
+	/// </summary>
+	void UpdateFadeOut();
+
+private:
 	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
 	KamataEngine::Input* input_ = nullptr;
 	KamataEngine::Audio* audio_ = nullptr;
+	GameConfigManager* cfg_ = nullptr;
 
 	KamataEngine::Camera camera_;
 

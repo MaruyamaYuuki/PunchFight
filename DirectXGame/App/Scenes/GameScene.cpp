@@ -4,6 +4,7 @@
 #include "../../Engine/Rendering/Fade.h"
 #include "../../Engine/Math/Easing.h"
 #include "../../Engine//Math/Collision.h"
+#include "../../Engine/Utility/GameConfigManager.h"
 #include <algorithm>
 
 using namespace KamataEngine;
@@ -28,10 +29,28 @@ void GameScene::Initialize() {
 	dxCommon_ = DirectXCommon::GetInstance(); 
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
+	cfg_ = GameConfigManager::GetInstance();
 
 	camera_.Initialize();
 
 	worldTransform_.Initialize();
+
+	// 基礎情報
+	fadeTime_ = cfg_->getFloat("Global.kFadeTime");
+	startTime_ = cfg_->getFloat("Scene.Game.kReadyTime");
+	cameraLimitZMin_ = cfg_->getFloat("Scene.Game.Area.kCameraLimitZMin");
+	cameraLimitZMax_ = cfg_->getFloat("Scene.Game.Area.kCameraLimitZMax");	
+	fightTextPos_ = cfg_->getVector2("Scene.Game.FightTextAnime.kFightTextCenterPos");
+	fightTextSize_ = cfg_->getVector2("Scene.Game.FightTextAnime.kFightTextBaseSize");
+	animeDuration_ = cfg_->getFloat("Scene.Game.FightTextAnime.kFightTextAnimeDuration");
+	startScale_ = cfg_->getFloat("Scene.Game.FightTextAnime.kFightTextStartScale");
+	waitDuration_ = cfg_->getFloat("Scene.Game.FightTextAnime.kFightTextWaitDuration");
+	alphaDuration_ = cfg_->getFloat("Scene.Game.GameOver.kBlackSpriteAlphaDuration");
+	gameOverFallDuration_ = cfg_->getFloat("Scene.Game.GameOver.kGameOverFallDuration");
+	guideDuration_ = cfg_->getFloat("Scene.Game.Guide.kGuideDisplayDuration");
+	blinkInterval_ = cfg_->getFloat("Scene.Game.Guide.kGuideBlinkInterval");
+	maxBlinkCount_ = cfg_->getInt("Scene.Game.Guide.kGuideMaxBlinkCount");
+
 
 	modelLoad_ = Model::CreateFromOBJ("load", true);
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
@@ -56,7 +75,7 @@ void GameScene::Initialize() {
 	startGongSEDataHandle_ = audio_->LoadWave("audio/SE/startGong.wav");
 
 	player_ = new Player();
-	player_->Initialize(modelPlayer_, modelSPAttack_, modelBoxFrame_, position_);
+	player_->Initialize(modelPlayer_, modelSPAttack_, modelBoxFrame_, cfg_->getVector3("Player.kGameInitialPos"));
 	player_->SetEndMoveLimitX(moveLimit_[0]);
 
 	EnemyGenerate();
@@ -68,7 +87,7 @@ void GameScene::Initialize() {
 	cameraController_->Initialize();            // 初期化
 	cameraController_->SetTarget(player_);      // 追従対象をセット
 	cameraController_->Reset();                 // リセット(瞬間合わせ)
-	CameraController::Rect cameraArea = {0.0f, scrollArea_[0], -8.0f, -1.0f};
+	CameraController::Rect cameraArea = {0.0f, scrollArea_[0], cameraLimitZMin_, cameraLimitZMax_};
 	cameraController_->SetMovableArea(cameraArea);
 
 	fade_ = new Fade();
@@ -295,18 +314,20 @@ void GameScene::GameOver() {
 	if (player_->IsDead()) {
 		// 経過時間を加算
 		alphaCounter_ += 1.0f / 60.0f;
-		if (alphaCounter_ > duration_)
-			alphaCounter_ = duration_;
+		if (alphaCounter_ > alphaDuration_)
+			alphaCounter_ = alphaDuration_;
 
 		// 正規化された進行度
-		float t = alphaCounter_ / duration_;
+		float t = alphaCounter_ / alphaDuration_;
 		t = std::clamp(t, 0.0f, 1.0f);
 
 		// イージングで滑らかフェード
 		float easedT = Easing::EaseInQuad(t);
 
+		const float kMaxAlpha = cfg_->getFloat("Scene.Game.GameOver.kBlackSpriteMaxAlpha");
+
 		// ===== 背景の黒フェード =====
-		blackSprite_->SetColor({1, 1, 1, 0.8f * easedT});
+		blackSprite_->SetColor({1, 1, 1, kMaxAlpha * easedT});
 
 		// ===== フェード完了後の「GAME OVER」落下 =====
 		if (t >= 1.0f) {
@@ -317,9 +338,9 @@ void GameScene::GameOver() {
 			float easedFall = Easing::EaseOutBounce(fallT); // ポンっと落ちる感じ
 
 			// Y位置を補間（上→中央）
-			float startY = -200.0f;
-			float endY = 300.0f;
-			float currentY = startY + (endY - startY) * easedFall;
+			const float kStartY = cfg_->getFloat("Scene.Game.GameOver.kGameOverTextStartY");
+			const float kEndY = cfg_->getFloat("Scene.Game.GameOver.kGameOverTextEndY");
+			float currentY = kStartY + (kEndY - kStartY) * easedFall;
 
 			gameOverTextSprite_->SetPosition({640.0f, currentY});
 			gameOverTextSprite_->SetColor({1, 1, 1, 1.0f}); // 完全不透明
@@ -421,14 +442,12 @@ void GameScene::EnemyUpdate() {
 
     if (areaClearedFlag_[2]) {
 		player_->SetEndMoveLimitX(moveLimit_[3]);
-		//phase_ = Phase::kFadeOut;
-		//fade_->Start(Fade::Status::FadeOut, fadeTime_);
 	} else if (areaClearedFlag_[1]) {
-		CameraController::Rect area = {0.0f, scrollArea_[2], -8.0f, -1.0f};
+		CameraController::Rect area = {0.0f, scrollArea_[2], cameraLimitZMin_, cameraLimitZMax_};
 		cameraController_->SetMovableArea(area);
 		player_->SetEndMoveLimitX(moveLimit_[2]);
 	} else if (areaClearedFlag_[0]) {
-		CameraController::Rect area = {0.0f, scrollArea_[1], -8.0f, -1.0f};
+		CameraController::Rect area = {0.0f, scrollArea_[1], cameraLimitZMin_, cameraLimitZMax_};
 		cameraController_->SetMovableArea(area);
 		player_->SetEndMoveLimitX(moveLimit_[1]);
 	}
