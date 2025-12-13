@@ -1,5 +1,6 @@
 #pragma once
 #include "KamataEngine.h"
+#include <memory>
 #include "../../Engine/Math/WorldTransformEx.h"
 #include "../../Engine/Camera/CameraController.h"
 #include "../../Engine/Rendering/UI.h"
@@ -102,35 +103,37 @@ private:
 	KamataEngine::Camera camera_;
 	WorldTransformEx worldTransform_;
 
-	KamataEngine::Model* modelLoad_ = nullptr;
-	KamataEngine::Model* modelPlayer_ = nullptr;
-	KamataEngine::Model* modelSPAttack_ = nullptr;
-	KamataEngine::Model* modelBoxFrame_ = nullptr;
+	std::unique_ptr<KamataEngine::Model> modelLoad_;
+	std::unique_ptr<KamataEngine::Model> modelPlayer_;
+	std::unique_ptr<KamataEngine::Model> modelSPAttack_;
+	std::unique_ptr<KamataEngine::Model> modelBoxFrame_;
 
 	uint32_t textureHandle_ = 0;
 
-	KamataEngine::Sprite* backTextSprite_ = nullptr;
-	KamataEngine::Sprite* readyTextSprite_ = nullptr;
-	KamataEngine::Sprite* fightTextSprite_ = nullptr;
-	KamataEngine::Sprite* gameOverTextSprite_ = nullptr;
-	KamataEngine::Sprite* blackSprite_ = nullptr;
-	KamataEngine::Sprite* resetTextSprite_ = nullptr;
-	KamataEngine::Sprite* guideTexture_ = nullptr;
+	std::unique_ptr<KamataEngine::Sprite> backTextSprite_;
+	std::unique_ptr<KamataEngine::Sprite> readyTextSprite_;
+	std::unique_ptr<KamataEngine::Sprite> fightTextSprite_;
+	std::unique_ptr<KamataEngine::Sprite> gameOverTextSprite_;
+	std::unique_ptr<KamataEngine::Sprite> blackSprite_;
+	std::unique_ptr<KamataEngine::Sprite> resetTextSprite_;
+	std::unique_ptr<KamataEngine::Sprite> guideTexture_;
 
 	uint32_t startGongSEDataHandle_ = 0;
 	uint32_t startGongSEVoiceHandle_ = 0;
 
-	StageManager* stage_ = nullptr;
-	Player* player_ = nullptr;
+	std::unique_ptr<StageManager> stage_;
+	std::unique_ptr<Player> player_;
+	std::unique_ptr<CameraController> cameraController_;
+	std::unique_ptr<Fade> fade_;
+	std::unique_ptr<EnemyManager> enemyManager_;
+	std::unique_ptr<UI> ui_;
 
 	float moveLimit_[4] = {20.0f, 35.0f, 50.0f, 53.0f};
 	float scrollArea_[3] = {15.0f, 30.0f, 45.0f};
 	float cameraLimitZMin_;
 	float cameraLimitZMax_;
 
-	CameraController* cameraController_ = nullptr;
 
-	Fade* fade_ = nullptr;
 	float fadeTime_;
 
 	float startTime_;
@@ -139,10 +142,6 @@ private:
 	bool isFinished_ = false;
 
 	Phase phase_ = Phase::kFadeIn;
-
-	EnemyManager* enemyManager_ = nullptr;
-
-	UI* ui_ = nullptr;
 
 	// ---ファイトテキストアニメーション用---
 	float blinkTime_ = 0.0f;

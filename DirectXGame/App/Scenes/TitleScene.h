@@ -63,12 +63,12 @@ private:
 
 	uint32_t textureHandle_ = 0;
 
-	KamataEngine::Sprite* titleBackSprite[2];
-	KamataEngine::Sprite* titleSprite_ = nullptr;
-	KamataEngine::Sprite* startSprite_ = nullptr;
-	KamataEngine::Sprite* fadeSprite_ = nullptr;
-	KamataEngine::Sprite* loadingTextSprite_ = nullptr;
-	KamataEngine::Sprite* loadingBarSprite_ = nullptr;
+    std::array<std::unique_ptr<KamataEngine::Sprite>, 2> titleBackSprite_;
+	std::unique_ptr<KamataEngine::Sprite> titleSprite_;
+	std::unique_ptr<KamataEngine::Sprite> startSprite_;
+	std::unique_ptr<KamataEngine::Sprite> fadeSprite_;
+	std::unique_ptr<KamataEngine::Sprite> loadingTextSprite_;
+	std::unique_ptr<KamataEngine::Sprite> loadingBarSprite_;
 
 	// ---タイトルロゴアニメーション用---
 	float blinkTime_ = 0.0f;
@@ -103,11 +103,9 @@ private:
 	int32_t blinkCount_ = 0;
 	int maxBlinkCount_ ;
 	// フェード用
-	Fade* fade_ = nullptr;
+	std::unique_ptr<Fade> fade_;
 	float fadeTime_;
 	bool isFinished_ = false;
-
-
 
 	uint32_t hitSEDataHandle_ = 0;
 	uint32_t hitSEVoiceHandle_ = 0;

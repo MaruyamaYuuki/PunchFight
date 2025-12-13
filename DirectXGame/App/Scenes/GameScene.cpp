@@ -11,19 +11,7 @@ using namespace KamataEngine;
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() {
-	delete modelLoad_;
-	delete modelPlayer_;
-	delete modelSPAttack_;
-	delete modelBoxFrame_;
-
-	delete player_;
-	delete stage_;
-	delete cameraController_;
-	delete fade_;
-	delete enemyManager_;
-	delete ui_;
-}
+GameScene::~GameScene() = default;
 
 void GameScene::Initialize() { 
 	dxCommon_ = DirectXCommon::GetInstance(); 
@@ -52,50 +40,51 @@ void GameScene::Initialize() {
 	maxBlinkCount_ = cfg_->getInt("Scene.Game.Guide.kGuideMaxBlinkCount");
 
 
-	modelLoad_ = Model::CreateFromOBJ("load", true);
-	modelPlayer_ = Model::CreateFromOBJ("player", true);
-	modelSPAttack_ = Model::CreateFromOBJ("specialAttack", true);
-	modelBoxFrame_ = Model::CreateFromOBJ("boxFrame", true);
+	modelLoad_.reset(Model::CreateFromOBJ("load", true));
+	modelPlayer_.reset( Model::CreateFromOBJ("player", true));
+	modelSPAttack_.reset(Model::CreateFromOBJ("specialAttack", true));
+	modelBoxFrame_.reset(Model::CreateFromOBJ("boxFrame", true));
 
 	textureHandle_ = TextureManager::Load("gameSelect.png");
-	backTextSprite_ = Sprite::Create(textureHandle_, {640.0f, 360.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
+	backTextSprite_.reset(Sprite::Create(textureHandle_, {640.0f, 360.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
 	textureHandle_ = TextureManager::Load("readyText.png");
-	readyTextSprite_ = Sprite::Create(textureHandle_, {640.0f, 300.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
+	readyTextSprite_.reset( Sprite::Create(textureHandle_, {640.0f, 300.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
 	textureHandle_ = TextureManager::Load("fightText.png");
-	fightTextSprite_ = Sprite::Create(textureHandle_, {640.0f, 300.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
+	fightTextSprite_.reset(Sprite::Create(textureHandle_, {640.0f, 300.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
 	textureHandle_ = TextureManager::Load("knockDownText.png");
-	gameOverTextSprite_ = Sprite::Create(textureHandle_, {640.0f, 300.0f}, {1, 1, 1, 0}, {0.5f, 0.5f});
+	gameOverTextSprite_.reset(Sprite::Create(textureHandle_, {640.0f, 300.0f}, {1, 1, 1, 0}, {0.5f, 0.5f}));
 	textureHandle_ = TextureManager::Load("black.png");
-	blackSprite_ = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1, 1, 1, 0});
+	blackSprite_.reset(Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1, 1, 1, 0}));
 	textureHandle_ = TextureManager::Load("resetText.png");
-	resetTextSprite_ = Sprite::Create(textureHandle_, {640.0f, 500.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
+	resetTextSprite_.reset(Sprite::Create(textureHandle_, {640.0f, 500.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
 	textureHandle_ = TextureManager::Load("scrollGuide.png");
-	guideTexture_ = Sprite::Create(textureHandle_, {1100.0f, 500.0f},{1, 1, 1, 1}, {0.5f, 0.5f});
+	guideTexture_.reset(Sprite::Create(textureHandle_, {1100.0f, 500.0f},{1, 1, 1, 1}, {0.5f, 0.5f}));
 
 	startGongSEDataHandle_ = audio_->LoadWave("audio/SE/startGong.wav");
 
-	player_ = new Player();
-	player_->Initialize(modelPlayer_, modelSPAttack_, modelBoxFrame_, cfg_->getVector3("Player.kGameInitialPos"));
+	player_ = std::make_unique<Player>();
+	player_->Initialize(modelPlayer_.get(), modelSPAttack_.get(), modelBoxFrame_.get(), cfg_->getVector3("Player.kGameInitialPos"));
 	player_->SetEndMoveLimitX(moveLimit_[0]);
 
 	EnemyGenerate();
 
-	stage_ = new StageManager();
+	stage_ = std::make_unique<StageManager>();
 	stage_->Initialize(1, 9);
 
-	cameraController_ = new CameraController(); // 生成
-	cameraController_->Initialize();            // 初期化
-	cameraController_->SetTarget(player_);      // 追従対象をセット
+	cameraController_ = std::make_unique<CameraController>();
+	cameraController_->Initialize();
+	cameraController_->SetTarget(player_.get());
 	cameraController_->Reset();                 // リセット(瞬間合わせ)
 	CameraController::Rect cameraArea = {0.0f, scrollArea_[0], cameraLimitZMin_, cameraLimitZMax_};
 	cameraController_->SetMovableArea(cameraArea);
 
-	fade_ = new Fade();
+	fade_ = std::make_unique<Fade>();
 	fade_->Initialize();
 	fade_->Start(Fade::Status::FadeIn, fadeTime_);
 
-	ui_ = new UI();
-	ui_->Initialize(player_);
+	ui_ = std::make_unique<UI>();
+	ui_->Initialize(player_.get());
+
 
 	prevTime_ = std::chrono::high_resolution_clock::now();
 	waitTimer_ = 0.0f;
@@ -382,7 +371,7 @@ void GameScene::ResetGame() {
 }
 
 void GameScene::EnemyGenerate() {
-	enemyManager_ = new EnemyManager();
+	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->Initialize();
 
 	// --- エリア追加（トリガー位置） ---

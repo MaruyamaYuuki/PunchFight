@@ -8,14 +8,7 @@ using namespace KamataEngine;
 
 TitleScene::TitleScene() {}
 
-TitleScene::~TitleScene() { 
-	delete titleSprite_; 
-	delete startSprite_;
-	for (int32_t i = 0; i < 2; i++) {
-		delete titleBackSprite[i];
-	}
-	audio_->StopWave(titleBGMVoiceHandle_);
-}
+TitleScene::~TitleScene() = default;
 
 void TitleScene::Initialize() {
 	dxCommon_ = DirectXCommon::GetInstance();
@@ -48,16 +41,15 @@ void TitleScene::Initialize() {
 	
 
 	textureHandle_ = TextureManager::Load("brickWall.png");
-	for (int32_t i = 0; i < 2; i++) {
-		titleBackSprite[i] = Sprite::Create(textureHandle_, {bgPosX_[i], 0.0f});
-	}
+	titleBackSprite_[0].reset(Sprite::Create(textureHandle_, {bgPosX_[0], 0.0f}));
+	titleBackSprite_[1].reset(Sprite::Create(textureHandle_, {bgPosX_[1], 0.0f}));
 
 	textureHandle_ = TextureManager::Load("punchFightTitle.png");
-	titleSprite_ = Sprite::Create(textureHandle_, titlePos_, {1, 1, 1, 1}, {0.5f, 0.5f});
+	titleSprite_.reset(Sprite::Create(textureHandle_, titlePos_, {1, 1, 1, 1}, {0.5f, 0.5f}));
 	titleSprite_->SetSize(titleSize_);
 
 	textureHandle_ = TextureManager::Load("eStart.png");
-	startSprite_ = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1, 1, 1, 0}, {0.5f, 0.5f});
+	startSprite_.reset(Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1, 1, 1, 0}, {0.5f, 0.5f}));
 	startSprite_->SetPosition({640.0f, 500.0f});
 
 	hitSEDataHandle_ = audio_->LoadWave("audio/SE/hitSE.wav");
@@ -67,7 +59,7 @@ void TitleScene::Initialize() {
 	prevTime_ = std::chrono::high_resolution_clock::now();
 	waitTimer_ = 0.0f;
 
-	fade_ = new Fade();
+	fade_ = std::make_unique<Fade>();
 	fade_->Initialize();
 	fade_->Start(Fade::Status::FadeOut, fadeTime_);
 }
@@ -83,7 +75,8 @@ void TitleScene::Update() {
 			bgPosX_[i] = bgResetPosX_;
 		}
 
-		titleBackSprite[i]->SetPosition({bgPosX_[i], 0.0f});
+		titleBackSprite_[0]->SetPosition({bgPosX_[0], 0.0f});
+		titleBackSprite_[1]->SetPosition({bgPosX_[1], 0.0f});
 	}
 
 	TitleAnimation();
@@ -101,9 +94,8 @@ void TitleScene::Draw() {
 	// 背景スプライト描画前処理
 	Sprite::PreDraw(dxCommon_->GetCommandList());
 
-	for (int32_t i = 0; i < 2; i++) {
-		titleBackSprite[i]->Draw();
-	}
+	titleBackSprite_[0]->Draw();
+	titleBackSprite_[1]->Draw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();

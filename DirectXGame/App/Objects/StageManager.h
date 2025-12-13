@@ -48,7 +48,7 @@ private:
 	GameConfigManager* cfg_ = nullptr;
 
 	std::unordered_map<int32_t, std::unique_ptr<Stage>> activeStages_;
-	KamataEngine::Model* model_ = nullptr;
+
 	KamataEngine::Model* startModel_ = nullptr;
 	KamataEngine::Model* midModel_ = nullptr;
 	KamataEngine::Model* endModel_ = nullptr;

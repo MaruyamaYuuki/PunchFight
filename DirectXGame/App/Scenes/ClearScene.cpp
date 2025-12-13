@@ -8,7 +8,7 @@ using namespace KamataEngine;
 
 ClearScene::ClearScene() {}
 
-ClearScene::~ClearScene() {}
+ClearScene::~ClearScene() = default;
 
 void ClearScene::Initialize() {
 	dxCommon_ = DirectXCommon::GetInstance();
@@ -21,8 +21,8 @@ void ClearScene::Initialize() {
 	waitTimer_ = cfg_->getFloat("Scene.Clear.kInitialWaitTime");
 	clearScaleSpeed_ = cfg_->getFloat("Scene.Clear.ClearText.kClearScaleSpeed");
 
-	modelPlayer_ = Model::CreateFromOBJ("player", true);
-	modelBoxFrame_ = Model::CreateFromOBJ("boxFrame", true);
+	modelPlayer_.reset(Model::CreateFromOBJ("player", true));
+	modelBoxFrame_.reset(Model::CreateFromOBJ("boxFrame", true));
 
 	textureHandle_ = TextureManager::Load("clearScene/clearBack.png");
 	backTexture_ = Sprite::Create(textureHandle_, {0.0f, 0.0f});
@@ -37,10 +37,10 @@ void ClearScene::Initialize() {
 	textureHandle_ = TextureManager::Load("clearScene/keyGuide.png");
 	pushSpaceTexture_ = Sprite::Create(textureHandle_, {640.0f, 360.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
 
-	player_ = new Player();
-	player_->Initialize(modelPlayer_, modelBoxFrame_, modelBoxFrame_, cfg_->getVector3("Player.kClearInitialPos"));
+	player_ = std::make_unique<Player>();
+	player_->Initialize(modelPlayer_.get(), modelBoxFrame_.get(), modelBoxFrame_.get(), cfg_->getVector3("Player.kClearInitialPos"));
 
-	fade_ = new Fade();
+	fade_ = std::make_unique<Fade>();
 	fade_->Initialize();
 	fade_->SetAlpha(0.0f);
 }
