@@ -89,8 +89,8 @@ private:
 
 	KamataEngine::Camera camera_;
 
-	KamataEngine::Model* modelPlayer_ = nullptr;
-	KamataEngine::Model* modelBoxFrame_ = nullptr;
+	std::unique_ptr<KamataEngine::Model> modelPlayer_;
+	std::unique_ptr<KamataEngine::Model> modelBoxFrame_;
 
 	uint32_t textureHandle_ = 0;
 
@@ -100,9 +100,9 @@ private:
 	KamataEngine::Sprite* clearTextTexture_ = 0;
 	KamataEngine::Sprite* pushSpaceTexture_ = 0;
 
-	Player* player_ = nullptr;
+	std::unique_ptr<Player> player_;
 
-	Fade* fade_ = nullptr;
+	std::unique_ptr<Fade> fade_;
 	float fadeTime_ = 1.0f;
 
 	bool isFinished_ = false;
