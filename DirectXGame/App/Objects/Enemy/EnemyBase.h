@@ -196,6 +196,11 @@ protected:
 	float attackDuration_ ;
 	float attackCooldown_;
 
+	float attackTimer_ = 0.0f;
+	bool isAttacking_ = false;
+	bool isAttackMode_ = false;
+	const float ATTACK_RANGE_ = 1.0f;
+
 	bool hasDealtDamage_ = false;
 
 	// ---- スタン ----

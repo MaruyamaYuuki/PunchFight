@@ -24,5 +24,4 @@ public:
 	void Update(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) override;
 
 private:
-	float attackCooldown_ = 0.0f;
 };
