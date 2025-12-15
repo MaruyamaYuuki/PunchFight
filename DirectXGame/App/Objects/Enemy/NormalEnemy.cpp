@@ -69,31 +69,6 @@ void NormalEnemy::Update(const Vector3& playerPos, const std::vector<std::unique
 	worldTransform_.UpdateMatrix();
 }
 
-void NormalEnemy::MoveTowardPlayer(const Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) {
-	Vector3 toPlayer = playerPos - worldTransform_.translation_;
-	float len = sqrtf(toPlayer.x * toPlayer.x + toPlayer.z * toPlayer.z);
-
-	if (len > 0.001f) {
-		toPlayer.x /= len;
-		toPlayer.z /= len;
-	}
-
-	// 分離処理
-	Vector3 sep = ComputeSeparation(allEnemies, 1.0f);
-	toPlayer.x += sep.x;
-	toPlayer.z += sep.z;
-
-	float finalLen = sqrtf(toPlayer.x * toPlayer.x + toPlayer.z * toPlayer.z);
-	if (finalLen > 0.001f) {
-		toPlayer.x /= finalLen;
-		toPlayer.z /= finalLen;
-	}
-
-	float moveSpeed = 0.025f;
-	worldTransform_.translation_.x += toPlayer.x * moveSpeed;
-	worldTransform_.translation_.z += toPlayer.z * moveSpeed;
-}
-
 void NormalEnemy::AttackProcess(const Vector3& playerPos) {
 	Vector3 toPlayer = playerPos - worldTransform_.translation_;
 	float dist = sqrtf(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y + toPlayer.z * toPlayer.z);
@@ -147,7 +122,3 @@ void NormalEnemy::AttackProcess(const Vector3& playerPos) {
 	SetAttackHitBox(worldTransform_.translation_ + Vector3{offsetX, 0.1f, 0});
 	attackHitBox_.active = true;
 }
-
-
-
-

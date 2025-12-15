@@ -2,6 +2,14 @@
 #include "EnemyBase.h"
 
 /// <summary>
+/// 攻撃の種類
+/// </summary>
+enum class AttackType {
+	Normal,
+	Tackle
+};
+
+/// <summary>
 /// パワータイプの敵
 /// </summary>
 class PowerEnemy : public EnemyBase {
@@ -24,4 +32,21 @@ public:
 	void Update(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) override;
 
 private:
+
+	void NormalAttack(const KamataEngine::Vector3& playerPos);
+
+	//void TackleAttack(const KamataEngine::Vector3& playerPos);
+
+protected:
+	void AttackProcess(const KamataEngine::Vector3& playerPos) override;
+
+	void UpdateTextures() override;
+
+private:
+	uint32_t RTackleTexture_ = 0;
+	uint32_t LTackleTexture_ = 0;
+
+	bool useTackle_ = false;
+
+	AttackType attackType_ = AttackType::Normal;
 };

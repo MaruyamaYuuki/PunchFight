@@ -52,7 +52,7 @@ void UI::UpdateHPBar() {
 
 	// プレイヤーの HP 取得
 	int hp = player_->GetHP(); // 0〜100など
-	int maxHP = 100;
+	const int maxHP = 100;
 
 	float hpRate = static_cast<float>(hp) / maxHP; // 0.0〜1.0
 

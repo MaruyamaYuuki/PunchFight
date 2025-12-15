@@ -68,6 +68,8 @@ void EnemyManager::SpawnEnemy(EnemyType type, const KamataEngine::Vector3& pos) 
 	enemies_.push_back(std::move(enemy));
 }
 
+
+
 void EnemyManager::Update(const Vector3& playerPos) {
 	// ======== エリアトリガーチェック ========
 	for (auto& area : areas_) {
@@ -125,50 +127,42 @@ void EnemyManager::Draw(Camera& camera) {
 }
 
 void EnemyManager::BackDraw(KamataEngine::Camera& camera, const KamataEngine::Vector3& playerPos) {
-	// 一旦リストをコピー（unique_ptrなのでポインタ参照で扱う）
-	std::vector<EnemyBase*> backEnemies;
-	backEnemies.reserve(enemies_.size());
+	auto enemies = GetEnemiesSortedByZ(playerPos, true);
 
-	// プレイヤーより奥にいる敵を抽出
-	for (auto& e : enemies_) {
-		if (e->GetPosition().z > playerPos.z) {
-			backEnemies.push_back(e.get());
-		}
-	}
-
-	// Z座標が大きい順に（奥から手前へ）ソート
-	std::sort(backEnemies.begin(), backEnemies.end(), [](EnemyBase* a, EnemyBase* b) { return a->GetPosition().z > b->GetPosition().z; });
-
-	// 描画
-	for (auto& e : backEnemies) {
+	for (auto* e : enemies) {
 		e->Draw(camera);
 	}
 }
 
 void EnemyManager::FrontDraw(KamataEngine::Camera& camera, const KamataEngine::Vector3& playerPos) {
-	// 一旦リストをコピー
-	std::vector<EnemyBase*> frontEnemies;
-	frontEnemies.reserve(enemies_.size());
+	auto enemies = GetEnemiesSortedByZ(playerPos, false);
 
-	// プレイヤーより手前にいる敵を抽出
-	for (auto& e : enemies_) {
-		if (e->GetPosition().z <= playerPos.z) {
-			frontEnemies.push_back(e.get());
-		}
-	}
-
-	// Z座標が大きい順に（奥から手前へ）ソート
-	std::sort(frontEnemies.begin(), frontEnemies.end(), [](EnemyBase* a, EnemyBase* b) { return a->GetPosition().z > b->GetPosition().z; });
-
-	// 描画
-	for (auto& e : frontEnemies) {
+	for (auto* e : enemies) {
 		e->Draw(camera);
 	}
 }
-
 
 bool EnemyManager::IsAreaCleared(int32_t areaIndex) const {
 	if (areaIndex < 0 || areaIndex >= static_cast<int32_t>(areas_.size()))
 		return false;
 	return areas_[areaIndex].cleared;
+}
+
+// EnemyManager.cpp
+std::vector<EnemyBase*> EnemyManager::GetEnemiesSortedByZ(const KamataEngine::Vector3& playerPos, bool backSide) {
+	std::vector<EnemyBase*> result;
+	result.reserve(enemies_.size());
+
+	for (auto& e : enemies_) {
+		bool isBack = e->GetPosition().z > playerPos.z;
+
+		if (isBack == backSide) {
+			result.push_back(e.get());
+		}
+	}
+
+	// 奥 → 手前
+	std::sort(result.begin(), result.end(), [](EnemyBase* a, EnemyBase* b) { return a->GetPosition().z > b->GetPosition().z; });
+
+	return result;
 }
