@@ -179,7 +179,7 @@ protected:
 	/// 攻撃処理
 	/// </summary>
 	/// <param name="playerPos">プレイヤーの座標</param>
-	virtual void AttackProcess(const KamataEngine::Vector3& playerPos);
+	virtual void AttackProcess(const KamataEngine::Vector3& playerPos) = 0;
 
 	/// <summary>
 	/// テクスチャの更新

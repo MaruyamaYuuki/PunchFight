@@ -94,6 +94,15 @@ private:
 	/// </summary>
 	void AllCollision();
 
+	/// <summary>
+	/// プレイヤーの攻撃→敵の判定
+	/// </summary>
+	/// <param name="attackHitBox攻撃ヒットボックスparam>
+	/// <param name="hitList">ヒットリスト</param>
+	/// <param name="attackPower">攻撃力</param>
+	/// <param name="attackDir">向いている方向</param>
+	void CheckPlayerAttackToEnemies(const HitBox& attackHitBox, std::vector<EnemyBase*>& hitList, int attackPower, float attackDir);
+
 private:
 	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
 	KamataEngine::Input* input_ = nullptr;
@@ -156,8 +165,8 @@ private:
 	bool fightTextAnimeFinished_ = false;
 	float fadeInTimer_ = 0.0f;
 
-	KamataEngine::Vector2 fightTextPos_ = {640.0f, 300.0f};
-	KamataEngine::Vector2 fightTextSize_ = {400.0f, 150.0f};
+	KamataEngine::Vector2 fightTextPos_;
+	KamataEngine::Vector2 fightTextSize_;
 
 	// --- ゲームオーバー関連 ---
 	float alphaCounter_  = 0.0f;

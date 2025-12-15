@@ -125,11 +125,12 @@ void PowerEnemy::NormalAttack(const KamataEngine::Vector3& playerPos) {
 	attackHitBox_.active = true;
 }
 
-void PowerEnemy::TackleAttack(const KamataEngine::Vector3& playerPos) {}
+//void PowerEnemy::TackleAttack(const KamataEngine::Vector3& playerPos) {}
 
 void PowerEnemy::AttackProcess(const KamataEngine::Vector3& playerPos) {
 	if (useTackle_) {
 	} else {
+		NormalAttack(playerPos);
 	}
 }
 

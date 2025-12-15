@@ -446,55 +446,16 @@ void GameScene::AllCollision() {
 
 	// プレイヤーのヒットボックスを取得する
 	const HitBox& pHitBox = player_->GetPlayerHitBox();
-	// プレイヤーの攻撃ヒットボックスの取得
-	const HitBox& atk = player_->GetAttackHitBox();
-	// プレイヤーの強攻撃ヒットボックスの取得
-	const HitBox& spAtk = player_->GetSPAttackHitBox();
 
 	// 敵リストの取得
 	auto& enemies = enemyManager_->GetEnemies();
 
 	#pragma region プレイヤーの通常攻撃と敵の当たり判定
-	if (!atk.active) {
-		hitEnemiesThisAttack_.clear();
-	} else {
-		for (auto& e : enemies) {
-
-			if (std::find(hitEnemiesThisAttack_.begin(), hitEnemiesThisAttack_.end(), e.get()) != hitEnemiesThisAttack_.end()) {
-				continue;
-			}
-
-			if (Collision::AABB(atk, e->GetHitBox())) {
-
-				hitEnemiesThisAttack_.push_back(e.get());
-
-				Vector3 dir{player_->GetFacingDir(), 0, 0};
-				e->OnHit(player_->GetAttackPower(), dir);
-			}
-		}
-	}
+	CheckPlayerAttackToEnemies(player_->GetAttackHitBox(), hitEnemiesThisAttack_, player_->GetAttackPower(), player_->GetFacingDir());
 	#pragma endregion
 
 	#pragma region プレイヤーの強攻撃と敵の当たり判定
-	if (!spAtk.active) {
-		hitEnemiesThisSPAttack_.clear();
-	} else {
-
-		for (auto& e : enemies) {
-
-			if (std::find(hitEnemiesThisSPAttack_.begin(), hitEnemiesThisSPAttack_.end(), e.get()) != hitEnemiesThisSPAttack_.end()) {
-				continue;
-			}
-
-			if (Collision::AABB(spAtk, e->GetHitBox())) {
-
-				hitEnemiesThisSPAttack_.push_back(e.get());
-
-				Vector3 dir{player_->GetSPAttackDir(), 0, 0};
-				e->OnHit(player_->GetSPAttackPower(), dir);
-			}
-		}
-	}
+	CheckPlayerAttackToEnemies(player_->GetSPAttackHitBox(), hitEnemiesThisSPAttack_, player_->GetSPAttackPower(), player_->GetSPAttackDir());
 	#pragma endregion
 
 	#pragma region 敵の攻撃とプレイヤーの当たり判定
@@ -524,4 +485,29 @@ void GameScene::AllCollision() {
 		}
 	}
 	#pragma endregion
+}
+
+void GameScene::CheckPlayerAttackToEnemies(const HitBox& attackHitBox, std::vector<EnemyBase*>& hitList, int attackPower, float attackDir) {
+	auto& enemies = enemyManager_->GetEnemies();
+
+	if (!attackHitBox.active) {
+		hitList.clear();
+		return;
+	}
+
+	for (auto& e : enemies) {
+
+		// すでにこの攻撃で当たっている敵はスキップ
+		if (std::find(hitList.begin(), hitList.end(), e.get()) != hitList.end()) {
+			continue;
+		}
+
+		if (Collision::AABB(attackHitBox, e->GetHitBox())) {
+
+			hitList.push_back(e.get());
+
+			Vector3 dir{attackDir, 0, 0};
+			e->OnHit(attackPower, dir);
+		}
+	}
 }

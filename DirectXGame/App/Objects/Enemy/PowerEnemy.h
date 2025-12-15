@@ -35,7 +35,7 @@ private:
 
 	void NormalAttack(const KamataEngine::Vector3& playerPos);
 
-	void TackleAttack(const KamataEngine::Vector3& playerPos);
+	//void TackleAttack(const KamataEngine::Vector3& playerPos);
 
 protected:
 	void AttackProcess(const KamataEngine::Vector3& playerPos) override;

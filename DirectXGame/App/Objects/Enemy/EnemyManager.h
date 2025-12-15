@@ -6,6 +6,7 @@
 #include "../../../Engine/Particle/SmokeParticleManager.h"
 #include <memory> // unique_ptr
 #include <vector>
+#include <functional>
 
 /// <summary>
 /// 敵の種類
@@ -101,6 +102,9 @@ private:
 	/// <param name="type">敵の種類</param>
 	/// <param name="pos">出現座標</param>
 	void SpawnEnemy(EnemyType type, const KamataEngine::Vector3& pos);
+
+
+	std::vector<EnemyBase*> GetEnemiesSortedByZ(const KamataEngine::Vector3& playerPos, bool backSide);
 
 private:
 	std::vector<std::unique_ptr<EnemyBase>> enemies_;
