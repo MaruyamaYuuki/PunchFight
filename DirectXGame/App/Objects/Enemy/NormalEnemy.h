@@ -23,10 +23,10 @@ public:
 	/// <param name="playerPos">プレイヤーの座標</param>
 	void Update(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) override;
 
-private:
-	void MoveTowardPlayer(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies);
+protected:
 
-	void AttackProcess(const KamataEngine::Vector3& playerPos);
+
+	void AttackProcess(const KamataEngine::Vector3& playerPos) override;
 
 private:
 

@@ -23,6 +23,7 @@ struct EnemyData {
 enum class EnemyState { 
 	Idle = 0, 
 	Walking, 
+	AttackWait,
 	Attacking, 
 	Stunned, 
 	Knockback, 
@@ -158,17 +159,32 @@ public:
 	void SetHasDealtDamage(bool flag) { hasDealtDamage_ = flag; }
 
 	/// <summary>
-	/// テクスチャの更新
-	/// </summary>
-	void UpdateTextures();
-
-	/// <summary>
 	/// 他の敵との距離を見て分離ベクトルを計算
 	/// </summary>
 	/// <param name="allEnemies">全敵リスト</param>
 	/// <param name="separationDistance">最低距離</param>
 	/// <returns>分離用オフセットベクトル</returns>
 	KamataEngine::Vector3 ComputeSeparation(const std::vector<std::unique_ptr<EnemyBase>>& allEnemies, float separationDistance);
+
+protected:
+
+	/// <summary>
+	/// 移動処理
+	/// </summary>
+	/// <param name="playerPos">プレイヤーの座標</param>
+	/// <param name="allEnemies">全ての敵の情報</param>
+	virtual void MoveTowardPlayer(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies);
+
+	/// <summary>
+	/// 攻撃処理
+	/// </summary>
+	/// <param name="playerPos">プレイヤーの座標</param>
+	virtual void AttackProcess(const KamataEngine::Vector3& playerPos);
+
+	/// <summary>
+	/// テクスチャの更新
+	/// </summary>
+	virtual void UpdateTextures();
 
 protected:
 	GameConfigManager* cfg_ = nullptr;
@@ -199,7 +215,7 @@ protected:
 	float attackTimer_ = 0.0f;
 	bool isAttacking_ = false;
 	bool isAttackMode_ = false;
-	const float ATTACK_RANGE_ = 1.0f;
+	float ATTACK_RANGE_ = 1.0f;
 
 	bool hasDealtDamage_ = false;
 
@@ -236,10 +252,12 @@ protected:
 	EnemyState state_ = EnemyState::Idle;
 
 	uint32_t RIdleTexture_ = 0;
+	uint32_t RWaitTexture_ = 0;
 	uint32_t RAttackTexture_ = 0;
 	uint32_t RStunTexture_ = 0;
 
 	uint32_t LIdleTexture_ = 0;
+	uint32_t LWaitTexture_ = 0;
 	uint32_t LAttackTexture_ = 0;
 	uint32_t LStunTexture_ = 0;
 };

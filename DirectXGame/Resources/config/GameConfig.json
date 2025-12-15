@@ -137,7 +137,8 @@
       "kStunShakeAmplitude": 0.05,
       "kStunShakeSpeed": 80.0,
       "kSmokeSpawnInterval": 0.05,
-      "kSmokeSize":[0.4, 0.4, 0.4]
+      "kSmokeSize":[0.4, 0.4, 0.4],
+      "kATTACK_RENGE": 1.0
     },
 
     "Types": {

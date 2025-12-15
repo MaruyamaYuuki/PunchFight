@@ -31,6 +31,7 @@ void EnemyBase::Initialize(const EnemyData& data) {
 	knockbackDuration_ = cfg_->getFloat("Enemy.Default.kKnockbackDuration");
 	attackDuration_ = cfg_->getFloat("Enemy.Default.kAttackDuration");
 	attackCooldown_ = cfg_->getFloat("Enemy.Default.kAttackCooldown");
+	ATTACK_RANGE_ = cfg_->getFloat("Enmey.Default.kATTACK_RENGE");
 	stunDuration_ = cfg_->getFloat("Enemy.Default.kStunDuration");
 	stunShakeAmplitude_ = cfg_->getFloat("Enemy.Default.kStunShakeAmplitude");
 	stunShakeSpeed_ = cfg_->getFloat("Enemy.Default.kStunShakeSpeed");
@@ -163,53 +164,6 @@ void EnemyBase::SetPosition(float x, float y, float z) { worldTransform_.transla
 
 void EnemyBase::SetScale(const Vector3& scale) { worldTransform_.scale_ = scale; }
 
-void EnemyBase::UpdateTextures() {
-	switch (state_) {
-	case EnemyState::Idle:
-		if (facingDir_ == 1.0f) {
-    		textureHandle_ = RIdleTexture_;
-		} else {
-			textureHandle_ = LIdleTexture_;
-		}
-		break;
-	case EnemyState::Walking:
-		if (facingDir_ == 1.0f) {
-			textureHandle_ = RIdleTexture_;
-		} else {
-			textureHandle_ = LIdleTexture_;
-		}
-		break;
-	case EnemyState::Attacking:
-		if (facingDir_ == 1.0f) {
-			textureHandle_ = RAttackTexture_;
-		} else {
-			textureHandle_ = LAttackTexture_;
-		}
-		break;
-	case EnemyState::Stunned:
-		if (facingDir_ == 1.0f) {
-			textureHandle_ = RStunTexture_;
-		} else {
-			textureHandle_ = LStunTexture_;
-		}
-		break;
-	case EnemyState::Knockback:
-		if (facingDir_ == 1.0f) {
-			textureHandle_ = RStunTexture_;
-		} else {
-			textureHandle_ = RStunTexture_;
-		}
-		break;
-	case EnemyState::Dead:
-		if (facingDir_ == 1.0f) {
-			textureHandle_ = RStunTexture_;
-		} else {
-			textureHandle_ = RStunTexture_;
-		}
-		break;
-	}
-}
-
 Vector3 EnemyBase::ComputeSeparation(const std::vector<std::unique_ptr<EnemyBase>>& allEnemies, float separationDistance) {
 	Vector3 offset{0.0f, 0.0f, 0.0f};
 
@@ -232,4 +186,55 @@ Vector3 EnemyBase::ComputeSeparation(const std::vector<std::unique_ptr<EnemyBase
 	}
 
 	return offset;
+}
+
+void EnemyBase::MoveTowardPlayer(const Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) {
+	Vector3 toPlayer = playerPos - worldTransform_.translation_;
+	float len = sqrtf(toPlayer.x * toPlayer.x + toPlayer.z * toPlayer.z);
+
+	if (len > 0.001f) {
+		toPlayer.x /= len;
+		toPlayer.z /= len;
+	}
+
+	// 分離処理
+	Vector3 sep = ComputeSeparation(allEnemies, 1.0f);
+	toPlayer.x += sep.x;
+	toPlayer.z += sep.z;
+
+	float finalLen = sqrtf(toPlayer.x * toPlayer.x + toPlayer.z * toPlayer.z);
+	if (finalLen > 0.001f) {
+		toPlayer.x /= finalLen;
+		toPlayer.z /= finalLen;
+	}
+
+	float moveSpeed = 0.025f;
+	worldTransform_.translation_.x += toPlayer.x * moveSpeed;
+	worldTransform_.translation_.z += toPlayer.z * moveSpeed;
+}
+
+void EnemyBase::UpdateTextures() {
+	switch (state_) {
+	case EnemyState::Idle:
+		textureHandle_ = (facingDir_ > 0) ? RIdleTexture_ : LIdleTexture_;
+		break;
+	case EnemyState::Walking:
+		textureHandle_ = (facingDir_ > 0) ? RIdleTexture_ : LIdleTexture_;
+		break;
+	case EnemyState::AttackWait:
+		textureHandle_ = (facingDir_ > 0) ? RWaitTexture_ : LWaitTexture_;
+		break;
+	case EnemyState::Attacking:
+		textureHandle_ = (facingDir_ > 0) ? RAttackTexture_ : LAttackTexture_;
+		break;
+	case EnemyState::Stunned:
+		textureHandle_ = (facingDir_ > 0) ? RStunTexture_ : LStunTexture_;
+		break;
+	case EnemyState::Knockback:
+		textureHandle_ = (facingDir_ > 0) ? RStunTexture_ : LStunTexture_;
+		break;
+	case EnemyState::Dead:
+			textureHandle_ = (facingDir_ > 0) ? RStunTexture_ : LStunTexture_;
+		break;
+	}
 }
