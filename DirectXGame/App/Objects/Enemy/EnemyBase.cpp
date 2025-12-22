@@ -228,10 +228,10 @@ void EnemyBase::MoveTowardPlayer(const Vector3& playerPos, const std::vector<std
 		if (walkFrameTimer_ >= walkFrameInterval_) {
 			walkFrameTimer_ = 0;
 			walkFrame_ = (walkFrame_ + 1) % 4;
-		} else {
+		} 
+	}else {
 			walkFrame_ = 0;
 			walkFrameTimer_ = 0;
-		}
 	}
 }
 
