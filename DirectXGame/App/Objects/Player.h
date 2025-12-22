@@ -230,21 +230,15 @@ private:
 	uint32_t RLeftPunchTexture_ = 0;
 	uint32_t RRightPunchTexture_ = 0;
 	uint32_t RUppercutTexture_ = 0;
-	uint32_t RKnockDownTexture_ = 0;
-	uint32_t RKnockDown2Texture_ = 0;
-	uint32_t RRunTexture1_ = 0;
-	uint32_t RRunTexture2_ = 0;
-	uint32_t RRunTexture3_ = 0;
+	uint32_t RKnockDownTexture_[2];
+	uint32_t RRunTexture_[3];
 
 	uint32_t LPlayerTexture_ = 0;
 	uint32_t LLeftPunchTexture_ = 0;
 	uint32_t LRightPunchTexture_ = 0;
 	uint32_t LUppercutTexture_ = 0;
-	uint32_t LKnockDownTexture_ = 0;
-	uint32_t LKnockDown2Texture_ = 0;
-	uint32_t LRunTexture1_ = 0;
-	uint32_t LRunTexture2_ = 0;
-	uint32_t LRunTexture3_ = 0;
+	uint32_t LKnockDownTexture_[2];
+	uint32_t LRunTexture_[3];
 
 	// --- 強攻撃のテクスチャ ---
 	uint32_t SPTextureHandle_ = 0;

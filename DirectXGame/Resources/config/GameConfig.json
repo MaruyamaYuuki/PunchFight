@@ -160,6 +160,7 @@
 
   "Enemy": {
     "Default": {
+      "kWalkFrameInterval": 6,
       "kGravityAcceleration": 30.0,
       "kKnockbackDuration": 0.5,
       "kKnockbackBasePower": 25.0,
