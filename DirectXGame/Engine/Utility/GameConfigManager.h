@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <json.hpp>
 
 /// <summary>
 /// ゲームの設定値を管理するシングルトンクラス
@@ -66,4 +67,14 @@ public:
 	/// floatの配列を取得する（例: GameSceneのArea設定など）
 	/// </summary>
 	std::vector<float> getFloatArray(const std::string& key) const;
+
+	/// <summary>
+	/// JSON配列をそのまま取得する
+	/// </summary>
+	nlohmann::json getJsonArray(const std::string& key) const;
+
+	/// <summary>
+	/// JSONオブジェクトをそのまま取得する
+	/// </summary>
+	nlohmann::json getJsonObject(const std::string& key) const;
 };

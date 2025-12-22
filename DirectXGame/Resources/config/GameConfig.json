@@ -39,6 +39,28 @@
         "kGuideDisplayDuration": 3.0,
         "kGuideBlinkInterval": 1.0,
         "kGuideMaxBlinkCount": 3
+      },
+
+      "EnemySpawn": {
+        "Areas": [
+          {"triggerX": 15.0,
+           "enemies": [
+             {"type": "Normal", "pos": [20,1,0]},
+             {"type": "Normal", "pos": [20,1,2]},
+             {"type": "Normal", "pos": [20,1,-2]}
+           ]
+          },
+          {"triggerX": 30.0,
+           "enemies": [
+            {"type": "Normal", "pos": [35,1,0]}
+           ]
+          },
+          {"triggerX": 45.0,
+           "enemies": [
+            {"type": "Normal", "pos": [50,1,0]}
+           ]
+          }
+        ]
       }
     },
 

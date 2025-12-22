@@ -3,7 +3,6 @@
 #include <sstream>
 #include <iostream>
 #include <algorithm>
-#include <json.hpp>
 
 using json = nlohmann::json;
 
@@ -180,6 +179,38 @@ std::vector<float> GameConfigManager::getFloatArray(const std::string& key) cons
 		throw std::runtime_error(errMsg.c_str());
 	} catch (const std::exception& e) {
 		std::string errMsg = "Config type conversion failed (FloatArray) for key: " + key + ". Error: " + e.what();
+		throw std::runtime_error(errMsg.c_str());
+	}
+}
+
+nlohmann::json GameConfigManager::getJsonArray(const std::string& key) const {
+	const std::string& s = FindConfigValue(configData_, key);
+
+	try {
+		nlohmann::json j = nlohmann::json::parse(s);
+
+		if (!j.is_array()) {
+			throw std::runtime_error("Value is not a JSON array.");
+		}
+		return j;
+	} catch (const std::exception& e) {
+		std::string errMsg = "Config JSON array parsing failed for key: " + key + ". Value: " + s + ". Error: " + e.what();
+		throw std::runtime_error(errMsg.c_str());
+	}
+}
+
+nlohmann::json GameConfigManager::getJsonObject(const std::string& key) const {
+	const std::string& s = FindConfigValue(configData_, key);
+
+	try {
+		nlohmann::json j = nlohmann::json::parse(s);
+
+		if (!j.is_object()) {
+			throw std::runtime_error("Value is not a JSON object.");
+		}
+		return j;
+	} catch (const std::exception& e) {
+		std::string errMsg = "Config JSON object parsing failed for key: " + key + ". Value: " + s + ". Error: " + e.what();
 		throw std::runtime_error(errMsg.c_str());
 	}
 }
