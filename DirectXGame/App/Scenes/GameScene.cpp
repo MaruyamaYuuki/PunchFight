@@ -26,6 +26,8 @@ void GameScene::Initialize() {
 	// 基礎情報
 	fadeTime_ = cfg_->getFloat("Global.kFadeTime");
 	startTime_ = cfg_->getFloat("Scene.Game.kReadyTime");
+	moveLimit_ = cfg_->getFloatArray("Scene.Game.Area.kMoveLimitX_Area");
+	scrollArea_ = cfg_->getFloatArray("Scene.Game.Area.kScrollAreaLimitX");
 	cameraLimitZMin_ = cfg_->getFloat("Scene.Game.Area.kCameraLimitZMin");
 	cameraLimitZMax_ = cfg_->getFloat("Scene.Game.Area.kCameraLimitZMax");	
 	fightTextPos_ = cfg_->getVector2("Scene.Game.FightTextAnime.kFightTextCenterPos");
@@ -84,6 +86,9 @@ void GameScene::Initialize() {
 
 	ui_ = std::make_unique<UI>();
 	ui_->Initialize(player_.get());
+
+	const size_t areaCount = std::size(scrollArea_);
+	areaClearedFlag_.assign(areaCount, false);
 
 
 	prevTime_ = std::chrono::high_resolution_clock::now();
@@ -371,26 +376,30 @@ void GameScene::ResetGame() {
 }
 
 void GameScene::EnemyGenerate() {
+	auto areas = cfg_->getJsonArray("Scene.Game.EnemySpawn.Areas");
+
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->Initialize();
 
-	// --- エリア追加（トリガー位置） ---
-	enemyManager_->AddArea(15.0f);   // area 0
-	enemyManager_->AddArea(30.0f);  // area 1
-	enemyManager_->AddArea(45.0f); // area 2
-
 	// --- 各エリアに敵を追加 ---
-	// エリア0
-	enemyManager_->AddSpawnToArea(0, EnemyType::Normal, {20, 1, 0});
-	enemyManager_->AddSpawnToArea(0, EnemyType::Normal, {20, 1, 2});
-	enemyManager_->AddSpawnToArea(0, EnemyType::Normal, {20, 1, -2});
+	for (size_t i = 0; i < areas.size(); ++i) {
+		float triggerX = areas[i]["triggerX"].get<float>();
+		enemyManager_->AddArea(triggerX);
 
-	// エリア1
-	enemyManager_->AddSpawnToArea(1, EnemyType::Normal, {35, 1, 0});
+		for (auto& e : areas[i]["enemies"]) {
+			std::string typeStr = e["type"];
+			auto posArr = e["pos"];
+			Vector3 pos{
+				posArr[0].get<float>(), 
+				posArr[1].get<float>(), 
+				posArr[2].get<float>()
+			};
 
-	// エリア2
-	enemyManager_->AddSpawnToArea(2, EnemyType::Normal, {50, 1, 0});
+			EnemyType type = (typeStr == "Power") ? EnemyType::Power : EnemyType::Normal;
 
+			enemyManager_->AddSpawnToArea(static_cast<int>(i), type, pos);
+		}
+	}
 }
 
 void GameScene::EnemyUpdate() {
@@ -428,17 +437,22 @@ void GameScene::EnemyUpdate() {
 		}
 	}
 
+	// エリア進行処理（最も進んだエリア）
+	for (int i = static_cast<int>(areaClearedFlag_.size()) - 1; i >= 0; --i) {
+		if (!areaClearedFlag_[i])
+			continue;
 
-    if (areaClearedFlag_[2]) {
-		player_->SetEndMoveLimitX(moveLimit_[3]);
-	} else if (areaClearedFlag_[1]) {
-		CameraController::Rect area = {0.0f, scrollArea_[2], cameraLimitZMin_, cameraLimitZMax_};
-		cameraController_->SetMovableArea(area);
-		player_->SetEndMoveLimitX(moveLimit_[2]);
-	} else if (areaClearedFlag_[0]) {
-		CameraController::Rect area = {0.0f, scrollArea_[1], cameraLimitZMin_, cameraLimitZMax_};
-		cameraController_->SetMovableArea(area);
-		player_->SetEndMoveLimitX(moveLimit_[1]);
+		// プレイヤー移動制限
+		if (i + 1 < static_cast<int>(std::size(moveLimit_))) {
+			player_->SetEndMoveLimitX(moveLimit_[i + 1]);
+		}
+
+		// カメラ制限（次のエリアのスクロール範囲を使う）
+		if (i + 1 < static_cast<int>(std::size(scrollArea_))) {
+			cameraController_->SetMovableArea({0.0f, scrollArea_[i + 1], cameraLimitZMin_, cameraLimitZMax_});
+		}
+
+		break;
 	}
 }
 

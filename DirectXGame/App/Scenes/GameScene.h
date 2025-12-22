@@ -137,8 +137,8 @@ private:
 	std::unique_ptr<EnemyManager> enemyManager_;
 	std::unique_ptr<UI> ui_;
 
-	float moveLimit_[4] = {20.0f, 35.0f, 50.0f, 53.0f};
-	float scrollArea_[3] = {15.0f, 30.0f, 45.0f};
+	std::vector<float> moveLimit_;
+	std::vector<float> scrollArea_;
 	float cameraLimitZMin_;
 	float cameraLimitZMax_;
 
@@ -175,9 +175,7 @@ private:
 	float gameOverFallDuration_; // 落下にかける時間（秒）
 	bool isGameOverFallFinished_ = false; // 落下完了フラグ
 
-	bool areaClearedFlag_[3] = {false, false, false};
-
-
+	std::vector<bool> areaClearedFlag_;
 
 	std::vector<EnemyBase*> hitEnemiesThisAttack_;
 	std::vector<EnemyBase*> hitEnemiesThisSPAttack_;
