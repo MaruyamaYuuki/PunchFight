@@ -26,6 +26,8 @@ void PowerEnemy::Initialize(const EnemyData& data) {
 	LWalkTexture_[1] = TextureManager::Load("enemies/powerEnemy/LWalk2.png");
 	LWalkTexture_[2] = TextureManager::Load("enemies/powerEnemy/LWalk3.png");
 	LWalkTexture_[3] = TextureManager::Load("enemies/powerEnemy/LWalk4.png");
+
+	attackCooldownTimer_ = attackCooldown_;
 }
 
 void PowerEnemy::Update(const Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) {
@@ -69,6 +71,8 @@ void PowerEnemy::Update(const Vector3& playerPos, const std::vector<std::unique_
 	// 移動・攻撃などの状態判定
 	if (isAttacking_)
 		state_ = EnemyState::Attacking;
+	else if (isAttackMode_)
+		state_ = EnemyState::AttackWait;
 	else if (speed_ > 0.0f)
 		state_ = EnemyState::Walking;
 	else
