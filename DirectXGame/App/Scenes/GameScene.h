@@ -142,6 +142,8 @@ private:
 	float cameraLimitZMin_;
 	float cameraLimitZMax_;
 
+	uint32_t stageNumber_;
+	uint32_t stageRepeatCount_;
 
 	float fadeTime_;
 

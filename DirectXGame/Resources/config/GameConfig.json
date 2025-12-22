@@ -61,6 +61,18 @@
            ]
           }
         ]
+      },
+
+      "StageDate": {
+        "Stage1": {
+          "kStageNumber": 1,
+          "kRepeatCount": 9
+        },
+
+        "Stage2": {
+          "kStageNumber": 2,
+          "kRepeatCount": 9
+        }
       }
     },
 
