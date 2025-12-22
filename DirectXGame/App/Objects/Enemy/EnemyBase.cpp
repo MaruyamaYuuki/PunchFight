@@ -27,6 +27,7 @@ void EnemyBase::Initialize(const EnemyData& data) {
 	dustManager_->Initialize();
 
 	worldTransform_.rotation_.x = cfg_->getFloat("Global.kPlaneModelRotateX");
+	walkFrameInterval_ = cfg_->getInt("Enemy.Default.kWalkFrameInterval");
 	gravity_ = cfg_->getFloat("Enemy.Default.kGravityAcceleration");
 	knockbackDuration_ = cfg_->getFloat("Enemy.Default.kKnockbackDuration");
 	attackDuration_ = cfg_->getFloat("Enemy.Default.kAttackDuration");
@@ -176,11 +177,9 @@ Vector3 EnemyBase::ComputeSeparation(const std::vector<std::unique_ptr<EnemyBase
 
 		if (dist < separationDistance && dist > 0.001f) {
 			// 正規化して距離に応じて押し戻す
-			//toOther.x /= dist;
 			toOther.z /= dist;
 
 			float pushFactor = separationDistance - dist;
-			//offset.x += toOther.x * pushFactor;
 			offset.z += toOther.z * pushFactor;
 		}
 	}
@@ -189,6 +188,9 @@ Vector3 EnemyBase::ComputeSeparation(const std::vector<std::unique_ptr<EnemyBase
 }
 
 void EnemyBase::MoveTowardPlayer(const Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) {
+	Vector3 moveDir{0, 0, 0};
+
+	// プレイヤー方向ベクトル計算
 	Vector3 toPlayer = playerPos - worldTransform_.translation_;
 	float len = sqrtf(toPlayer.x * toPlayer.x + toPlayer.z * toPlayer.z);
 
@@ -202,15 +204,35 @@ void EnemyBase::MoveTowardPlayer(const Vector3& playerPos, const std::vector<std
 	toPlayer.x += sep.x;
 	toPlayer.z += sep.z;
 
+	// 正規化
 	float finalLen = sqrtf(toPlayer.x * toPlayer.x + toPlayer.z * toPlayer.z);
 	if (finalLen > 0.001f) {
 		toPlayer.x /= finalLen;
 		toPlayer.z /= finalLen;
 	}
 
+	// 移動
 	float moveSpeed = 0.025f;
 	worldTransform_.translation_.x += toPlayer.x * moveSpeed;
 	worldTransform_.translation_.z += toPlayer.z * moveSpeed;
+
+	// 向き
+	if (moveDir.x > 0.01f) facingDir_ = 1.0f;
+	if (moveDir.x < -0.01f) facingDir_ = -1.0f;
+
+	// 歩行アニメ進行
+	bool isMoving = (finalLen > 0.001f);
+	if (isMoving && !isAttacking_ && hp_ > 0) {
+		walkFrameTimer_++;
+
+		if (walkFrameTimer_ >= walkFrameInterval_) {
+			walkFrameTimer_ = 0;
+			walkFrame_ = (walkFrame_ + 1) % 4;
+		} else {
+			walkFrame_ = 0;
+			walkFrameTimer_ = 0;
+		}
+	}
 }
 
 void EnemyBase::UpdateTextures() {
@@ -218,9 +240,14 @@ void EnemyBase::UpdateTextures() {
 	case EnemyState::Idle:
 		textureHandle_ = (facingDir_ > 0) ? RIdleTexture_ : LIdleTexture_;
 		break;
-	case EnemyState::Walking:
-		textureHandle_ = (facingDir_ > 0) ? RIdleTexture_ : LIdleTexture_;
+	case EnemyState::Walking: {
+		// 0,1,2,3 のループを配列で
+		static const int walkPattern[4] = {0, 1, 2, 3};
+
+		int texIndex = walkPattern[walkFrame_];
+		textureHandle_ = (facingDir_ > 0) ? RWalkTexture_[texIndex] : LWalkTexture_[texIndex];
 		break;
+	}
 	case EnemyState::AttackWait:
 		textureHandle_ = (facingDir_ > 0) ? RWaitTexture_ : LWaitTexture_;
 		break;

@@ -204,6 +204,11 @@ protected:
 	int32_t attackPower_ = 1;
 	float facingDir_ = 1.0f;
 
+	// ---- 移動 ----
+	int32_t walkFrame_ = 0;      // 0〜3でループ
+	int32_t walkFrameTimer_ = 0; // テクスチャ切替タイマー
+	int32_t walkFrameInterval_;  // 何フレームごとに切り替えるか
+
 	// ---- 攻撃 ----
 	HitBox hitBox_;
 	HitBox attackHitBox_;
@@ -255,9 +260,11 @@ protected:
 	uint32_t RWaitTexture_ = 0;
 	uint32_t RAttackTexture_ = 0;
 	uint32_t RStunTexture_ = 0;
+	uint32_t RWalkTexture_[4];
 
 	uint32_t LIdleTexture_ = 0;
 	uint32_t LWaitTexture_ = 0;
 	uint32_t LAttackTexture_ = 0;
 	uint32_t LStunTexture_ = 0;
+	uint32_t LWalkTexture_[4];
 };

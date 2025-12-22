@@ -12,12 +12,20 @@ void PowerEnemy::Initialize(const EnemyData& data) {
 	RAttackTexture_ = TextureManager::Load("enemies/powerEnemy/RHeadbutt2.png");
 	RTackleTexture_ = TextureManager::Load("enemies/powerEnemy/RTackle.png");
 	RStunTexture_ = TextureManager::Load("enemies/powerEnemy/RStun.png");
+	RWalkTexture_[0] = TextureManager::Load("enemies/powerEnemy/RWalk1.png");
+	RWalkTexture_[1] = TextureManager::Load("enemies/powerEnemy/RWalk2.png");
+	RWalkTexture_[2] = TextureManager::Load("enemies/powerEnemy/RWalk3.png");
+	RWalkTexture_[3] = TextureManager::Load("enemies/powerEnemy/RWalk4.png");
 
 	LIdleTexture_ = TextureManager::Load("enemies/powerEnemy/LPower.png");
 	LWaitTexture_ = TextureManager::Load("enemies/powerEnemy/LHeadbutt1.png");
 	LAttackTexture_ = TextureManager::Load("enemies/powerEnemy/LHeadbutt2.png");
 	LTackleTexture_ = TextureManager::Load("enemies/powerEnemy/LTackle.png");
 	LStunTexture_ = TextureManager::Load("enemies/powerEnemy/LStun.png");
+	LWalkTexture_[0] = TextureManager::Load("enemies/powerEnemy/LWalk1.png");
+	LWalkTexture_[1] = TextureManager::Load("enemies/powerEnemy/LWalk2.png");
+	LWalkTexture_[2] = TextureManager::Load("enemies/powerEnemy/LWalk3.png");
+	LWalkTexture_[3] = TextureManager::Load("enemies/powerEnemy/LWalk4.png");
 }
 
 void PowerEnemy::Update(const Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) {

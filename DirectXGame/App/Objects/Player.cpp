@@ -68,21 +68,21 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 	RLeftPunchTexture_ = TextureManager::Load("playerTextures/RLeftPunch.png");
 	RRightPunchTexture_ = TextureManager::Load("playerTextures/RRightPunch.png");
 	RUppercutTexture_ = TextureManager::Load("playerTextures/RUppercut.png");
-	RKnockDownTexture_ = TextureManager::Load("playerTextures/RKnockDown.png");
-	RKnockDown2Texture_ = TextureManager::Load("playerTextures/RKnockDown2.png");
-	RRunTexture1_ = TextureManager::Load("playerTextures/RRun1.png");
-	RRunTexture2_ = TextureManager::Load("playerTextures/RRun2.png");
-	RRunTexture3_ = TextureManager::Load("playerTextures/RRun3.png");
+	RKnockDownTexture_[0] = TextureManager::Load("playerTextures/RKnockDown.png");
+	RKnockDownTexture_[1] = TextureManager::Load("playerTextures/RKnockDown.png");
+	RRunTexture_[0] = TextureManager::Load("playerTextures/RRun1.png");
+	RRunTexture_[1] = TextureManager::Load("playerTextures/RRun2.png");
+	RRunTexture_[2] = TextureManager::Load("playerTextures/RRun3.png");
 	// 左向きテクスチャ
 	LPlayerTexture_ = TextureManager::Load("playerTextures/LPlayer.png");
 	LLeftPunchTexture_ = TextureManager::Load("playerTextures/LLeftPunch.png");
 	LRightPunchTexture_ = TextureManager::Load("playerTextures/LRightPunch.png");
 	LUppercutTexture_ = TextureManager::Load("playerTextures/LUppercut.png");
-	LKnockDownTexture_ = TextureManager::Load("playerTextures/LKnockDown.png");
-	LKnockDown2Texture_ = TextureManager::Load("playerTextures/LKnockDown2.png");
-	LRunTexture1_ = TextureManager::Load("playerTextures/LRun1.png");
-	LRunTexture2_ = TextureManager::Load("playerTextures/LRun2.png");
-	LRunTexture3_ = TextureManager::Load("playerTextures/LRun3.png");
+	LKnockDownTexture_[0] = TextureManager::Load("playerTextures/LKnockDown.png");
+	LKnockDownTexture_[1] = TextureManager::Load("playerTextures/LKnockDown2.png");
+	LRunTexture_[0] = TextureManager::Load("playerTextures/LRun1.png");
+	LRunTexture_[1] = TextureManager::Load("playerTextures/LRun2.png");
+	LRunTexture_[2] = TextureManager::Load("playerTextures/LRun3.png");
 	// 気弾テクスチャ
 	SPTextureHandle_ = TextureManager::Load("playerTextures/RSpecial.png");
 	RSpecialTexture_ = TextureManager::Load("playerTextures/RSpecial.png");
@@ -444,17 +444,9 @@ void Player::TextureUpdate() {
 	// 攻撃
 	else if (isNormalAttacking_) {
 		if (nAttackFromRight_) {
-			if (facingDir_ == 1.0f) {
-				textureHandle_ = RRightPunchTexture_;
-			} else {
-				textureHandle_ = LRightPunchTexture_;
-			}
+			textureHandle_ = (facingDir_ > 0) ? RRightPunchTexture_ : LRightPunchTexture_;
 		} else {
-			if (facingDir_ == 1.0f) {
-				textureHandle_ = RLeftPunchTexture_;
-			} else {
-				textureHandle_ = LLeftPunchTexture_;
-			}
+			textureHandle_ = (facingDir_ > 0) ? RLeftPunchTexture_ : LLeftPunchTexture_;
 		}
 	}  
 	// ダウン
@@ -463,68 +455,26 @@ void Player::TextureUpdate() {
 		if (knockDownTimer_ <= 0) {
 			isDead_ = true;
 		} else if (knockDownTimer_ <= 1.0f) {
-			if (facingDir_ == 1.0f) {
-				textureHandle_ = RKnockDown2Texture_;
-			} else {
-				textureHandle_ = LKnockDown2Texture_;
-			}
+			textureHandle_ = (facingDir_ > 0) ? RKnockDownTexture_[1] : LKnockDownTexture_[1];
 		} else {
-			if (facingDir_ == 1.0f) {
-				textureHandle_ = RKnockDownTexture_;
-			} else {
-				textureHandle_ = LKnockDownTexture_;
-			}
+			textureHandle_ = (facingDir_ > 0) ? RKnockDownTexture_[0] : LKnockDownTexture_[0];
 		}
 
 	} 
 	// ステップ
 	else if (isStepping_) {
-		if (facingDir_ == 1.0f) {
-			textureHandle_ = RRunTexture1_;
-		} else {
-			textureHandle_ = LRunTexture1_;
-		}
+		textureHandle_ = (facingDir_ > 0) ? RRunTexture_[0] : LRunTexture_[0];
 		return;
 	}
 	// 移動
 	else if (isMoving) {
-		if (facingDir_ == 1.0f) {
-			switch (walkFrame_) {
-			case 0:
-				textureHandle_ = RRunTexture1_;
-				break;
-			case 1:
-				textureHandle_ = RRunTexture2_;
-				break;
-			case 2:
-				textureHandle_ = RRunTexture3_;
-				break;
-			case 3:
-				textureHandle_ = RRunTexture2_;
-				break;
-			}
-		} else {
-			switch (walkFrame_) {
-			case 0:
-				textureHandle_ = LRunTexture1_;
-				break;
-			case 1:
-				textureHandle_ = LRunTexture2_;
-				break;
-			case 2:
-				textureHandle_ = LRunTexture3_;
-				break;
-			case 3:
-				textureHandle_ = LRunTexture2_;
-				break;
-			}
-		}
+		// 0,1,2,1 のループを配列で
+		static const int walkPattern[4] = {0, 1, 2, 1};
+
+		int texIndex = walkPattern[walkFrame_];
+		textureHandle_ = (facingDir_ > 0) ? RRunTexture_[texIndex] : LRunTexture_[texIndex];
 	} else {
-		if (facingDir_ == 1.0f) {
-			textureHandle_ = RPlayerTexture_;
-		} else {
-			textureHandle_ = LPlayerTexture_;
-		}
+		textureHandle_ = (facingDir_ > 0) ? RPlayerTexture_ : LPlayerTexture_;
 	}
 }
 

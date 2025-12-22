@@ -10,10 +10,18 @@ void NormalEnemy::Initialize(const EnemyData& data) {
 	RIdleTexture_ = TextureManager::Load("enemies/REnemy.png");
 	RAttackTexture_ = TextureManager::Load("enemies/RPunch.png");
 	RStunTexture_ = TextureManager::Load("enemies/RStun.png");
+	RWalkTexture_[0] = TextureManager::Load("enemies/REnemy.png");
+	RWalkTexture_[1] = TextureManager::Load("enemies/REnemy.png");
+	RWalkTexture_[2] = TextureManager::Load("enemies/REnemy.png");
+	RWalkTexture_[3] = TextureManager::Load("enemies/REnemy.png");
 
 	LIdleTexture_ = TextureManager::Load("enemies/LEnemy.png");
 	LAttackTexture_ = TextureManager::Load("enemies/LPunch.png");
 	LStunTexture_ = TextureManager::Load("enemies/LStun.png");
+	LWalkTexture_[0] = TextureManager::Load("enemies/LEnemy.png");
+	LWalkTexture_[1] = TextureManager::Load("enemies/LEnemy.png");
+	LWalkTexture_[2] = TextureManager::Load("enemies/LEnemy.png");
+	LWalkTexture_[3] = TextureManager::Load("enemies/LEnemy.png");
 
 	attackCooldownTimer_ = attackCooldown_;
 }
