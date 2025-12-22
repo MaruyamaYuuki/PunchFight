@@ -29,7 +29,9 @@ void GameScene::Initialize() {
 	moveLimit_ = cfg_->getFloatArray("Scene.Game.Area.kMoveLimitX_Area");
 	scrollArea_ = cfg_->getFloatArray("Scene.Game.Area.kScrollAreaLimitX");
 	cameraLimitZMin_ = cfg_->getFloat("Scene.Game.Area.kCameraLimitZMin");
-	cameraLimitZMax_ = cfg_->getFloat("Scene.Game.Area.kCameraLimitZMax");	
+	cameraLimitZMax_ = cfg_->getFloat("Scene.Game.Area.kCameraLimitZMax");
+	stageNumber_ = cfg_->getInt("Scene.Game.StageDate.Stage1.kStageNumber");
+	stageRepeatCount_ = cfg_->getInt("Scene.Game.StageDate.Stage1.kRepeatCount");
 	fightTextPos_ = cfg_->getVector2("Scene.Game.FightTextAnime.kFightTextCenterPos");
 	fightTextSize_ = cfg_->getVector2("Scene.Game.FightTextAnime.kFightTextBaseSize");
 	animeDuration_ = cfg_->getFloat("Scene.Game.FightTextAnime.kFightTextAnimeDuration");
@@ -71,7 +73,7 @@ void GameScene::Initialize() {
 	EnemyGenerate();
 
 	stage_ = std::make_unique<StageManager>();
-	stage_->Initialize(1, 9);
+	stage_->Initialize(stageNumber_, stageRepeatCount_);
 
 	cameraController_ = std::make_unique<CameraController>();
 	cameraController_->Initialize();
