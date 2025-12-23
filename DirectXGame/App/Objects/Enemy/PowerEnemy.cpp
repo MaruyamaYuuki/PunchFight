@@ -137,10 +137,83 @@ void PowerEnemy::NormalAttack(const KamataEngine::Vector3& playerPos) {
 	attackHitBox_.active = true;
 }
 
-//void PowerEnemy::TackleAttack(const KamataEngine::Vector3& playerPos) {}
+void PowerEnemy::TackleAttack(const Vector3& playerPos) {
+
+	Vector3 toPlayer = playerPos - worldTransform_.translation_;
+	float dist = sqrtf(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y + toPlayer.z * toPlayer.z);
+
+	// プレイヤーの向き
+	if (fabs(toPlayer.x) > 0.01f)
+		facingDir_ = (toPlayer.x > 0) ? 1.0f : -1.0f;
+
+	// ===== 一定距離以内なら攻撃モードON（離れてもOFFにしない） =====
+	if (!isAttackMode_ && dist <= ATTACK_RANGE_) {
+		isAttackMode_ = true;
+	}
+
+	// 攻撃モードじゃないなら何もしない
+	if (!isAttackMode_) {
+		return;
+	}
+
+	// ===== 溜め開始 =====
+	if (!isTackleCharging_ && !isTackling_) {
+		isTackleCharging_ = true;
+		tackleChargeTimer_ = tackleChargeTime_;
+
+		// この瞬間の方向を固定
+		tackleDirX_ = (toPlayer.x >= 0) ? 1.0f : -1.0f;
+		facingDir_ = tackleDirX_;
+
+		return;
+	}
+
+	// ===== 溜め中 =====
+	if (isTackleCharging_) {
+		tackleChargeTimer_ -= deltaTime_;
+
+		if (tackleChargeTimer_ <= 0.0f) {
+			// 溜め完了 → 突進開始
+			isTackleCharging_ = false;
+			isTackling_ = true;
+			isAttacking_ = true;
+
+			tackleMoveTimer_ = tackleMoveTime_;
+
+			// 敵自身を攻撃判定にする
+			attackHitBox_.active = true;
+			attackHitBox_.pos = worldTransform_.translation_;
+			attackHitBox_.size = hitBox_.size; // ← 敵の当たり判定と同じ
+		}
+		return;
+	}
+
+	// ===== タックル中 =====
+	if (isTackling_) {
+		tackleMoveTimer_ -= deltaTime_;
+
+		// 移動
+		worldTransform_.translation_.x += tackleDirX_ * tackleSpeed_;
+
+		// ヒットボックス追従
+		attackHitBox_.pos = worldTransform_.translation_;
+
+		if (tackleMoveTimer_ <= 0.0f) {
+			// タックル終了
+			isTackling_ = false;
+			isAttacking_ = false;
+			isAttackMode_ = false;
+
+			attackHitBox_.active = false;
+			attackCooldownTimer_ = attackCooldown_;
+		}
+	}
+}
+
 
 void PowerEnemy::AttackProcess(const KamataEngine::Vector3& playerPos) {
 	if (useTackle_) {
+		TackleAttack(playerPos);
 	} else {
 		NormalAttack(playerPos);
 	}
