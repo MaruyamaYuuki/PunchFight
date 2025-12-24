@@ -56,8 +56,10 @@ void PowerEnemy::Update(const Vector3& playerPos, const std::vector<std::unique_
 	float dist = std::sqrtf(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y + toPlayer.z * toPlayer.z);
 
 	// プレイヤー方向（左右）を決める
-	if (fabs(toPlayer.x) > 0.01f) {
-		facingDir_ = (toPlayer.x > 0) ? 1.0f : -1.0f;
+	if (!isAttackMode_ && !isAttacking_) {
+    	if (fabs(toPlayer.x) > 0.01f) {
+    		facingDir_ = (toPlayer.x > 0) ? 1.0f : -1.0f;
+    	}
 	}
 
 	// ===== 攻撃処理 =====
@@ -83,75 +85,20 @@ void PowerEnemy::Update(const Vector3& playerPos, const std::vector<std::unique_
 	worldTransform_.UpdateMatrix();
 }
 
-void PowerEnemy::NormalAttack(const KamataEngine::Vector3& playerPos) {
-	Vector3 toPlayer = playerPos - worldTransform_.translation_;
-	float dist = sqrtf(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y + toPlayer.z * toPlayer.z);
-
-	// プレイヤーの向き
-	if (fabs(toPlayer.x) > 0.01f)
-		facingDir_ = (toPlayer.x > 0) ? 1.0f : -1.0f;
-
-	// ===== 一定距離以内なら攻撃モードON（離れてもOFFにしない） =====
-	if (!isAttackMode_ && dist <= ATTACK_RANGE_) {
-		isAttackMode_ = true;
-	}
-
-	// 攻撃モードじゃないなら何もしない
-	if (!isAttackMode_) {
-		return;
-	}
-
-	// ===== クールタイム =====
-	if (attackCooldownTimer_ > 0.0f) {
-		attackCooldownTimer_ -= deltaTime_;
-		return; // 攻撃できないのでここで終了
-	}
-
-	// ===== 攻撃中処理 =====
-	if (isAttacking_) {
-		attackTimer_ -= deltaTime_;
-
-		if (attackTimer_ <= 0) {
-			// 攻撃終了
-			isAttacking_ = false;
-			attackHitBox_.active = false;
-			hasDealtDamage_ = false;
-			attackCooldownTimer_ = attackCooldown_;
-			isAttackMode_ = false;
-		} else {
-			// 攻撃中：ヒットボックス追従
-			float offsetX = 0.5f * facingDir_;
-			SetAttackHitBox(worldTransform_.translation_ + Vector3{offsetX, 0.1f, 0});
-		}
-
-		return;
-	}
-
-	// ===== 攻撃開始 =====
-	isAttacking_ = true;
-	attackTimer_ = attackDuration_;
-	hasDealtDamage_ = false;
-
-	float offsetX = 0.5f * facingDir_;
-	SetAttackHitBox(worldTransform_.translation_ + Vector3{offsetX, 0.1f, 0});
-	attackHitBox_.active = true;
-}
-
 void PowerEnemy::TackleAttack(const Vector3& playerPos) {
 
 	Vector3 toPlayer = playerPos - worldTransform_.translation_;
 	float dist = sqrtf(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y + toPlayer.z * toPlayer.z);
 
-	// プレイヤーの向き
-	if (fabs(toPlayer.x) > 0.01f)
-		facingDir_ = (toPlayer.x > 0) ? 1.0f : -1.0f;
-
-	// ===== 一定距離以内なら攻撃モードON（離れてもOFFにしない） =====
+	// ===== 攻撃モード突入 =====
 	if (!isAttackMode_ && dist <= ATTACK_RANGE_) {
 		isAttackMode_ = true;
+
+		// 向きを固定する
+		tackleDirX_ = (toPlayer.x >= 0) ? 1.0f : -1.0f;
+		facingDir_ = tackleDirX_;
 	}
 
-	// 攻撃モードじゃないなら何もしない
 	if (!isAttackMode_) {
 		return;
 	}
@@ -160,11 +107,6 @@ void PowerEnemy::TackleAttack(const Vector3& playerPos) {
 	if (!isTackleCharging_ && !isTackling_) {
 		isTackleCharging_ = true;
 		tackleChargeTimer_ = tackleChargeTime_;
-
-		// この瞬間の方向を固定
-		tackleDirX_ = (toPlayer.x >= 0) ? 1.0f : -1.0f;
-		facingDir_ = tackleDirX_;
-
 		return;
 	}
 
@@ -173,17 +115,16 @@ void PowerEnemy::TackleAttack(const Vector3& playerPos) {
 		tackleChargeTimer_ -= deltaTime_;
 
 		if (tackleChargeTimer_ <= 0.0f) {
-			// 溜め完了 → 突進開始
 			isTackleCharging_ = false;
 			isTackling_ = true;
 			isAttacking_ = true;
 
 			tackleMoveTimer_ = tackleMoveTime_;
 
-			// 敵自身を攻撃判定にする
+			// 自分自身を攻撃判定に
 			attackHitBox_.active = true;
 			attackHitBox_.pos = worldTransform_.translation_;
-			attackHitBox_.size = hitBox_.size; // ← 敵の当たり判定と同じ
+			attackHitBox_.size = hitBox_.size;
 		}
 		return;
 	}
@@ -192,14 +133,12 @@ void PowerEnemy::TackleAttack(const Vector3& playerPos) {
 	if (isTackling_) {
 		tackleMoveTimer_ -= deltaTime_;
 
-		// 移動
+		// ★ 固定した向きで突進
 		worldTransform_.translation_.x += tackleDirX_ * tackleSpeed_;
 
-		// ヒットボックス追従
 		attackHitBox_.pos = worldTransform_.translation_;
 
 		if (tackleMoveTimer_ <= 0.0f) {
-			// タックル終了
 			isTackling_ = false;
 			isAttacking_ = false;
 			isAttackMode_ = false;
@@ -210,12 +149,11 @@ void PowerEnemy::TackleAttack(const Vector3& playerPos) {
 	}
 }
 
-
 void PowerEnemy::AttackProcess(const KamataEngine::Vector3& playerPos) {
 	if (useTackle_) {
 		TackleAttack(playerPos);
 	} else {
-		NormalAttack(playerPos);
+		DoNormalAttack(playerPos);
 	}
 }
 

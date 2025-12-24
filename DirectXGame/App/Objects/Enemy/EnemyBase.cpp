@@ -235,6 +235,62 @@ void EnemyBase::MoveTowardPlayer(const Vector3& playerPos, const std::vector<std
 	}
 }
 
+void EnemyBase::DoNormalAttack(const Vector3& playerPos) {
+	Vector3 toPlayer = playerPos - worldTransform_.translation_;
+	float dist = sqrtf(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y + toPlayer.z * toPlayer.z);
+
+	// ===== 一定距離以内なら攻撃モードON（離れてもOFFにしない） =====
+	if (!isAttackMode_ && dist <= ATTACK_RANGE_) {
+		isAttackMode_ = true;
+
+		// 向きを固定する
+		attackDirX_ = (toPlayer.x >= 0) ? 1.0f : -1.0f;
+		facingDir_ = attackDirX_;
+	}
+
+	// 攻撃モードじゃないなら何もしない
+	if (!isAttackMode_) {
+		return;
+	}
+
+	// ===== クールタイム =====
+	if (attackCooldownTimer_ > 0.0f) {
+		attackCooldownTimer_ -= deltaTime_;
+		return; // 攻撃できないのでここで終了
+	}
+
+	// ===== 攻撃中処理 =====
+	if (isAttacking_) {
+		attackTimer_ -= deltaTime_;
+
+		facingDir_ = attackDirX_;
+
+		if (attackTimer_ <= 0) {
+			// 攻撃終了
+			isAttacking_ = false;
+			attackHitBox_.active = false;
+			hasDealtDamage_ = false;
+			attackCooldownTimer_ = attackCooldown_;
+			isAttackMode_ = false;
+		} else {
+			// 攻撃中：ヒットボックス追従
+			float offsetX = 0.5f * facingDir_;
+			SetAttackHitBox(worldTransform_.translation_ + Vector3{offsetX, 0.1f, 0});
+		}
+
+		return;
+	}
+
+	// ===== 攻撃開始 =====
+	isAttacking_ = true;
+	attackTimer_ = attackDuration_;
+	hasDealtDamage_ = false;
+
+	float offsetX = 0.5f * facingDir_;
+	SetAttackHitBox(worldTransform_.translation_ + Vector3{offsetX, 0.1f, 0});
+	attackHitBox_.active = true;
+}
+
 void EnemyBase::UpdateTextures() {
 	switch (state_) {
 	case EnemyState::Idle:
@@ -264,4 +320,56 @@ void EnemyBase::UpdateTextures() {
 			textureHandle_ = (facingDir_ > 0) ? RStunTexture_ : LStunTexture_;
 		break;
 	}
+}
+
+void EnemyBase::UpdateCommon(const Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies, bool enableAttackWaitState) {
+	// ===== ノックバック・死亡・スタン =====
+	if (isKnockBack_ || isStun_ || hp_ <= 0) {
+		Update(playerPos, allEnemies);
+
+		isAttackMode_ = false;
+		isAttacking_ = false;
+		attackHitBox_.active = false;
+
+		if (isKnockBack_)
+			state_ = EnemyState::Knockback;
+		else if (hp_ <= 0)
+			state_ = EnemyState::Dead;
+		else if (isStun_)
+			state_ = EnemyState::Stunned;
+
+		worldTransform_.UpdateMatrix();
+		return;
+	}
+
+	// ===== 距離 & 向き =====
+	Vector3 toPlayer = playerPos - worldTransform_.translation_;
+	float dist = std::sqrtf(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y + toPlayer.z * toPlayer.z);
+
+	if (!isAttackMode_ && !isAttacking_) {
+		if (fabs(toPlayer.x) > 0.01f) {
+			facingDir_ = (toPlayer.x > 0) ? 1.0f : -1.0f;
+		}
+	}
+
+	// ===== 攻撃 =====
+	AttackProcess(playerPos);
+
+	// ===== 移動 =====
+	if (dist > ATTACK_RANGE_ && !isAttackMode_) {
+		MoveTowardPlayer(playerPos, allEnemies);
+	}
+
+	// ===== 状態 =====
+	if (isAttacking_)
+		state_ = EnemyState::Attacking;
+	else if (enableAttackWaitState && isAttackMode_)
+		state_ = EnemyState::AttackWait;
+	else if (speed_ > 0.0f)
+		state_ = EnemyState::Walking;
+	else
+		state_ = EnemyState::Idle;
+
+	Update(playerPos, allEnemies);
+	worldTransform_.UpdateMatrix();
 }

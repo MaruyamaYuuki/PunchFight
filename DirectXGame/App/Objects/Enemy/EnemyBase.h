@@ -181,10 +181,14 @@ protected:
 	/// <param name="playerPos">プレイヤーの座標</param>
 	virtual void AttackProcess(const KamataEngine::Vector3& playerPos) = 0;
 
+	void DoNormalAttack(const KamataEngine::Vector3& playerPos);
+
 	/// <summary>
 	/// テクスチャの更新
 	/// </summary>
 	virtual void UpdateTextures();
+
+    void UpdateCommon(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies, bool enableAttackWaitState);
 
 protected:
 	GameConfigManager* cfg_ = nullptr;
@@ -221,6 +225,7 @@ protected:
 	bool isAttacking_ = false;
 	bool isAttackMode_ = false;
 	float ATTACK_RANGE_ = 1.0f;
+	float attackDirX_ = 0.0f;
 
 	bool hasDealtDamage_ = false;
 

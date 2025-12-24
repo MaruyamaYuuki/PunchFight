@@ -52,8 +52,10 @@ void NormalEnemy::Update(const Vector3& playerPos, const std::vector<std::unique
 	float dist = std::sqrtf(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y + toPlayer.z * toPlayer.z);
 
 	// プレイヤー方向（左右）を決める
-	if (fabs(toPlayer.x) > 0.01f) {
-		facingDir_ = (toPlayer.x > 0) ? 1.0f : -1.0f;
+	if (!isAttackMode_ && !isAttacking_) {
+		if (fabs(toPlayer.x) > 0.01f) {
+			facingDir_ = (toPlayer.x > 0) ? 1.0f : -1.0f;
+		}
 	}
 
 	// ===== 攻撃処理 =====
@@ -77,56 +79,6 @@ void NormalEnemy::Update(const Vector3& playerPos, const std::vector<std::unique
 	worldTransform_.UpdateMatrix();
 }
 
-void NormalEnemy::AttackProcess(const Vector3& playerPos) {
-	Vector3 toPlayer = playerPos - worldTransform_.translation_;
-	float dist = sqrtf(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y + toPlayer.z * toPlayer.z);
-
-	// プレイヤーの向き
-	if (fabs(toPlayer.x) > 0.01f)
-		facingDir_ = (toPlayer.x > 0) ? 1.0f : -1.0f;
-
-	// ===== 一定距離以内なら攻撃モードON（離れてもOFFにしない） =====
-	if (!isAttackMode_ && dist <= ATTACK_RANGE_) {
-		isAttackMode_ = true;
-	}
-
-	// 攻撃モードじゃないなら何もしない
-	if (!isAttackMode_) {
-		return;
-	}
-
-	// ===== クールタイム =====
-	if (attackCooldownTimer_ > 0.0f) {
-		attackCooldownTimer_ -= deltaTime_;
-		return; // 攻撃できないのでここで終了
-	}
-
-	// ===== 攻撃中処理 =====
-	if (isAttacking_) {
-		attackTimer_ -= deltaTime_;
-
-		if (attackTimer_ <= 0) {
-			// 攻撃終了
-			isAttacking_ = false;
-			attackHitBox_.active = false;
-			hasDealtDamage_ = false;
-			attackCooldownTimer_ = attackCooldown_;
-			isAttackMode_ = false;
-		} else {
-			// 攻撃中：ヒットボックス追従
-			float offsetX = 0.5f * facingDir_;
-			SetAttackHitBox(worldTransform_.translation_ + Vector3{offsetX, 0.1f, 0});
-		}
-
-		return;
-	}
-
-	// ===== 攻撃開始 =====
-	isAttacking_ = true;
-	attackTimer_ = attackDuration_;
-	hasDealtDamage_ = false;
-
-	float offsetX = 0.5f * facingDir_;
-	SetAttackHitBox(worldTransform_.translation_ + Vector3{offsetX, 0.1f, 0});
-	attackHitBox_.active = true;
+void NormalEnemy::AttackProcess(const Vector3& playerPos) { 
+	DoNormalAttack(playerPos); 
 }
