@@ -33,8 +33,6 @@ public:
 
 private:
 
-	void NormalAttack(const KamataEngine::Vector3& playerPos);
-
 	void TackleAttack(const KamataEngine::Vector3& playerPos);
 
 protected:
@@ -46,7 +44,7 @@ private:
 	uint32_t RTackleTexture_ = 0;
 	uint32_t LTackleTexture_ = 0;
 
-	bool useTackle_ = true;
+	bool useTackle_ = false;
 
 	AttackType attackType_ = AttackType::Normal;
 
