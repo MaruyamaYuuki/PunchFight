@@ -33,31 +33,39 @@ public:
 
 private:
 
-	void TackleAttack(const KamataEngine::Vector3& playerPos);
+	void TackleAttack();
+
+	void EnterAttackMode(const KamataEngine::Vector3& playerPos);
 
 protected:
 	void AttackProcess(const KamataEngine::Vector3& playerPos) override;
 
 	void UpdateTextures() override;
 
-private:
-	uint32_t RTackleTexture_ = 0;
-	uint32_t LTackleTexture_ = 0;
 
-	bool useTackle_ = false;
+
+private:
+	GameConfigManager* cfg_ = nullptr;
+
+	uint32_t RTackleTexture_ = 0;
+	uint32_t RTackleWaitTexture_ = 0;
+	uint32_t LTackleTexture_ = 0;
+	uint32_t LTackleWaitTexture_ = 0;
+
+	bool useTackle_ = true;
 
 	AttackType attackType_ = AttackType::Normal;
 
 	// タックル用
 	bool isTackleCharging_ = false;
 	bool isTackling_ = false;
+	float tackleProbability_; // %の確率でタックル攻撃
 
 	float tackleChargeTimer_ = 0.0f;
-	float tackleChargeTime_ = 3.0f; // 溜め時間
+	float tackleChargeTime_; // 溜め時間
 
 	float tackleMoveTimer_ = 0.0f;
-	float tackleMoveTime_ = 0.4f; // 突進時間
+	float tackleMoveTime_; // 突進時間
 
-	float tackleSpeed_ = 0.15f;
-	float tackleDirX_ = 0.0f; // 突進方向
+	float tackleSpeed_;
 };

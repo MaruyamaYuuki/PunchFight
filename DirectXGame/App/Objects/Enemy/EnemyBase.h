@@ -188,8 +188,6 @@ protected:
 	/// </summary>
 	virtual void UpdateTextures();
 
-    void UpdateCommon(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies, bool enableAttackWaitState);
-
 protected:
 	GameConfigManager* cfg_ = nullptr;
 
