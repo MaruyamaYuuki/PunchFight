@@ -184,6 +184,11 @@
         "scale": [0.5, 0.5, 0.5]
       },
       "Power": {
+        "kTackleProbability": 0.3,
+        "kTackleChargeTime": 3.0,
+        "kTackleMoveTime": 0.4,
+        "kTackleSpeed": 0.15,
+
         "modelPath": "enemy",
         "speed": 0.1,
         "hp": 30,

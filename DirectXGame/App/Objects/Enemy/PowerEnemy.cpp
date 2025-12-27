@@ -1,4 +1,5 @@
 #include "PowerEnemy.h"
+#include "../../../Engine/Utility/GameConfigManager.h"
 #include <cmath>
 
 using namespace KamataEngine;
@@ -7,10 +8,18 @@ using namespace KamataEngine::MathUtility;
 void PowerEnemy::Initialize(const EnemyData& data) { 
 	EnemyBase::Initialize(data); 
 
+	cfg_ = GameConfigManager::GetInstance();
+	tackleProbability_ = cfg_->getFloat("Enemy.Types.Power.kTackleProbability");
+	tackleChargeTime_ = cfg_->getFloat("Enemy.Types.Power.kTackleChargeTime");
+	tackleMoveTime_ = cfg_->getFloat("Enemy.Types.Power.kTackleMoveTime");
+	tackleSpeed_ = cfg_->getFloat("Enemy.Types.Power.kTackleSpeed");
+
+
 	RIdleTexture_ = TextureManager::Load("enemies/powerEnemy/RPower.png");
 	RWaitTexture_ = TextureManager::Load("enemies/powerEnemy/RHeadbutt1.png");
 	RAttackTexture_ = TextureManager::Load("enemies/powerEnemy/RHeadbutt2.png");
 	RTackleTexture_ = TextureManager::Load("enemies/powerEnemy/RTackle.png");
+	RTackleWaitTexture_ = TextureManager::Load("enemies/powerEnemy/RTackleWait.png");
 	RStunTexture_ = TextureManager::Load("enemies/powerEnemy/RStun.png");
 	RWalkTexture_[0] = TextureManager::Load("enemies/powerEnemy/RWalk1.png");
 	RWalkTexture_[1] = TextureManager::Load("enemies/powerEnemy/RWalk2.png");
@@ -21,6 +30,7 @@ void PowerEnemy::Initialize(const EnemyData& data) {
 	LWaitTexture_ = TextureManager::Load("enemies/powerEnemy/LHeadbutt1.png");
 	LAttackTexture_ = TextureManager::Load("enemies/powerEnemy/LHeadbutt2.png");
 	LTackleTexture_ = TextureManager::Load("enemies/powerEnemy/LTackle.png");
+	LTackleWaitTexture_ = TextureManager::Load("enemies/powerEnemy/LTackleWait.png");
 	LStunTexture_ = TextureManager::Load("enemies/powerEnemy/LStun.png");
 	LWalkTexture_[0] = TextureManager::Load("enemies/powerEnemy/LWalk1.png");
 	LWalkTexture_[1] = TextureManager::Load("enemies/powerEnemy/LWalk2.png");
@@ -85,24 +95,7 @@ void PowerEnemy::Update(const Vector3& playerPos, const std::vector<std::unique_
 	worldTransform_.UpdateMatrix();
 }
 
-void PowerEnemy::TackleAttack(const Vector3& playerPos) {
-
-	Vector3 toPlayer = playerPos - worldTransform_.translation_;
-	float dist = sqrtf(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y + toPlayer.z * toPlayer.z);
-
-	// ===== 攻撃モード突入 =====
-	if (!isAttackMode_ && dist <= ATTACK_RANGE_) {
-		isAttackMode_ = true;
-
-		// 向きを固定する
-		tackleDirX_ = (toPlayer.x >= 0) ? 1.0f : -1.0f;
-		facingDir_ = tackleDirX_;
-	}
-
-	if (!isAttackMode_) {
-		return;
-	}
-
+void PowerEnemy::TackleAttack() {
 	// ===== 溜め開始 =====
 	if (!isTackleCharging_ && !isTackling_) {
 		isTackleCharging_ = true;
@@ -133,8 +126,8 @@ void PowerEnemy::TackleAttack(const Vector3& playerPos) {
 	if (isTackling_) {
 		tackleMoveTimer_ -= deltaTime_;
 
-		// ★ 固定した向きで突進
-		worldTransform_.translation_.x += tackleDirX_ * tackleSpeed_;
+		// 固定した向きで突進
+		worldTransform_.translation_.x += facingDir_ * tackleSpeed_;
 
 		attackHitBox_.pos = worldTransform_.translation_;
 
@@ -149,9 +142,40 @@ void PowerEnemy::TackleAttack(const Vector3& playerPos) {
 	}
 }
 
+void PowerEnemy::EnterAttackMode(const Vector3& playerPos) { 
+	isAttackMode_ = true;
+
+	// 向き固定
+	Vector3 toPlayer = playerPos - worldTransform_.translation_;
+	attackDirX_ = (toPlayer.x >= 0) ? 1.0f : -1.0f;
+	facingDir_ = attackDirX_;
+
+	// 攻撃タイプ抽選
+	float r = static_cast<float>(rand()) / RAND_MAX;
+	if (r < tackleProbability_) {
+		attackType_ = AttackType::Tackle;
+		useTackle_ = true;
+	} else {
+		attackType_ = AttackType::Normal;
+		useTackle_ = false;
+	}
+}
+
 void PowerEnemy::AttackProcess(const KamataEngine::Vector3& playerPos) {
+	// 攻撃モードに入ってないならチェック
+	if (!isAttackMode_) {
+		Vector3 toPlayer = playerPos - worldTransform_.translation_;
+		float dist = Length(toPlayer);
+
+		if (dist <= ATTACK_RANGE_) {
+			EnterAttackMode(playerPos); // ★ここで一度だけ決定
+		} else {
+			return;
+		}
+	}
+
 	if (useTackle_) {
-		TackleAttack(playerPos);
+		TackleAttack();
 	} else {
 		DoNormalAttack(playerPos);
 	}
@@ -161,12 +185,26 @@ void PowerEnemy::UpdateTextures() {
 	// 共通処理
 	EnemyBase::UpdateTextures();
 
-	// 攻撃中だけ上書き
-	if (state_ == EnemyState::Attacking) {
-		if (attackType_ == AttackType::Normal) {
-			textureHandle_ = (facingDir_ > 0) ? RAttackTexture_ : LAttackTexture_;
-		} else if (attackType_ == AttackType::Tackle) {
-			textureHandle_ = (facingDir_ > 0) ? RTackleTexture_ : LTackleTexture_;
-		}
+    uint32_t waitTex = 0;
+	uint32_t attackTex = 0;
+
+	// 攻撃タイプで使用テクスチャを決定
+	switch (attackType_) {
+	case AttackType::Normal:
+		waitTex = (facingDir_ > 0) ? RWaitTexture_ : LWaitTexture_;
+		attackTex = (facingDir_ > 0) ? RAttackTexture_ : LAttackTexture_;
+		break;
+
+	case AttackType::Tackle:
+		waitTex = (facingDir_ > 0) ? RTackleWaitTexture_ : LTackleWaitTexture_;
+		attackTex = (facingDir_ > 0) ? RTackleTexture_ : LTackleTexture_;
+		break;
+	}
+
+	// 状態で最終決定
+	if (state_ == EnemyState::AttackWait) {
+		textureHandle_ = waitTex;
+	} else if (state_ == EnemyState::Attacking) {
+		textureHandle_ = attackTex;
 	}
 }
