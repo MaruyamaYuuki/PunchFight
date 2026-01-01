@@ -34,7 +34,8 @@ void ClearScene::Initialize() {
 	pushSpaceTexture_ = Sprite::Create(textureHandle_, {640.0f, 360.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
 
 	player_ = std::make_unique<Player>();
-	player_->Initialize(modelPlayer_.get(), modelBoxFrame_.get(), modelBoxFrame_.get(), cfg_->getVector3("Player.kClearInitialPos"));
+	player_->Initialize(modelPlayer_.get(), modelBoxFrame_.get(), modelBoxFrame_.get());
+	player_->SetTranslation(cfg_->getVector3("Player.kClearInitialPos"));
 	player_->SetRotateX(cfg_->getFloat("Player.kClearSceneRotateX"));
 
 	fade_ = std::make_unique<Fade>();

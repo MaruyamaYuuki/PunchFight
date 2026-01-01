@@ -25,7 +25,7 @@ void GameScene::Initialize() {
 
 	// 基礎情報
 	fadeTime_ = cfg_->getFloat("Global.kFadeTime");
-	startTime_ = cfg_->getFloat("Scene.Game.kReadyTime");
+	kInitialStartTime_ = cfg_->getFloat("Scene.Game.kReadyTime");
 	moveLimit_ = cfg_->getFloatArray("Scene.Game.Area.kMoveLimitX_Area");
 	scrollArea_ = cfg_->getFloatArray("Scene.Game.Area.kScrollAreaLimitX");
 	cameraLimitZMin_ = cfg_->getFloat("Scene.Game.Area.kCameraLimitZMin");
@@ -42,7 +42,9 @@ void GameScene::Initialize() {
 	guideDuration_ = cfg_->getFloat("Scene.Game.Guide.kGuideDisplayDuration");
 	blinkInterval_ = cfg_->getFloat("Scene.Game.Guide.kGuideBlinkInterval");
 	maxBlinkCount_ = cfg_->getInt("Scene.Game.Guide.kGuideMaxBlinkCount");
+	enemySpawnData_ = cfg_->getJsonArray("Scene.Game.EnemySpawn.Areas");
 
+	startTime_ = kInitialStartTime_;
 
 	modelLoad_.reset(Model::CreateFromOBJ("load", true));
 	modelPlayer_.reset( Model::CreateFromOBJ("player", true));
@@ -65,9 +67,10 @@ void GameScene::Initialize() {
 	guideTexture_.reset(Sprite::Create(textureHandle_, {1100.0f, 450.0f},{1, 1, 1, 1}, {0.5f, 0.5f}));
 
 	startGongSEDataHandle_ = audio_->LoadWave("audio/SE/startGong.wav");
+	bgmDataHandle_ = audio_->LoadWave("audio/BGM/gameBGM.wav");
 
 	player_ = std::make_unique<Player>();
-	player_->Initialize(modelPlayer_.get(), modelSPAttack_.get(), modelBoxFrame_.get(), cfg_->getVector3("Player.kGameInitialPos"));
+	player_->Initialize(modelPlayer_.get(), modelSPAttack_.get(), modelBoxFrame_.get());
 	player_->SetEndMoveLimitX(moveLimit_[0]);
 
 	EnemyGenerate();
@@ -230,6 +233,7 @@ void GameScene::ChangePhase() {
 				audio_->StopWave(startGongSEVoiceHandle_);
     			startTime_ = 4.0f;
     			phase_ = Phase::kPlay;
+    			bgmVoiceHandle_ = audio_->PlayWave(bgmDataHandle_, true, 0.5f);
     		}
 		}
 		break;
@@ -238,6 +242,7 @@ void GameScene::ChangePhase() {
 			player_->OnHit(5);
 		}
 		if (player_->GetWorldTransform().translation_.x >= moveLimit_[3]) {
+			audio_->StopWave(bgmVoiceHandle_);
 			phase_ = Phase::kFadeOut;
 			fade_->Start(Fade::Status::FadeOut, fadeTime_);
 		}
@@ -308,6 +313,8 @@ void GameScene::FightAnimation() {
 
 void GameScene::GameOver() {
 	if (player_->IsDead()) {
+		audio_->StopWave(bgmVoiceHandle_);
+
 		// 経過時間を加算
 		alphaCounter_ += 1.0f / 60.0f;
 		if (alphaCounter_ > alphaDuration_)
@@ -361,34 +368,58 @@ void GameScene::GameOver() {
 }
 
 void GameScene::ResetGame() {
-	// === タイマー・フラグ初期化 ===
+
+	// フェーズ
+	phase_ = Phase::kFadeIn;
+
+	// タイマー・フラグ
 	alphaCounter_ = 0.0f;
 	gameOverFallTimer_ = 0.0f;
 	isGameOverFallFinished_ = false;
+	fightTextVisible_ = false;
+	fightTextAnimeFinished_ = false;
+	waitTimer_ = 0.0f;
+	startTime_ = kInitialStartTime_;
 
-	// === プレイヤー関連 ===
-	if (player_) {
-		player_->Reset();
-	}
+	// プレイヤー
+	player_->Reset();
 
-	// === スプライトの初期状態 ===
-	blackSprite_->SetColor({1, 1, 1, 0.0f});
-	gameOverTextSprite_->SetColor({1, 1, 1, 0.0f});
+	// 敵・エリア
+	EnemyGenerate();
+	areaClearedFlag_.assign(areaClearedFlag_.size(), false);
+	guideOn_ = false;
+	guideTimer_ = 0.0f;
+	blinkCount_ = 0;
+
+	// カメラ
+	cameraController_->Reset();
+	cameraController_->SetMovableArea({0.0f, scrollArea_[0], cameraLimitZMin_, cameraLimitZMax_});
+
+	// UI
+	ui_->Reset();
+
+	// スプライト
+	blackSprite_->SetColor({1, 1, 1, 0});
+	gameOverTextSprite_->SetColor({1, 1, 1, 0});
 	gameOverTextSprite_->SetPosition({640.0f, -200.0f});
+
+	// BGM
+	audio_->StopWave(bgmVoiceHandle_);
 }
 
+
 void GameScene::EnemyGenerate() {
-	auto areas = cfg_->getJsonArray("Scene.Game.EnemySpawn.Areas");
+	//auto areas = cfg_->getJsonArray("Scene.Game.EnemySpawn.Areas");
 
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->Initialize();
 
 	// --- 各エリアに敵を追加 ---
-	for (size_t i = 0; i < areas.size(); ++i) {
-		float triggerX = areas[i]["triggerX"].get<float>();
+	for (size_t i = 0; i < enemySpawnData_.size(); ++i) {
+		float triggerX = enemySpawnData_[i]["triggerX"].get<float>();
 		enemyManager_->AddArea(triggerX);
 
-		for (auto& e : areas[i]["enemies"]) {
+		for (auto& e : enemySpawnData_[i]["enemies"]) {
 			std::string typeStr = e["type"];
 			auto posArr = e["pos"];
 			Vector3 pos{
