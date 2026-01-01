@@ -148,7 +148,6 @@ bool EnemyManager::IsAreaCleared(int32_t areaIndex) const {
 	return areas_[areaIndex].cleared;
 }
 
-// EnemyManager.cpp
 std::vector<EnemyBase*> EnemyManager::GetEnemiesSortedByZ(const KamataEngine::Vector3& playerPos, bool backSide) {
 	std::vector<EnemyBase*> result;
 	result.reserve(enemies_.size());
