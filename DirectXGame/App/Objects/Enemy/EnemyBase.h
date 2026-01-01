@@ -190,6 +190,7 @@ protected:
 
 protected:
 	GameConfigManager* cfg_ = nullptr;
+	KamataEngine::Audio* audio_ = nullptr;
 
 	WorldTransformEx worldTransform_;
 	WorldTransformEx worldTransformEHitBox_;
@@ -270,4 +271,13 @@ protected:
 	uint32_t LAttackTexture_ = 0;
 	uint32_t LStunTexture_ = 0;
 	uint32_t LWalkTexture_[4];
+
+	// ---- SE ----
+	uint32_t attackSEDataHandle_ = 0;
+	uint32_t hitSEDataHandle_ = 0;
+	uint32_t blownSEDataHandle_ = 0;
+
+	uint32_t attackSEVoiceHandle_ = 0;
+	uint32_t hitSEVoiceHandle_ = 0;
+	uint32_t blownSEVoiceHandle_ = 0;
 };

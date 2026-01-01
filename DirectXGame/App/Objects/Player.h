@@ -210,6 +210,7 @@ private:
 
 private:
 	KamataEngine::Input* input_ = nullptr;
+	KamataEngine::Audio* audio_ = nullptr;
 	GameConfigManager* cfg_ = nullptr;
 
 	WorldTransformEx worldTransform_;
@@ -246,6 +247,15 @@ private:
 	uint32_t LSpecialTexture_ = 0;
 
 	uint32_t smokeTexture_ = 0;
+
+	// --- SE ---
+	uint32_t normalAttackSEDataHandle_ = 0;
+	uint32_t spAttackSEDataHandle_ = 0;
+	uint32_t hitSEDataHandle_ = 0;
+
+	uint32_t normalAttackSEVoiceHandle_ = 0;
+	uint32_t spAttackSEVoiceHandle_ = 0;
+	uint32_t hitSEVoiceHandle_ = 0;
 
 	bool isDead_ = false;
 	int32_t HP_;

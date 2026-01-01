@@ -6,6 +6,7 @@ using namespace KamataEngine::MathUtility;
 
 void EnemyBase::Initialize(const EnemyData& data) {
 	cfg_ = GameConfigManager::GetInstance();
+	audio_ = Audio::GetInstance();
 
 	model_ = Model::CreateFromOBJ(data.modelPath, true);
 	speed_ = data.speed;
@@ -39,6 +40,9 @@ void EnemyBase::Initialize(const EnemyData& data) {
 	smokeSpawnInterval_ = cfg_->getFloat("Enemy.Default.kSmokeSpawnInterval");
 	smokeSize_ = cfg_->getVector3("Enemy.Default.kSmokeSize");
 
+	attackSEDataHandle_ = audio_->LoadWave("audio/SE/punchSE.wav");
+	hitSEDataHandle_ = audio_->LoadWave("audio/SE/hitSE.wav");
+	blownSEDataHandle_ = audio_->LoadWave("audio/SE/blownSE.wav");
 }
 
 void EnemyBase::Update(const Vector3&, const std::vector<std::unique_ptr<EnemyBase>>&) {
@@ -132,6 +136,8 @@ void EnemyBase::OnHit(int32_t damage, const Vector3& attackDir) {
 
 
 	if (hp_ <= 0 && !isKnockBack_) {
+		blownSEVoiceHandle_ = audio_->PlayWave(blownSEDataHandle_, false, 0.5f);
+
 		hp_ = 0;
 		isKnockBack_ = true;
 		knockbackTime_ = 0.0f;
@@ -142,6 +148,8 @@ void EnemyBase::OnHit(int32_t damage, const Vector3& attackDir) {
 
 		knockbackVelocity_ = {attackDir.x * basePower, upwardBoost, 0.0f};
 	} else {
+		hitSEVoiceHandle_ = audio_->PlayWave(hitSEDataHandle_, false, 0.5f);
+
     	isStun_ = true;
      	stunTimer_ = stunDuration_;
     	stunShakeTime_ = 0.0f;
@@ -285,6 +293,8 @@ void EnemyBase::DoNormalAttack(const Vector3& playerPos) {
 	isAttacking_ = true;
 	attackTimer_ = attackDuration_;
 	hasDealtDamage_ = false;
+
+    attackSEVoiceHandle_ = audio_->PlayWave(attackSEDataHandle_, false, 0.5f);
 
 	float offsetX = 0.5f * facingDir_;
 	SetAttackHitBox(worldTransform_.translation_ + Vector3{offsetX, 0.1f, 0});
