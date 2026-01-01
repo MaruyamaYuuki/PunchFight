@@ -20,7 +20,7 @@ public:
 	/// 初期化
 	/// </summary>
 	/// <param name="model"></param>
-	void Initialize(KamataEngine::Model* model, KamataEngine::Model* modelSP, KamataEngine::Model* modelBox, KamataEngine::Vector3 pos);
+	void Initialize(KamataEngine::Model* model, KamataEngine::Model* modelSP, KamataEngine::Model* modelBox);
 
 	/// <summary>
 	/// 更新
@@ -172,6 +172,12 @@ public:
 	void SetEndMoveLimitX(float limit) { endMoveLimitX_ = limit; }
 
 	/// <summary>
+	/// プレイヤーの座標を設定する
+	/// </summary>
+	/// <param name="pos">座標</param>
+	void SetTranslation(const KamataEngine::Vector3& pos) { worldTransform_.translation_ = pos; }
+
+	/// <summary>
 	/// X軸での回転角を設定する
 	/// </summary>
 	/// <param name="rotX">回転角</param>
@@ -265,6 +271,8 @@ private:
 
 	bool isDead_ = false;
 	int32_t HP_;
+	int32_t maxHP_;
+	KamataEngine::Vector3 kInitialPos_;
 
 	// --- 移動関連 ---
 	KamataEngine::Vector3 move_ = {0, 0, 0};
@@ -316,6 +324,7 @@ private:
 
 	// --- ノックダウン処理用 ---
 	float knockDownTimer_;
+	float knockDownDuration_;
 
 	float endMoveLimitX_ = 0;
 

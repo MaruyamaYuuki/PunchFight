@@ -15,6 +15,8 @@ public:
 
 	void Draw();
 
+	void Reset();
+
 private:
 
 	void UpdateHPBar();

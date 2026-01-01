@@ -48,6 +48,20 @@ void UI::Draw() {
 	ctrlSprite_->Draw();
 }
 
+void UI::Reset() {
+
+	// === HPバー初期化 ===
+	const float texWidth = 385.0f;
+	const float texHeight = 122.0f;
+
+	hpSprite_->SetTextureRect({0.0f, 0.0f}, {texWidth, texHeight});
+	hpSprite_->SetSize({texWidth, texHeight});
+
+	// === クールタイム影を消す ===
+	dashShadowSprite_->SetSize({dashIconSize_.x, 0.0f});
+	spShadowSprite_->SetSize({spIconSize.x, 0.0f});
+}
+
 void UI::UpdateHPBar() {
 
 	// プレイヤーの HP 取得

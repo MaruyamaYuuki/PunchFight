@@ -1,6 +1,7 @@
 #pragma once
 #include "KamataEngine.h"
 #include <memory>
+#include <json.hpp>
 #include "../../Engine/Math/WorldTransformEx.h"
 #include "../../Engine/Camera/CameraController.h"
 #include "../../Engine/Rendering/UI.h"
@@ -128,7 +129,10 @@ private:
 	std::unique_ptr<KamataEngine::Sprite> guideTexture_;
 
 	uint32_t startGongSEDataHandle_ = 0;
+	uint32_t bgmDataHandle_ = 0;
+
 	uint32_t startGongSEVoiceHandle_ = 0;
+	uint32_t bgmVoiceHandle_ = 0;
 
 	std::unique_ptr<StageManager> stage_;
 	std::unique_ptr<Player> player_;
@@ -147,6 +151,7 @@ private:
 
 	float fadeTime_;
 
+	float kInitialStartTime_;
 	float startTime_;
 	float deltaTime_ = 1.0f / 60.0f;
 
@@ -189,4 +194,6 @@ private:
 	float blinkInterval_; // 1回の ON/OFF の長さ
 	int32_t blinkCount_ = 0;         // 何回点滅したか
 	int32_t maxBlinkCount_;      // 合計何回点滅させるか
+
+	nlohmann::json enemySpawnData_;
 };

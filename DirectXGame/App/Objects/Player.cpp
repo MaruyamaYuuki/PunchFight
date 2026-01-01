@@ -7,7 +7,7 @@
 using namespace KamataEngine;
 using namespace KamataEngine::MathUtility;
 
-void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine::Model* modelBox, KamataEngine::Vector3 pos) { 
+void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine::Model* modelBox) { 
 	input_ = Input::GetInstance(); 
 	audio_ = Audio::GetInstance();
 
@@ -21,7 +21,6 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 	modelSPHiyBox_ = modelBox;
 
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = pos;
 	worldTransformSP_.Initialize();
 	worldTransformSPHitBox_.Initialize();
 	worldTransformNormalAttackHitBox_.Initialize();
@@ -35,7 +34,8 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 	cfg_ = GameConfigManager::GetInstance();
 
 	// 基本設定
-	HP_ = cfg_->getInt("Player.kInitialHP");
+	maxHP_ = cfg_->getInt("Player.kInitialHP");
+	kInitialPos_ = cfg_->getVector3("Player.kGameInitialPos");
 	worldTransform_.scale_ = cfg_->getVector3("Global.kPlaneModelScale");
 	worldTransform_.rotation_.x = cfg_->getFloat("Global.kPlaneModelRotateX");
 	moveSpeed_ = cfg_->getFloat("Player.kMoveSpeed");
@@ -56,11 +56,13 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 	spAttackHitBox_.size = cfg_->getVector3("Player.Attack.kSPAttackHitBoxSize");
 	
 	poseWaitTimer_ = cfg_->getFloat("Player.Clear.kPoseWaitTimer");
-	knockDownTimer_ = cfg_->getFloat("Player.KnockDown.kKnockDownTimer");
+	knockDownDuration_ = cfg_->getFloat("Player.KnockDown.kKnockDownTimer");
 	trailSpawnInterval_ = cfg_->getFloat("Player.Particle.kTrailSpawnInterval");
 	smokeSize_ = cfg_->getVector3("Player.Particle.kSmokeSize");
 
-
+	HP_ = maxHP_;
+	worldTransform_.translation_ = kInitialPos_;
+	knockDownTimer_ = knockDownDuration_;
 
 	textureHandle_ = TextureManager::Load("playerTextures/RPlayer.png");
 
@@ -481,9 +483,9 @@ void Player::TextureUpdate() {
 }
 
 void Player::Reset() { 
-	worldTransform_.translation_ = cfg_->getVector3("Player.kGameInitialPos");
-	HP_ = cfg_->getInt("Player.kInitialHP");
-	knockDownTimer_ = cfg_->getFloat("Player.KnockDown,kKockDownTimer");
+	worldTransform_.translation_ = kInitialPos_;
+	HP_ = maxHP_;
+	knockDownTimer_ = knockDownDuration_;
 	isDead_ = false;
 	textureHandle_ = TextureManager::Load("playerTextures/RPlayer.png");
 }
