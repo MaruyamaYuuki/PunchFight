@@ -45,17 +45,21 @@
         "Areas": [
           {"triggerX": 15.0,
            "enemies": [
-             {"type": "Power", "pos": [20,1,0]}
+             {"type": "Normal", "pos": [21,1,-1]},
+             {"type": "Normal", "pos": [20,1,0]},
+             {"type": "Normal", "pos": [21,1,1]}
            ]
           },
           {"triggerX": 30.0,
            "enemies": [
-            {"type": "Normal", "pos": [35,1,0]}
+            {"type": "Power", "pos": [35,1,0]}
            ]
           },
           {"triggerX": 45.0,
            "enemies": [
-            {"type": "Normal", "pos": [50,1,0]}
+            {"type": "Normal", "pos": [50,1,-1]},
+            {"type": "Power", "pos": [51,1,0]},
+            {"type": "Normal", "pos": [50,1,1]}
            ]
           }
         ]
@@ -180,7 +184,7 @@
         "speed": 0.1,
         "hp": 35,
         "attackPower": 5,
-        "hitBoxSize": [0.5, 1.0, 0.025],
+        "hitBoxSize": [0.3, 0.5, 0.3],
         "scale": [0.5, 0.5, 0.5]
       },
       "Power": {
@@ -193,20 +197,20 @@
         "speed": 0.1,
         "hp": 30,
         "attackPower": 10,
-        "hitBoxSize": [0.5, 1.0, 0.025],
+        "hitBoxSize": [0.3, 0.5, 0.3],
         "scale": [0.5, 0.5, 0.5]
       }
     }
   },
 
   "Stage":{
-    "kStageWidth": 20.0,
+    "kStageWidth": 24.0,
 
     "Models":{
       "Stage1": {
-        "startModelPath": "load",
-        "midModelPath": "load",
-        "endModelPath": "load"
+        "startModelPath": "brickWall",
+        "midModelPath": "brickWall",
+        "endModelPath": "brickWall"
       },
 
       "Stage2": {
