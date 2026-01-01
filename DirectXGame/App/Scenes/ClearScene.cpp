@@ -26,10 +26,6 @@ void ClearScene::Initialize() {
 
 	textureHandle_ = TextureManager::Load("clearScene/clearBack.png");
 	backTexture_ = Sprite::Create(textureHandle_, {0.0f, 0.0f});
-	textureHandle_ = TextureManager::Load("clearScene/spotlight.png");
-	spotlightTexture_ = Sprite::Create(textureHandle_, {0.0f, 0.0f});
-	textureHandle_ = TextureManager::Load("clearScene/frontShadow.png");
-	frontShadowTexture_ = Sprite::Create(textureHandle_, {0.0f, 0.0f});
 	textureHandle_ = TextureManager::Load("clearScene/clearText.png");
 	clearTextTexture_ = Sprite::Create(textureHandle_, {640.0f, 200.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
 	clearScale_ = 0.2f;
@@ -39,6 +35,7 @@ void ClearScene::Initialize() {
 
 	player_ = std::make_unique<Player>();
 	player_->Initialize(modelPlayer_.get(), modelBoxFrame_.get(), modelBoxFrame_.get(), cfg_->getVector3("Player.kClearInitialPos"));
+	player_->SetRotateX(cfg_->getFloat("Player.kClearSceneRotateX"));
 
 	fade_ = std::make_unique<Fade>();
 	fade_->Initialize();
@@ -63,27 +60,24 @@ void ClearScene::Draw() {
 	// 背景スプライト描画前処理
 	Sprite::PreDraw(dxCommon_->GetCommandList());
 	backTexture_->Draw();
-	if (isSpot_) {
-		spotlightTexture_->Draw();
-	}
 	// スプライト描画後処理
 	Sprite::PostDraw();
 	dxCommon_->ClearDepthBuffer();
 
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw();
-	player_->Draw(camera_);
+	if (phase_ != Phase::kWaite) {
+    	player_->Draw(camera_);
+	}
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 
 	// 前景スプライト描画前処理
 	Sprite::PreDraw(dxCommon_->GetCommandList());
-	if (!isSpot_) {
-    	frontShadowTexture_->Draw();
-	} else {
+	if (player_->IsVictory()) {
 		clearTextTexture_->Draw();
 		if (pushSpaceShown_) {
-    		pushSpaceTexture_->Draw();
+			pushSpaceTexture_->Draw();
 		}
 	}
 	fade_->Draw();
@@ -95,28 +89,16 @@ void ClearScene::UpdateWait() {
 	waitTimer_ -= deltaTime_;
 	player_->UpdateWorldTransform();
 	if (waitTimer_ <= 0) {
-		waitTimer_ = cfg_->getFloat("Scene.Clear.kSpotlightAppearWaitTime");
+		waitTimer_ = cfg_->getFloat("Scene.Clear.kPoseWaitTime");
 		phase_ = Phase::kPlay;
 	}
 }
 
 void ClearScene::UpdatePlay() { 
-	player_->ClearAnimation(isSpot_); 
+	player_->ClearAnimation(); 
 
-	UpdateGoalWaite();
 	UpdateClearText();
 	UpdateInput();
-}
-
-void ClearScene::UpdateGoalWaite() {
-	if (!player_->IsGoal() || player_->IsVictory())
-		return;
-
-	waitTimer_ -= deltaTime_;
-	if (waitTimer_ <= 0.0f) {
-		isSpot_ = true;
-		waitTimer_ = cfg_->getFloat("Scene.Clear.kClearAnimeStartWaitTime");
-	}
 }
 
 void ClearScene::UpdateClearText() {

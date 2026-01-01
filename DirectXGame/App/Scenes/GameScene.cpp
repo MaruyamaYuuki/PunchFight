@@ -62,7 +62,7 @@ void GameScene::Initialize() {
 	textureHandle_ = TextureManager::Load("resetText.png");
 	resetTextSprite_.reset(Sprite::Create(textureHandle_, {640.0f, 500.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
 	textureHandle_ = TextureManager::Load("scrollGuide.png");
-	guideTexture_.reset(Sprite::Create(textureHandle_, {1100.0f, 500.0f},{1, 1, 1, 1}, {0.5f, 0.5f}));
+	guideTexture_.reset(Sprite::Create(textureHandle_, {1100.0f, 450.0f},{1, 1, 1, 1}, {0.5f, 0.5f}));
 
 	startGongSEDataHandle_ = audio_->LoadWave("audio/SE/startGong.wav");
 

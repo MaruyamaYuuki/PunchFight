@@ -164,72 +164,65 @@ void Player::Draw(Camera& camera) {
 	}
 }
 
-void Player::ClearAnimation(bool isSpot) {
-	// ここでゴール地点を指定
+void Player::ClearAnimation() {
 	const float targetX = 0.0f;
 
-	// --- まだゴールしてない時だけ移動 ---
+	// ===== ゴールまで自動移動 =====
 	if (!isGoal_) {
-
-		// 目的地にまだ着いていないなら右へ移動（今回は右向き想定）
 		if (worldTransform_.translation_.x < targetX) {
-			move_.x = 1.0f; // 右へ移動
+			move_.x = 1.0f;
 		} else {
-			move_.x = 0.0f; // 到達したら停止
-
-			// ★ ポーズに入るため勝利フラグON
+			move_.x = 0.0f;
 			isGoal_ = true;
+
+			// ★ ゴール到達時に待ち時間をセット
+			poseWaitTimer_ = 2.0f; // ← 好きな秒数
 		}
 
-		// --- ベクトル正規化 ---
+		// 正規化
 		if (move_.x != 0.0f || move_.z != 0.0f) {
 			float length = std::sqrt(move_.x * move_.x + move_.z * move_.z);
 			move_.x /= length;
 			move_.z /= length;
 		}
 
-		// --- 向き ---
+		// 向き
 		if (move_.x > 0.0f)
 			facingDir_ = 1.0f;
 		if (move_.x < 0.0f)
 			facingDir_ = -1.0f;
 
-		// --- 移動 ---
 		worldTransform_.translation_.x += move_.x * moveSpeed_;
-
 	} else {
-		// ★ 勝利フラグ時は移動しない
+		// ===== ゴール後：数秒待ってポーズ =====
 		move_.x = 0.0f;
+
+		if (!isVictory_) {
+			poseWaitTimer_ -= deltaTime_;
+			if (poseWaitTimer_ <= 0.0f) {
+				isVictory_ = true; // ★ ここで勝利ポーズ
+			}
+		}
 	}
 
-	// --- アニメ処理 ---
+	// ===== 歩行アニメ =====
 	bool isMoving = (move_.x != 0.0f || move_.z != 0.0f);
 
 	if (isMoving && !isStepping_ && !isNormalAttacking_ && HP_ > 0 && !isVictory_) {
 		walkFrameTimer_++;
-
 		if (walkFrameTimer_ >= walkFrameInterval_) {
 			walkFrameTimer_ = 0;
-			walkFrame_ = (walkFrame_ + 1) % 4; // 4枚ループ
+			walkFrame_ = (walkFrame_ + 1) % 4;
 		}
 	} else {
-		// 止まったら初期フレーム
 		walkFrame_ = 0;
 		walkFrameTimer_ = 0;
-	}
-
-	if (isGoal_ && isSpot && !isVictory_) {
-		if (poseWaitTimer_ > 0) {
-			poseWaitTimer_ -= deltaTime_;
-		} else if(poseWaitTimer_<=0) {
-			poseWaitTimer_ = 0;
-			isVictory_ = true;
-		}
 	}
 
 	TextureUpdate();
 	worldTransform_.UpdateMatrix();
 }
+
 
 
 void Player::Move() {

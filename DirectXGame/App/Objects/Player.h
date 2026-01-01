@@ -172,10 +172,16 @@ public:
 	void SetEndMoveLimitX(float limit) { endMoveLimitX_ = limit; }
 
 	/// <summary>
+	/// X軸での回転角を設定する
+	/// </summary>
+	/// <param name="rotX">回転角</param>
+	void SetRotateX(float rotX) { worldTransform_.rotation_.x = rotX; }
+
+	/// <summary>
 	/// クリアシーンでのアニメーション
 	/// </summary>
 	/// <param name="isSpot">スポットライト</param>
-	void ClearAnimation(bool isSpot);
+	void ClearAnimation();
 
 private:
 	/// <summary>

@@ -62,11 +62,6 @@ private:
 	void UpdatePlay();
 
 	/// <summary>
-	/// ゴール待機処理の更新
-	/// </summary>
-	void UpdateGoalWaite();
-
-	/// <summary>
 	/// クリアテキストの更新
 	/// </summary>
 	void UpdateClearText();
@@ -95,8 +90,6 @@ private:
 	uint32_t textureHandle_ = 0;
 
 	KamataEngine::Sprite* backTexture_ = 0;
-	KamataEngine::Sprite* spotlightTexture_ = 0;
-	KamataEngine::Sprite* frontShadowTexture_ = 0;
 	KamataEngine::Sprite* clearTextTexture_ = 0;
 	KamataEngine::Sprite* pushSpaceTexture_ = 0;
 
@@ -109,8 +102,6 @@ private:
 
 	float waitTimer_ = 2.0f;
 	float deltaTime_ = 1.0f / 60.0f;
-
-	bool isSpot_ = false;
 
 	Phase phase_ = Phase::kWaite;
 
