@@ -9,6 +9,7 @@ using namespace KamataEngine::MathUtility;
 
 void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine::Model* modelBox, KamataEngine::Vector3 pos) { 
 	input_ = Input::GetInstance(); 
+	audio_ = Audio::GetInstance();
 
 	assert(model);
 	model_ = model;
@@ -89,6 +90,10 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 	LSpecialTexture_ = TextureManager::Load("playerTextures/LSpecial.png");
 
 	smokeTexture_ = TextureManager::Load("effects/dust2.png");
+
+	normalAttackSEDataHandle_ = audio_->LoadWave("audio/SE/punchSE.wav");
+	spAttackSEDataHandle_ = audio_->LoadWave("audio/SE/spAttackSE.wav");
+	hitSEDataHandle_ = audio_->LoadWave("audio/SE/hitSE.wav");
 }
 
 void Player::Update() {
@@ -336,6 +341,8 @@ void Player::Attack() {
 	canNormalAttack_ = false;
 	nAttackTimer_ = nAttackDuration_;
 
+	normalAttackSEVoiceHandle_ = audio_->PlayWave(normalAttackSEDataHandle_, false, 0.5f);
+
 	// パンチテクスチャ切り替え（右左交互）
 	nAttackFromRight_ = !nAttackFromRight_;
 
@@ -381,6 +388,8 @@ void Player::SpecialAttack() {
 	spAttackCooldownTimer_ = spAttackCoolDown_;
 
 	spAttackTimer_ = spAttackDuration_;
+
+	spAttackSEVoiceHandle_ = audio_->PlayWave(spAttackSEDataHandle_, false, 0.5f);
 
 	// 発射時の向きを固定
 	spAttackDirection_ = static_cast<float>(facingDir_);
@@ -501,5 +510,7 @@ void Player::OnHit(int32_t damage) {
 	}
 	if (HP_ < 0) {
 		HP_ = 0;
+	} else {
+		hitSEVoiceHandle_ = audio_->PlayWave(hitSEDataHandle_, false, 0.5f);
 	}
 }

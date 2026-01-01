@@ -37,6 +37,8 @@ void PowerEnemy::Initialize(const EnemyData& data) {
 	LWalkTexture_[2] = TextureManager::Load("enemies/powerEnemy/LWalk3.png");
 	LWalkTexture_[3] = TextureManager::Load("enemies/powerEnemy/LWalk4.png");
 
+	attackSEDataHandle_ = audio_->LoadWave("audio/SE/headbuttSE.wav");
+
 	attackCooldownTimer_ = attackCooldown_;
 }
 
