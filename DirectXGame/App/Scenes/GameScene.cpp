@@ -154,7 +154,6 @@ void GameScene::Draw() {
 	enemyManager_->BackDraw(camera_, player_->GetWorldTransform().translation_);
 	player_->Draw(camera_);
 	enemyManager_->FrontDraw(camera_, player_->GetWorldTransform().translation_);
-	//enemyManager_->Draw(camera_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
