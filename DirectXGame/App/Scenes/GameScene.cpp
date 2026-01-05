@@ -46,8 +46,7 @@ void GameScene::Initialize() {
 
 	startTime_ = kInitialStartTime_;
 
-	modelLoad_.reset(Model::CreateFromOBJ("load", true));
-	modelPlayer_.reset( Model::CreateFromOBJ("player", true));
+	modelPlayer_.reset( Model::CreateFromOBJ("quad", true));
 	modelSPAttack_.reset(Model::CreateFromOBJ("specialAttack", true));
 	modelBoxFrame_.reset(Model::CreateFromOBJ("boxFrame", true));
 

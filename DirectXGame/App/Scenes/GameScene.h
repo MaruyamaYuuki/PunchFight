@@ -113,7 +113,6 @@ private:
 	KamataEngine::Camera camera_;
 	WorldTransformEx worldTransform_;
 
-	std::unique_ptr<KamataEngine::Model> modelLoad_;
 	std::unique_ptr<KamataEngine::Model> modelPlayer_;
 	std::unique_ptr<KamataEngine::Model> modelSPAttack_;
 	std::unique_ptr<KamataEngine::Model> modelBoxFrame_;

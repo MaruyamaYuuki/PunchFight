@@ -2,6 +2,7 @@
   "Global": {
     "kDeltaTime": 0.01666666,
     "kAnchorCenter": [0.5, 0.5],
+    "kCharacterModelPath": "quad",
     "kPlaneModelScale": [0.5, 0.5, 0.5],
     "kPlaneModelRotateX": 0.75,
     "kFadeTime": 1.0
@@ -180,7 +181,6 @@
 
     "Types": {
       "Normal": {
-        "modelPath": "enemy",
         "speed": 0.1,
         "hp": 35,
         "attackPower": 5,
@@ -193,7 +193,6 @@
         "kTackleMoveTime": 0.4,
         "kTackleSpeed": 0.15,
 
-        "modelPath": "enemy",
         "speed": 0.1,
         "hp": 50,
         "attackPower": 10,
