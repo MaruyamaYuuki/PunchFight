@@ -40,7 +40,7 @@ void EnemyManager::SpawnEnemy(EnemyType type, const KamataEngine::Vector3& pos) 
 
 	switch (type) {
 	case EnemyType::Normal:
-		data = {cfg_->getString("Enemy.Types.Normal.modelPath"), 
+		data = {cfg_->getString("Global.kCharacterModelPath"), 
 			cfg_->getFloat("Enemy.Types.Normal.speed"), 
 			cfg_->getInt("Enemy.Types.Normal.hp"), 
 			cfg_->getInt("Enemy.Types.Normal.attackPower")
@@ -51,7 +51,7 @@ void EnemyManager::SpawnEnemy(EnemyType type, const KamataEngine::Vector3& pos) 
 		break;
 	case EnemyType::Power:
 		data = {
-			cfg_->getString("Enemy.Types.Power.modelPath"), 
+			cfg_->getString("Global.kCharacterModelPath"), 
 			cfg_->getFloat("Enemy.Types.Power.speed"), 
 			cfg_->getInt("Enemy.Types.Power.hp"), 
 			cfg_->getInt("Enemy.Types.Power.attackPower")
