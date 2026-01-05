@@ -21,7 +21,7 @@ void ClearScene::Initialize() {
 	waitTimer_ = cfg_->getFloat("Scene.Clear.kInitialWaitTime");
 	clearScaleSpeed_ = cfg_->getFloat("Scene.Clear.ClearText.kClearScaleSpeed");
 
-	modelPlayer_.reset(Model::CreateFromOBJ("player", true));
+	modelPlayer_.reset(Model::CreateFromOBJ("quad", true));
 	modelBoxFrame_.reset(Model::CreateFromOBJ("boxFrame", true));
 
 	textureHandle_ = TextureManager::Load("clearScene/clearBack.png");
