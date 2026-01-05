@@ -4,7 +4,7 @@
 using namespace KamataEngine;
 
 void DustParticleManager::Initialize() {
-	model_ = Model::CreateFromOBJ("player", true);
+	model_ = Model::CreateFromOBJ("quad", true);
 
 	// 粉塵用テクスチャを読み込む
 	textureHandle_ = TextureManager::Load("effects/dust2.png");
