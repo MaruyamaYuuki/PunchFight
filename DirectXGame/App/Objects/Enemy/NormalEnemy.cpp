@@ -7,21 +7,23 @@ using namespace KamataEngine::MathUtility;
 void NormalEnemy::Initialize(const EnemyData& data) { 
 	EnemyBase::Initialize(data); 
 
-	RIdleTexture_ = TextureManager::Load("enemies/REnemy.png");
-	RAttackTexture_ = TextureManager::Load("enemies/RPunch.png");
-	RStunTexture_ = TextureManager::Load("enemies/RStun.png");
-	RWalkTexture_[0] = TextureManager::Load("enemies/REnemy.png");
-	RWalkTexture_[1] = TextureManager::Load("enemies/REnemy.png");
-	RWalkTexture_[2] = TextureManager::Load("enemies/REnemy.png");
-	RWalkTexture_[3] = TextureManager::Load("enemies/REnemy.png");
+	RIdleTexture_ = TextureManager::Load("enemies/normalEnemy/RNormal.png");
+	RAttackTexture_ = TextureManager::Load("enemies/normalEnemy/RPunch.png");
+	RWaitTexture_ = TextureManager::Load("enemies/normalEnemy/RNormal.png");
+	RStunTexture_ = TextureManager::Load("enemies/normalEnemy/RStun.png");
+	RWalkTexture_[0] = TextureManager::Load("enemies/normalEnemy/RWalk1.png");
+	RWalkTexture_[1] = TextureManager::Load("enemies/normalEnemy/RWalk2.png");
+	RWalkTexture_[2] = TextureManager::Load("enemies/normalEnemy/RWalk3.png");
+	RWalkTexture_[3] = TextureManager::Load("enemies/normalEnemy/RWalk2.png");
 
-	LIdleTexture_ = TextureManager::Load("enemies/LEnemy.png");
-	LAttackTexture_ = TextureManager::Load("enemies/LPunch.png");
-	LStunTexture_ = TextureManager::Load("enemies/LStun.png");
-	LWalkTexture_[0] = TextureManager::Load("enemies/LEnemy.png");
-	LWalkTexture_[1] = TextureManager::Load("enemies/LEnemy.png");
-	LWalkTexture_[2] = TextureManager::Load("enemies/LEnemy.png");
-	LWalkTexture_[3] = TextureManager::Load("enemies/LEnemy.png");
+	LIdleTexture_ = TextureManager::Load("enemies/normalEnemy/LNormal.png");
+	LAttackTexture_ = TextureManager::Load("enemies/normalEnemy/LPunch.png");
+	LWaitTexture_ = TextureManager::Load("enemies/normalEnemy/LNormal.png");
+	LStunTexture_ = TextureManager::Load("enemies/normalEnemy/LStun.png");
+	LWalkTexture_[0] = TextureManager::Load("enemies/normalEnemy/LWalk1.png");
+	LWalkTexture_[1] = TextureManager::Load("enemies/normalEnemy/LWalk2.png");
+	LWalkTexture_[2] = TextureManager::Load("enemies/normalEnemy/LWalk3.png");
+	LWalkTexture_[3] = TextureManager::Load("enemies/normalEnemy/LWalk2.png");
 
 	attackCooldownTimer_ = attackCooldown_;
 }
@@ -67,8 +69,10 @@ void NormalEnemy::Update(const Vector3& playerPos, const std::vector<std::unique
 	} 
 
     // 移動・攻撃などの状態判定
-    if (isAttacking_)
+	if (isAttacking_)
 		state_ = EnemyState::Attacking;
+	else if (isAttackMode_)
+		state_ = EnemyState::AttackWait;
 	else if (speed_ > 0.0f)
 		state_ = EnemyState::Walking;
 	else
