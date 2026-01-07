@@ -302,8 +302,8 @@ void Player::Move() {
 
 	// 移動限界座標
 	const float kStartMoveLimitX = 3.0f;
-	const float kMoveLimitZ = 4.0f;
-	const float kMinMoveLimitZ = 1.5f;
+	const float kMoveLimitZ = 3.5f;
+	const float kMinMoveLimitZ = 2.5f;
 
 	// 範囲を越えない処理
 	worldTransform_.translation_.x = std::max(worldTransform_.translation_.x, -kStartMoveLimitX);
