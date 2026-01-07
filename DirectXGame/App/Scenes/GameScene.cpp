@@ -239,7 +239,7 @@ void GameScene::ChangePhase() {
 		if (input_->TriggerKey(DIK_T)) {
 			player_->OnHit(5);
 		}
-		if (player_->GetWorldTransform().translation_.x >= moveLimit_[3]) {
+		if (!moveLimit_.empty() && player_->GetWorldTransform().translation_.x >= moveLimit_.back()) {
 			audio_->StopWave(bgmVoiceHandle_);
 			phase_ = Phase::kFadeOut;
 			fade_->Start(Fade::Status::FadeOut, fadeTime_);
@@ -442,8 +442,9 @@ void GameScene::EnemyUpdate() {
 	enemyManager_->Update(playerPos);
 
 	// ----- エリアクリア判定 -----
-	for (int32_t i = 0; i < 3; i++) {
-		if (enemyManager_->IsAreaCleared(i) && !areaClearedFlag_[i]) {
+	for (size_t i = 0; i < areaClearedFlag_.size(); ++i) {
+		if (enemyManager_->IsAreaCleared(static_cast<int32_t>(i)) && !areaClearedFlag_[i]) {
+
 			areaClearedFlag_[i] = true;
 
 			// ガイド矢印を表示させる
@@ -452,6 +453,7 @@ void GameScene::EnemyUpdate() {
 			blinkCount_ = 0;
 		}
 	}
+
 
     // ----- ガイド矢印の点滅処理 -----
 	if (guideOn_) {
