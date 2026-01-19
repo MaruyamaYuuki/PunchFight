@@ -13,18 +13,18 @@ void CameraController::Initialize() {
 }
 
 void CameraController::Update() {
-
 	// 追従対象のワールドトランスフォームを参照
 	const WorldTransform& targetWorldTransform = target_->GetWorldTransform();
+	const Vector3& targetVelocity = target_->GetVelocity();
 
 	// 追従対象とオフセットからカメラの目標座標を計算
-	goalPos_ = targetWorldTransform.translation_ + targetOffset_;
+	goalPos = targetWorldTransform.translation_ + targetOffset_ + targetVelocity * kVelocityBias;
 
 	// --- Z軸だけ固定したい場合 ---
-	goalPos_.z = targetOffset_.z;
+	goalPos.z = targetOffset_.z;
 
 	// 座標補間でスムーズ追従
-	camera_.translation_ = goalPos_;
+	camera_.translation_ = LerpVector3(camera_.translation_, goalPos, kInterpolationRate);
 
 	// 移動範囲制限
 	camera_.translation_.x = std::max(camera_.translation_.x, movableArea_.left);
