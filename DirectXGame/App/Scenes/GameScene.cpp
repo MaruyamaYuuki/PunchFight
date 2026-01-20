@@ -451,6 +451,8 @@ void GameScene::EnemyUpdate() {
 			guideOn_ = true;
 			guideTimer_ = 0.0f;
 			blinkCount_ = 0;
+
+			cameraController_->StartReturnToPlayer();
 		}
 	}
 

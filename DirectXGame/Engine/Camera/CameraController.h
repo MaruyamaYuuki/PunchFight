@@ -66,6 +66,8 @@ public:
 	/// <returns>カメラの現在位置</returns>
 	KamataEngine::Vector3 GetPosition() const { return camera_.translation_; }
 
+	void StartReturnToPlayer();
+
 private:
 	KamataEngine::Camera camera_;
 	Player* target_ = nullptr;
@@ -76,9 +78,15 @@ private:
 	// カメラの目標座標
 	KamataEngine::Vector3 goalPos;
 	// 座標補間割合
-	static inline const float kInterpolationRate = 0.1f;
+	static inline const float kInterpolationRate = 0.08f;
 	// 速度掛け率
 	static inline const float kVelocityBias = 2.0f;
 	// 追従対象の各方向へのカメラ移動範囲
 	static inline const Rect kMargin = {0.0f, 5.0f, -8.0f, 4.0f};
+
+    bool isReturnInterpolating_ = false;
+	KamataEngine::Vector3 returnStartPos_;
+	KamataEngine::Vector3 returnTargetPos_;
+	float returnT_ = 0.0f;
+	KamataEngine::Vector3 velocityBias_{0, 0, 0};
 };
