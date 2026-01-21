@@ -7,6 +7,7 @@
 using namespace KamataEngine;
 using namespace KamataEngine::MathUtility;
 
+namespace MyEngine {
 void CameraController::Initialize() { 
 	camera_.Initialize(); 
 	camera_.rotation_.x += 0.4f;
@@ -70,3 +71,5 @@ void CameraController::StartReturnToPlayer() {
 	returnT_ = 0.0f;
 	isReturnInterpolating_ = true;
 }
+}
+

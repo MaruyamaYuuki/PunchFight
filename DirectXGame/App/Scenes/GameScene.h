@@ -12,8 +12,11 @@
 /// <summary>
 /// ゲームシーン
 /// </summary>
+namespace MyEngine {
 class Fade;
 class GameConfigManager;
+}
+
 class GameScene {
 public:
 	/// <summary>
@@ -108,10 +111,10 @@ private:
 	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
 	KamataEngine::Input* input_ = nullptr;
 	KamataEngine::Audio* audio_ = nullptr;
-	GameConfigManager* cfg_ = nullptr;
+	MyEngine::GameConfigManager* cfg_ = nullptr;
 
 	KamataEngine::Camera camera_;
-	WorldTransformEx worldTransform_;
+	MyEngine::WorldTransformEx worldTransform_;
 
 	std::unique_ptr<KamataEngine::Model> modelPlayer_;
 	std::unique_ptr<KamataEngine::Model> modelSPAttack_;
@@ -135,10 +138,10 @@ private:
 
 	std::unique_ptr<StageManager> stage_;
 	std::unique_ptr<Player> player_;
-	std::unique_ptr<CameraController> cameraController_;
-	std::unique_ptr<Fade> fade_;
+	std::unique_ptr<MyEngine::CameraController> cameraController_;
+	std::unique_ptr<MyEngine::Fade> fade_;
 	std::unique_ptr<EnemyManager> enemyManager_;
-	std::unique_ptr<UI> ui_;
+	std::unique_ptr<MyEngine::UI> ui_;
 
 	std::vector<float> moveLimit_;
 	std::vector<float> scrollArea_;

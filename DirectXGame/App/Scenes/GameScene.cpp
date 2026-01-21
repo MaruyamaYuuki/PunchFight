@@ -8,6 +8,10 @@
 #include <algorithm>
 
 using namespace KamataEngine;
+using MyEngine::GameConfigManager;
+using MyEngine::CameraController;
+using MyEngine::Fade;
+using MyEngine::UI;
 
 GameScene::GameScene() {}
 
@@ -242,7 +246,7 @@ void GameScene::ChangePhase() {
 		if (!moveLimit_.empty() && player_->GetWorldTransform().translation_.x >= moveLimit_.back()) {
 			audio_->StopWave(bgmVoiceHandle_);
 			phase_ = Phase::kFadeOut;
-			fade_->Start(Fade::Status::FadeOut, fadeTime_);
+			fade_->Start(MyEngine::Fade::Status::FadeOut, fadeTime_);
 		}
 		break;
 	case GameScene::Phase::kFadeOut:
@@ -360,7 +364,7 @@ void GameScene::GameOver() {
 		// リトライ入力
 		if (input_->TriggerKey(DIK_R)) {
 			phase_ = Phase::kFadeOut;
-			fade_->Start(Fade::Status::FadeOut, fadeTime_);
+			fade_->Start(MyEngine::Fade::Status::FadeOut, fadeTime_);
 		}
 	}
 }

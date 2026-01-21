@@ -5,7 +5,8 @@
 
 using namespace KamataEngine;
 
-void UI::Initialize(Player* player) {
+namespace MyEngine {
+void UI::Initialize(::Player* player) {
 	cfg_ = GameConfigManager::GetInstance();
 
 	assert(player);
@@ -88,8 +89,6 @@ void UI::UpdateHPBar() {
 	hpSprite_->SetSize({drawWidth, texHeight});
 }
 
-
-
 void UI::UpdateAbilityCoolTime() {
 
 	// ============================
@@ -108,7 +107,7 @@ void UI::UpdateAbilityCoolTime() {
 	float newDashHeight = dashIconSize_.y * dashRate;
 	dashShadowSprite_->SetSize({dashIconSize_.x, newDashHeight});
 
-    // ============================
+	// ============================
 	//  強攻撃クールタイムの影
 	// ============================
 	float spRate = 0.0f; // クールタイム 0 の時は 0%
@@ -122,3 +121,4 @@ void UI::UpdateAbilityCoolTime() {
 
 	spShadowSprite_->SetSize({spIconSize.x, newSPHeight});
 }
+} // namespace MyEngine

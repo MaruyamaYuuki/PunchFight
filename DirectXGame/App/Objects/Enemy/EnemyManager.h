@@ -34,7 +34,9 @@ struct EnemyArea {
 /// <summary>
 /// 敵の管理
 /// </summary>
-class GameConfigManager;
+namespace MyEngine {
+    class GameConfigManager;
+}
 class EnemyManager {
 public:
 	/// <summary>
@@ -108,9 +110,9 @@ private:
 
 private:
 	std::vector<std::unique_ptr<EnemyBase>> enemies_;
-	std::unique_ptr<SmokeParticleManager> smokeManager_;
+	std::unique_ptr<MyEngine::SmokeParticleManager> smokeManager_;
 	std::vector<EnemyArea> areas_;
-	GameConfigManager* cfg_ = nullptr;
+	MyEngine::GameConfigManager* cfg_ = nullptr;
 
 	bool isHit_ = false;
 };

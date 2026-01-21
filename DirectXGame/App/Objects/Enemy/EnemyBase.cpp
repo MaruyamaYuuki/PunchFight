@@ -3,6 +3,9 @@
 
 using namespace KamataEngine;
 using namespace KamataEngine::MathUtility;
+using MyEngine::GameConfigManager;
+using MyEngine::SmokeParticleManager;
+using MyEngine::DustParticleManager;
 
 void EnemyBase::Initialize(const EnemyData& data) {
 	cfg_ = GameConfigManager::GetInstance();

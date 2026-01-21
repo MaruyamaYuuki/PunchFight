@@ -3,6 +3,7 @@
 #include "../../Engine/Utility/GameConfigManager.h"
 
 using namespace KamataEngine;
+using MyEngine::GameConfigManager;
 
 void StageManager::Initialize(int32_t stageNumber, int32_t repeatCount) {
 	cfg_ = GameConfigManager::GetInstance();

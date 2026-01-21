@@ -1,14 +1,10 @@
 #pragma once
 #include "KamataEngine.h"
 
+namespace MyEngine{
 class Fade {
 public:
-	enum class Status {
-		None,
-		FadeIn,
-		FadeOut,
-		AlphaFadeOut
-	};
+	enum class Status { None, FadeIn, FadeOut, AlphaFadeOut };
 
 public:
 	/// <summary>
@@ -66,3 +62,4 @@ private:
 	float scale_ = 0.0f;
 	float alpha_ = 0.0f;
 };
+} // namespace MyEngine

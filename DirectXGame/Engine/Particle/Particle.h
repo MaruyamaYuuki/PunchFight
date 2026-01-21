@@ -2,6 +2,7 @@
 #include "../Math/WorldTransformEx.h"
 #include "KamataEngine.h"
 
+namespace MyEngine {
 class Particle {
 public:
 	virtual ~Particle() = default;
@@ -15,3 +16,6 @@ public:
 
 	virtual void Update(float deltaTime) = 0;
 };
+}
+
+

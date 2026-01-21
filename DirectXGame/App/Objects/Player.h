@@ -8,7 +8,9 @@
 /// <summary>
 /// プレイヤー
 /// </summary>
-class GameConfigManager;
+namespace MyEngine {
+    class GameConfigManager;
+}
 class Player {
 public:
 	/// <summary>
@@ -53,7 +55,7 @@ public:
 	/// プレイヤーのWorldTransformを設定する
 	/// </summary>
 	/// <returns>プレイヤーのWorldTransform</returns>
-	const WorldTransformEx& GetWorldTransform() const { return worldTransform_; }
+	const MyEngine::WorldTransformEx& GetWorldTransform() const { return worldTransform_; }
 
 	/// <summary>
 	/// プレイヤーの移動量を取得する
@@ -223,13 +225,13 @@ private:
 private:
 	KamataEngine::Input* input_ = nullptr;
 	KamataEngine::Audio* audio_ = nullptr;
-	GameConfigManager* cfg_ = nullptr;
+	MyEngine::GameConfigManager* cfg_ = nullptr;
 
-	WorldTransformEx worldTransform_;
-	WorldTransformEx worldTransformSP_;
-	WorldTransformEx worldTransformNormalAttackHitBox_;
-	WorldTransformEx worldTransformSPHitBox_;
-	WorldTransformEx worldTransformPHitBox_;
+	MyEngine::WorldTransformEx worldTransform_;
+	MyEngine::WorldTransformEx worldTransformSP_;
+	MyEngine::WorldTransformEx worldTransformNormalAttackHitBox_;
+	MyEngine::WorldTransformEx worldTransformSPHitBox_;
+	MyEngine::WorldTransformEx worldTransformPHitBox_;
 
 	KamataEngine::Model* model_ = nullptr;
 	KamataEngine::Model* modelSpecial_ = nullptr;
@@ -334,7 +336,7 @@ private:
 	float poseWaitTimer_;
 
 	// --- パーティクル用 ---
-	std::unique_ptr<SmokeParticleManager> smokeManager_;
+	std::unique_ptr<MyEngine::SmokeParticleManager> smokeManager_;
 	float trailSpawnTimer_ = 0.0f;
 	float trailSpawnInterval_;
 	KamataEngine::Vector3 smokeSize_;

@@ -2,6 +2,7 @@
 
 using namespace KamataEngine;
 
+namespace MyEngine {
 void DustParticle::Update(float deltaTime) {
 	if (!active)
 		return;
@@ -25,3 +26,4 @@ void DustParticle::Update(float deltaTime) {
 
 	transform.UpdateMatrix();
 }
+} // namespace MyEngine

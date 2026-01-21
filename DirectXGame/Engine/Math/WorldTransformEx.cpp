@@ -3,6 +3,7 @@
 using namespace KamataEngine;
 using namespace KamataEngine::MathUtility;
 
+namespace MyEngine {
 // Scale, Rotation, Tranlate 行列から World行列を計算
 // そして定数バッファへの転送も行う
 void WorldTransformEx::UpdateMatrix() {
@@ -30,3 +31,6 @@ KamataEngine::Matrix4x4 WorldTransformEx::MakeAffinMatrix() {
 
 	return matWorld;
 }
+}
+
+

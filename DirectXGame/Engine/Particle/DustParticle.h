@@ -1,7 +1,8 @@
 #pragma once
 #include "Particle.h"
 
-/// <summary>
+namespace MyEngine {
+ /// <summary>
 /// 粉塵パーティクル
 /// </summary>
 class DustParticle : public Particle {
@@ -11,3 +12,5 @@ public:
 
 	void Update(float deltaTime) override;
 };
+}
+

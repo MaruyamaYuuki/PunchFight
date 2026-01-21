@@ -6,6 +6,7 @@
 
 using json = nlohmann::json;
 
+namespace MyEngine {
 /// <summary>
 /// JSONオブジェクトを再帰的にトラバースし、階層構造をフラットなキー-値マップに変換する
 /// </summary>
@@ -213,4 +214,6 @@ nlohmann::json GameConfigManager::getJsonObject(const std::string& key) const {
 		std::string errMsg = "Config JSON object parsing failed for key: " + key + ". Value: " + s + ". Error: " + e.what();
 		throw std::runtime_error(errMsg.c_str());
 	}
+}
+
 }

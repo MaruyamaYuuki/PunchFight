@@ -6,6 +6,8 @@
 
 using namespace KamataEngine;
 using namespace KamataEngine::MathUtility;
+using MyEngine::GameConfigManager;
+using MyEngine::SmokeParticleManager;
 
 void EnemyManager::Initialize() {
 	enemies_.clear();

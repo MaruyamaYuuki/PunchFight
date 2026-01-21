@@ -1,6 +1,7 @@
 #pragma once
 #include "Particle.h"
 
+namespace MyEngine {
 class ParticleManager {
 public:
 	virtual ~ParticleManager() = default;
@@ -11,3 +12,4 @@ public:
 protected:
 	std::vector<std::unique_ptr<Particle>> particles_;
 };
+} // namespace MyEngine

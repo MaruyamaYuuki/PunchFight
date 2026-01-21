@@ -4,6 +4,7 @@
 
 using namespace KamataEngine;
 
+namespace MyEngine{
 Fade::~Fade() = default;
 
 void Fade::Initialize() {
@@ -46,11 +47,11 @@ void Fade::Update() {
 		break;
 
 	case Fade::Status::AlphaFadeOut:
-		alpha_ = std::lerp(0.0f, 1.0f, t); // 徐々に暗くしていく
-		sprite_->SetSize({1280.0f, 720.0f});    // 画面全体を覆う
+		alpha_ = std::lerp(0.0f, 1.0f, t);   // 徐々に暗くしていく
+		sprite_->SetSize({1280.0f, 720.0f}); // 画面全体を覆う
 		sprite_->SetPosition({640.0f, 360.0f});
 		sprite_->SetColor({1, 1, 1, alpha_}); // ← アルファ値だけ変化させる
-	  break;
+		break;
 
 	default:
 		break;
@@ -97,3 +98,4 @@ bool Fade::IsFinished() const {
 		return true;
 	}
 }
+} // namespace MyEngine

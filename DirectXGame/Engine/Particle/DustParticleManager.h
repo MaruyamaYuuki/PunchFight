@@ -2,6 +2,7 @@
 #include "DustParticle.h"
 #include "ParticleManager.h"
 
+namespace MyEngine {
 class DustParticleManager : public ParticleManager {
 public:
 	void Initialize();
@@ -11,7 +12,7 @@ public:
 private:
 	float RandomRange(float min, float max);
 
-
 	KamataEngine::Model* model_ = nullptr;
 	uint32_t textureHandle_ = 0;
 };
+} // namespace MyEngine

@@ -49,7 +49,7 @@ public:
 	float GetPositionX() const { return worldTransform_.translation_.x; }
 
 private:
-	WorldTransformEx worldTransform_;
+	MyEngine::WorldTransformEx worldTransform_;
 
 	KamataEngine::Model* model_ = nullptr;
 };

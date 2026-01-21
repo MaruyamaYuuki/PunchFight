@@ -5,6 +5,8 @@
 #include <chrono>
 
 using namespace KamataEngine;
+using MyEngine::GameConfigManager;
+using MyEngine::Fade;
 
 TitleScene::TitleScene() {}
 
@@ -61,7 +63,7 @@ void TitleScene::Initialize() {
 
 	fade_ = std::make_unique<Fade>();
 	fade_->Initialize();
-	fade_->Start(Fade::Status::FadeOut, fadeTime_);
+	fade_->Start(MyEngine::Fade::Status::FadeOut, fadeTime_);
 }
 
 void TitleScene::Update() { 

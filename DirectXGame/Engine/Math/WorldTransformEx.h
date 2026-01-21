@@ -1,6 +1,7 @@
 #pragma once
 #include "KamataEngine.h"
 
+namespace MyEngine {
 /// <summary>
 /// WorldTransformの拡張
 /// </summary>
@@ -19,3 +20,6 @@ public:
 	KamataEngine::Matrix4x4 MakeAffinMatrix();
 
 };
+}
+
+
