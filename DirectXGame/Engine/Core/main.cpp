@@ -46,7 +46,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// DirectXCommonインスタンス
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
 
-	GameConfigManager::GetInstance()->Initialize();
+	MyEngine::GameConfigManager::GetInstance()->Initialize();
 
 #ifdef _DEBUG
 	gameScene = new GameScene();

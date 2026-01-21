@@ -5,8 +5,11 @@
 /// <summary>
 /// クリアシーン
 /// </summary>
-class Fade;
-class GameConfigManager;
+
+namespace MyEngine {
+    class Fade;
+    class GameConfigManager;
+}
 class ClearScene {
 	/// <summary>
 	/// クリアシーンの進行状態
@@ -80,7 +83,7 @@ private:
 	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
 	KamataEngine::Input* input_ = nullptr;
 	KamataEngine::Audio* audio_ = nullptr;
-	GameConfigManager* cfg_ = nullptr;
+	MyEngine::GameConfigManager* cfg_ = nullptr;
 
 	KamataEngine::Camera camera_;
 
@@ -95,7 +98,7 @@ private:
 
 	std::unique_ptr<Player> player_;
 
-	std::unique_ptr<Fade> fade_;
+	std::unique_ptr<MyEngine::Fade> fade_;
 	float fadeTime_ = 1.0f;
 
 	bool isFinished_ = false;

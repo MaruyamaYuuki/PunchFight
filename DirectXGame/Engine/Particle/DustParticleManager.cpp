@@ -3,6 +3,7 @@
 
 using namespace KamataEngine;
 
+namespace MyEngine {
 void DustParticleManager::Initialize() {
 	model_ = Model::CreateFromOBJ("quad", true);
 
@@ -51,3 +52,4 @@ void DustParticleManager::Draw(Camera& camera) {
 		model_->Draw(p->transform, camera, textureHandle_);
 	}
 }
+} // namespace MyEngine

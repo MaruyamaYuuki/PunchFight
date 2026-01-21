@@ -6,6 +6,8 @@
 
 using namespace KamataEngine;
 using namespace KamataEngine::MathUtility;
+using MyEngine::GameConfigManager;
+using MyEngine::SmokeParticleManager;
 
 void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine::Model* modelBox) { 
 	input_ = Input::GetInstance(); 

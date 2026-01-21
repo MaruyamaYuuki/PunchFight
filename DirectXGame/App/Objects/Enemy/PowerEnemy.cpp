@@ -4,6 +4,7 @@
 
 using namespace KamataEngine;
 using namespace KamataEngine::MathUtility;
+using MyEngine::GameConfigManager;
 
 void PowerEnemy::Initialize(const EnemyData& data) { 
 	EnemyBase::Initialize(data); 

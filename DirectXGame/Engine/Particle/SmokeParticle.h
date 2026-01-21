@@ -1,7 +1,8 @@
 #pragma once
 #include "Particle.h"
 
-/// <summary>
+namespace MyEngine {
+ /// <summary>
 /// 煙のパーティクル
 /// </summary>
 class SmokeParticle : public Particle {
@@ -10,3 +11,4 @@ public:
 
 	void Update(float deltaTime) override;
 };
+}

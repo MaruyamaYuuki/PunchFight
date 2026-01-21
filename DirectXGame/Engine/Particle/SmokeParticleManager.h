@@ -2,6 +2,7 @@
 #include "ParticleManager.h"
 #include "SmokeParticle.h"
 
+namespace MyEngine {
 class SmokeParticleManager : public ParticleManager {
 public:
 	void Initialize();
@@ -18,3 +19,4 @@ private:
 	KamataEngine::Model* model_ = nullptr;
 	uint32_t textureHandle_ = 0;
 };
+} // namespace MyEngine

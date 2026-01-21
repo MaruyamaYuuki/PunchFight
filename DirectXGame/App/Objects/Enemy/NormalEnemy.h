@@ -27,7 +27,4 @@ protected:
 
 
 	void AttackProcess(const KamataEngine::Vector3& playerPos) override;
-
-private:
-
 };

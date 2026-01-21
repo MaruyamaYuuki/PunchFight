@@ -5,8 +5,11 @@
 /// <summary>
 /// タイトルシーン
 /// </summary>
-class Fade;
-class GameConfigManager;
+
+namespace MyEngine {
+    class Fade;
+    class GameConfigManager;
+}
 class TitleScene {
 public:
 	/// <summary>
@@ -56,10 +59,10 @@ private:
 	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
 	KamataEngine::Input* input_ = nullptr;
 	KamataEngine::Audio* audio_ = nullptr;
-	GameConfigManager* cfg_ = nullptr;
+	MyEngine::GameConfigManager* cfg_ = nullptr;
 
 	KamataEngine::Camera camera_;
-	WorldTransformEx worldTransform_;
+	MyEngine::WorldTransformEx worldTransform_;
 
 	uint32_t textureHandle_ = 0;
 
@@ -103,7 +106,7 @@ private:
 	int32_t blinkCount_ = 0;
 	int maxBlinkCount_ ;
 	// フェード用
-	std::unique_ptr<Fade> fade_;
+	std::unique_ptr<MyEngine::Fade> fade_;
 	float fadeTime_;
 	bool isFinished_ = false;
 

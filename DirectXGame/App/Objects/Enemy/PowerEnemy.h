@@ -45,7 +45,7 @@ protected:
 
 
 private:
-	GameConfigManager* cfg_ = nullptr;
+	MyEngine::GameConfigManager* cfg_ = nullptr;
 
 	uint32_t RTackleTexture_ = 0;
 	uint32_t RTackleWaitTexture_ = 0;

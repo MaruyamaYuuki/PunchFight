@@ -3,6 +3,7 @@
 using namespace KamataEngine;
 using namespace KamataEngine::MathUtility;
 
+namespace MyEngine {
 void SmokeParticle::Update(float deltaTime) {
 	if (!active)
 		return;
@@ -23,3 +24,4 @@ void SmokeParticle::Update(float deltaTime) {
 	transform.translation_.y += 0.005f;
 	transform.UpdateMatrix();
 }
+} // namespace MyEngine

@@ -5,6 +5,8 @@
 #include "../../Engine/Utility/GameConfigManager.h"
 
 using namespace KamataEngine;
+using MyEngine::GameConfigManager;
+using MyEngine::Fade;
 
 ClearScene::ClearScene() {}
 
@@ -136,7 +138,7 @@ void ClearScene::UpdateInput() {
 		return;
 
 	if (input_->TriggerKey(DIK_E)) {
-		fade_->Start(Fade::Status::AlphaFadeOut, cfg_->getFloat("Scene.Clear.kFadeOutDuration"));
+		fade_->Start(MyEngine::Fade::Status::AlphaFadeOut, cfg_->getFloat("Scene.Clear.kFadeOutDuration"));
 		phase_ = Phase::kFadeOut;
 	}
 }

@@ -3,6 +3,7 @@
 using namespace KamataEngine;
 using namespace KamataEngine::MathUtility;
 
+namespace MyEngine {
 void SmokeParticleManager::Initialize() {
 	model_ = Model::CreateFromOBJ("quad", true);
 	textureHandle_ = TextureManager::Load("effects/smoke.png");
@@ -34,3 +35,4 @@ void SmokeParticleManager::Draw(Camera& camera) {
 		model_->Draw(p->transform, camera, textureHandle_);
 	}
 }
+} // namespace MyEngine

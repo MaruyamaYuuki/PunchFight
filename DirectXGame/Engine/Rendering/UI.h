@@ -1,15 +1,16 @@
 #pragma once
 #include "KamataEngine.h"
 
+class Player;
+namespace MyEngine {
 /// <summary>
 /// UI
 /// </summary>
-class Player;
 class GameConfigManager;
 class UI {
 public:
 
-	void Initialize(Player* player);
+	void Initialize(::Player* player);
 
 	void Update();
 
@@ -42,3 +43,5 @@ private:
 
 	Player* player_ = nullptr;
 };
+}
+

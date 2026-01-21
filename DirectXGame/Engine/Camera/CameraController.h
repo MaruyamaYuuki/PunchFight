@@ -1,10 +1,11 @@
 #pragma once
 #include "KamataEngine.h"
 
+class Player;
+namespace MyEngine {
 /// <summary>
 /// カメラ制御
 /// </summary>
-class Player;
 class CameraController {
 public:
 	/// <summary>
@@ -32,7 +33,7 @@ public:
 	/// カメラのターゲットの設定
 	/// </summary>
 	/// <param name="target">ターゲット</param>
-	void SetTarget(Player* target) { target_ = target; }
+	void SetTarget(::Player* target) { target_ = target; }
 
 	/// <summary>
 	/// カメラを取得する
@@ -70,7 +71,7 @@ public:
 
 private:
 	KamataEngine::Camera camera_;
-	Player* target_ = nullptr;
+	::Player* target_ = nullptr;
 	// 追従対象のカメラ座標の差（オフセット）
 	KamataEngine::Vector3 targetOffset_ = {0, 1, -8.0f};
 	// カメラの移動範囲
@@ -90,3 +91,6 @@ private:
 	float returnT_ = 0.0f;
 	KamataEngine::Vector3 velocityBias_{0, 0, 0};
 };
+}
+
+

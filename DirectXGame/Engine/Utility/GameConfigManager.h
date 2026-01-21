@@ -5,6 +5,7 @@
 #include <vector>
 #include <json.hpp>
 
+namespace MyEngine {
 /// <summary>
 /// ゲームの設定値を管理するシングルトンクラス
 /// </summary>
@@ -78,3 +79,4 @@ public:
 	/// </summary>
 	nlohmann::json getJsonObject(const std::string& key) const;
 };
+}

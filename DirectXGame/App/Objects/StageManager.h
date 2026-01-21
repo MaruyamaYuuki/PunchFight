@@ -6,7 +6,9 @@
 /// <summary>
 /// ステージ管理
 /// </summary>
-class GameConfigManager;
+namespace MyEngine {
+    class GameConfigManager;
+}
 class StageManager {
 public:
 	/// <summary>
@@ -45,7 +47,7 @@ private:
 	void UpdateLoadedStages();
 
 private:
-	GameConfigManager* cfg_ = nullptr;
+	MyEngine::GameConfigManager* cfg_ = nullptr;
 
 	std::unordered_map<int32_t, std::unique_ptr<Stage>> activeStages_;
 
