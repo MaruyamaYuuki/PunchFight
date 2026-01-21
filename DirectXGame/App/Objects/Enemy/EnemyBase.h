@@ -33,7 +33,9 @@ enum class EnemyState {
 /// <summary>
 /// 敵の基盤
 /// </summary>
-class GameConfigManager;
+namespace MyEngine {
+    class GameConfigManager;
+}
 class EnemyBase {
 public:
 	/// <summary>
@@ -189,12 +191,12 @@ protected:
 	virtual void UpdateTextures();
 
 protected:
-	GameConfigManager* cfg_ = nullptr;
+	MyEngine::GameConfigManager* cfg_ = nullptr;
 	KamataEngine::Audio* audio_ = nullptr;
 
-	WorldTransformEx worldTransform_;
-	WorldTransformEx worldTransformEHitBox_;
-	WorldTransformEx worldTransformAHitBox_;
+	MyEngine::WorldTransformEx worldTransform_;
+	MyEngine::WorldTransformEx worldTransformEHitBox_;
+	MyEngine::WorldTransformEx worldTransformAHitBox_;
 
 	KamataEngine::Model* model_ = nullptr;
 	KamataEngine::Model* modelEHitBox_ = nullptr;
@@ -251,11 +253,11 @@ protected:
 	float deltaTime_ = 1.0f / 60.0f;
 
     // --- パーティクル用 ---
-	std::unique_ptr<SmokeParticleManager> smokeManager_;
+	std::unique_ptr<MyEngine::SmokeParticleManager> smokeManager_;
 	float smokeSpawnTimer_ = 0.0f;
 	float smokeSpawnInterval_;
 	KamataEngine::Vector3 smokeSize_;
-	std::unique_ptr<DustParticleManager> dustManager_;
+	std::unique_ptr<MyEngine::DustParticleManager> dustManager_;
 
 	// ---- テクスチャ ----
 	EnemyState state_ = EnemyState::Idle;
