@@ -32,6 +32,12 @@ void UI::Initialize(::Player* player) {
 	padCTRLSprite_ = Sprite::Create(textureHandle_, {5.0f, 5.0f});
 	textureHandle_ = TextureManager::Load("UI/baseCTRLTest.png");
 	ctrlSprite_ = Sprite::Create(textureHandle_, {5.0f, 130.0f});
+	textureHandle_ = TextureManager::Load("UI/pause.png");
+	pauseSprite_ = Sprite::Create(textureHandle_, {0.0f, 0.0f});
+	textureHandle_ = TextureManager::Load("UI/selectBack.png");
+	selectSprite_[0] = Sprite::Create(textureHandle_, {0.0f, 0.0f});
+	textureHandle_ = TextureManager::Load("UI/selectRestart.png");
+	selectSprite_[1] = Sprite::Create(textureHandle_, {0.0f, 0.0f});
 }
 
 void UI::Update() {
@@ -47,6 +53,16 @@ void UI::Draw() {
 	spShadowSprite_->Draw();
 	keyCTRLSprite_->Draw();
 	ctrlSprite_->Draw();
+
+	if (isPaused_) {
+		pauseSprite_->Draw();
+        if (pauseSelectIndex_ == 0) {
+    		selectSprite_[0]->Draw();
+    	} else if (pauseSelectIndex_ == 1) {
+    		selectSprite_[1]->Draw();
+    	}
+	}	
+
 }
 
 void UI::Reset() {

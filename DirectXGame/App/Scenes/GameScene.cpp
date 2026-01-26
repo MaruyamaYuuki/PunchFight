@@ -115,6 +115,17 @@ void GameScene::Update() {
 		player_->UpdateWorldTransform();
 		break;
 	case GameScene::Phase::kPlay:
+		if (input_->TriggerKey(DIK_ESCAPE)) {
+			isPaused_ = !isPaused_;
+			ui_->SetPause(isPaused_);
+		}
+		// ポーズ中はUI以外の更新を止める
+		if (isPaused_) {
+			UpdatePauseInput();
+			ui_->Update();
+			return;
+		}
+
 		DebugText::GetInstance()->ConsolePrintf("Camera.Translate.x : %f\n\n", cameraController_->GetCamera().translation_.x);
 		stage_->Update(cameraController_->GetCamera().translation_.x);
 		player_->Update();
@@ -311,6 +322,45 @@ void GameScene::FightAnimation() {
 		}
 	}
 	// -------------------------------------
+}
+
+void GameScene::UpdatePauseInput() {
+	// 上移動
+	if (input_->TriggerKey(DIK_W)) {
+		pauseSelectIndex_--;
+		if (pauseSelectIndex_ < 0) {
+			pauseSelectIndex_ = 1; // 2択なのでループ
+		}
+	}
+
+	// 下移動
+	if (input_->TriggerKey(DIK_S)) {
+		pauseSelectIndex_++;
+		if (pauseSelectIndex_ > 1) {
+			pauseSelectIndex_ = 0;
+		}
+	}
+
+	// 決定
+	if (input_->TriggerKey(DIK_SPACE)) {
+		switch (pauseSelectIndex_) {
+		case 0: // タイトルに戻る
+			backToTitle_ = true;
+			audio_->StopWave(bgmVoiceHandle_);
+			phase_ = Phase::kFadeOut;
+			fade_->Start(MyEngine::Fade::Status::FadeOut, fadeTime_);
+
+			break;
+
+		case 1: // ゲーム再開
+			isPaused_ = false;
+			ui_->SetPause(false);
+			break;
+		}
+	}
+
+	// UIに現在の選択を渡す
+	ui_->SetPauseSelectIndex(pauseSelectIndex_);
 }
 
 void GameScene::GameOver() {

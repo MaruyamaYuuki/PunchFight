@@ -62,6 +62,8 @@ public:
 	/// <returns>終了していれば true、進行中であれば false を返す。</returns>
 	bool IsFinished() const { return isFinished_; }
 
+	bool IsBackToTitle() const { return backToTitle_; }
+
 private:
 	/// <summary>
 	/// シーン切り替え
@@ -72,6 +74,8 @@ private:
 	/// 開始時のアニメーション
 	/// </summary>
 	void FightAnimation();
+
+	void UpdatePauseInput();
 
 	/// <summary>
 	/// ゲームオーバー時の演出
@@ -196,6 +200,11 @@ private:
 	float blinkInterval_; // 1回の ON/OFF の長さ
 	int32_t blinkCount_ = 0;         // 何回点滅したか
 	int32_t maxBlinkCount_;      // 合計何回点滅させるか
+
+	/// --- ポーズ処理　---
+	bool isPaused_ = false;
+	int32_t pauseSelectIndex_ = 0;
+	bool backToTitle_ = false;
 
 	nlohmann::json enemySpawnData_;
 };
