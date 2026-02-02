@@ -237,7 +237,7 @@ private:
 	KamataEngine::Model* modelSpecial_ = nullptr;
 	KamataEngine::Model* modelDebugHitBox_ = nullptr;
 	KamataEngine::Model* modelHitBox_ = nullptr;
-	KamataEngine::Model* modelSPHiyBox_ = nullptr;
+	KamataEngine::Model* modelSPHitBox_ = nullptr;
 
 	// --- プレイヤーのテクスチャ ---
 	uint32_t textureHandle_ = 0;

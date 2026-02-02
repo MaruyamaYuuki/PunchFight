@@ -36,7 +36,7 @@ void EnemyBase::Initialize(const EnemyData& data) {
 	knockbackDuration_ = cfg_->getFloat("Enemy.Default.kKnockbackDuration");
 	attackDuration_ = cfg_->getFloat("Enemy.Default.kAttackDuration");
 	attackCooldown_ = cfg_->getFloat("Enemy.Default.kAttackCooldown");
-	ATTACK_RANGE_ = cfg_->getFloat("Enemy.Default.kATTACK_RENGE");
+	ATTACK_RANGE_ = cfg_->getFloat("Enemy.Default.kATTACK_RANGE");
 	stunDuration_ = cfg_->getFloat("Enemy.Default.kStunDuration");
 	stunShakeAmplitude_ = cfg_->getFloat("Enemy.Default.kStunShakeAmplitude");
 	stunShakeSpeed_ = cfg_->getFloat("Enemy.Default.kStunShakeSpeed");
