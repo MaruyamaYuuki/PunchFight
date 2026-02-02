@@ -116,8 +116,11 @@ void GameScene::Update() {
 		break;
 	case GameScene::Phase::kPlay:
 		if (input_->TriggerKey(DIK_ESCAPE)) {
-			isPaused_ = !isPaused_;
-			ui_->SetPause(isPaused_);
+			if (isPaused_) {
+				ExitPause();
+			} else {
+				EnterPause();
+			}
 		}
 		// ポーズ中はUI以外の更新を止める
 		if (isPaused_) {
@@ -324,43 +327,85 @@ void GameScene::FightAnimation() {
 	// -------------------------------------
 }
 
+void GameScene::EnterPause() {
+	isPaused_ = true;
+	isBackTitleChecked_ = false;
+	pauseSelectIndex_ = 0;
+	checkBackTitleIndex_ = 1;
+
+	ui_->SetPause(true);
+	ui_->SetBackTitleCheck(false);
+}
+
+void GameScene::ExitPause() {
+	isPaused_ = false;
+	isBackTitleChecked_ = false;
+
+	ui_->SetPause(false);
+	ui_->SetBackTitleCheck(false);
+}
+
+
 void GameScene::UpdatePauseInput() {
+	if (isBackTitleChecked_) {
+		UpdateBackTitleCheckInput();
+	} else {
+		UpdatePauseMenuInput();
+	}
+}
+
+void GameScene::UpdatePauseMenuInput() {
+
 	// 上移動
 	if (input_->TriggerKey(DIK_W)) {
-		pauseSelectIndex_--;
-		if (pauseSelectIndex_ < 0) {
-			pauseSelectIndex_ = 1; // 2択なのでループ
-		}
+		pauseSelectIndex_ = (pauseSelectIndex_ + 1) % 2;
 	}
 
 	// 下移動
 	if (input_->TriggerKey(DIK_S)) {
-		pauseSelectIndex_++;
-		if (pauseSelectIndex_ > 1) {
-			pauseSelectIndex_ = 0;
+		pauseSelectIndex_ = (pauseSelectIndex_ + 1) % 2;
+	}
+
+	if (input_->TriggerKey(DIK_SPACE)) {
+		switch (pauseSelectIndex_) {
+		case 0: // 再開
+			isPaused_ = false;
+			ui_->SetPause(false);
+			break;
+
+		case 1: // タイトル
+			isBackTitleChecked_ = true;
+			checkBackTitleIndex_ = 1; // 初期は「No」
+			ui_->SetBackTitleCheck(true);
+			break;
 		}
 	}
 
-	// 決定
+	ui_->SetPauseSelectIndex(pauseSelectIndex_);
+}
+
+void GameScene::UpdateBackTitleCheckInput() {
+
+	// 左右で Yes / No 切り替え
+	if (input_->TriggerKey(DIK_A) || input_->TriggerKey(DIK_D)) {
+		checkBackTitleIndex_ = 1 - checkBackTitleIndex_;
+	}
+
 	if (input_->TriggerKey(DIK_SPACE)) {
-		switch (pauseSelectIndex_) {
-		case 0: // タイトルに戻る
+		if (checkBackTitleIndex_ == 0) {
+			// Yes → タイトルへ
 			backToTitle_ = true;
 			audio_->StopWave(bgmVoiceHandle_);
 			phase_ = Phase::kFadeOut;
 			fade_->Start(MyEngine::Fade::Status::FadeOut, fadeTime_);
-
-			break;
-
-		case 1: // ゲーム再開
-			isPaused_ = false;
-			ui_->SetPause(false);
-			break;
+		} else {
+			// No → ポーズに戻る
+			isBackTitleChecked_ = false;
+			ui_->SetBackTitleCheck(false);
 		}
 	}
 
-	// UIに現在の選択を渡す
-	ui_->SetPauseSelectIndex(pauseSelectIndex_);
+	ui_->SetCheckBackTitleIndex(checkBackTitleIndex_);
 }
 
 void GameScene::GameOver() {

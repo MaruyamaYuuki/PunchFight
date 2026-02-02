@@ -75,7 +75,30 @@ private:
 	/// </summary>
 	void FightAnimation();
 
+	/// <summary>
+	/// ポーズ開始
+	/// </summary>
+	void EnterPause();
+
+	/// <summary>
+	/// ポーズ終了
+	/// </summary>
+	void ExitPause();
+
+	/// <summary>
+	/// ポーズ画面管理
+	/// </summary>
 	void UpdatePauseInput();
+
+	/// <summary>
+	/// ポーズメニュー処理
+	/// </summary>
+	void UpdatePauseMenuInput();
+
+	/// <summary>
+	/// タイトルへ戻る確認処理
+	/// </summary>
+	void UpdateBackTitleCheckInput();
 
 	/// <summary>
 	/// ゲームオーバー時の演出
@@ -203,7 +226,9 @@ private:
 
 	/// --- ポーズ処理　---
 	bool isPaused_ = false;
+	bool isBackTitleChecked_ = false;
 	int32_t pauseSelectIndex_ = 0;
+	int32_t checkBackTitleIndex_ = 1;
 	bool backToTitle_ = false;
 
 	nlohmann::json enemySpawnData_;
