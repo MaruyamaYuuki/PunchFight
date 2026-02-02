@@ -76,8 +76,6 @@ private:
 	KamataEngine::Vector3 targetOffset_ = {0, 1, -8.0f};
 	// カメラの移動範囲
 	Rect movableArea_ = {0, 100, 0, 100};
-	// カメラの目標座標
-	KamataEngine::Vector3 goalPos;
 	// 座標補間割合
 	static inline const float kInterpolationRate = 0.08f;
 	// 速度掛け率

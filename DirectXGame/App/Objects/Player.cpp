@@ -20,7 +20,7 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 	assert(modelBox);
 	modelDebugHitBox_ = modelBox;
 	modelHitBox_ = modelBox;
-	modelSPHiyBox_ = modelBox;
+	modelSPHitBox_ = modelBox;
 
 	worldTransform_.Initialize();
 	worldTransformSP_.Initialize();
@@ -157,12 +157,12 @@ void Player::Draw(Camera& camera) {
 		#ifdef _DEBUG
 		// デバッグ用ヒットボックスモデル
 		// （必要なら）
-		if (modelSPHiyBox_) {
+		if (modelSPHitBox_) {
 			worldTransformSPHitBox_.translation_ = spAttackHitBox_.pos;
 			worldTransformSPHitBox_.scale_ = spAttackHitBox_.size;
 			worldTransformSPHitBox_.UpdateMatrix();
 
-			modelSPHiyBox_->Draw(worldTransformSPHitBox_, camera);
+			modelSPHitBox_->Draw(worldTransformSPHitBox_, camera);
 		}
 		#endif
 	}

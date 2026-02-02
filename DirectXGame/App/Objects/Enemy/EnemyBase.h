@@ -230,20 +230,10 @@ protected:
 
 	bool hasDealtDamage_ = false;
 
-	// ---- スタン ----
-	bool isStun_ = false;
-	float stunTimer_ = 0.0f;
-	float stunDuration_;
-	float stunShakeTime_ = 0.0f;
-	float stunShakeAmplitude_;
-	float stunShakeSpeed_;
-	KamataEngine::Vector3 originalPosition_ = {0.0f, 0.0f, 0.0f};
-
 	// ---- ノックバック ----
 	bool isKnockBack_ = false;
 	bool isDead_ = false;
 	float knockbackTime_ = 0.0f;
-	float knockbackSpeed_f;
 	float knockbackDuration_;
 	float knockbackHeight_;
 	KamataEngine::Vector3 knockbackDir_;
@@ -252,12 +242,8 @@ protected:
 
 	float deltaTime_ = 1.0f / 60.0f;
 
-    // --- パーティクル用 ---
-	std::unique_ptr<MyEngine::SmokeParticleManager> smokeManager_;
-	float smokeSpawnTimer_ = 0.0f;
-	float smokeSpawnInterval_;
-	KamataEngine::Vector3 smokeSize_;
-	std::unique_ptr<MyEngine::DustParticleManager> dustManager_;
+	// ---- スタン ----
+	bool isStun_ = false;
 
 	// ---- テクスチャ ----
 	EnemyState state_ = EnemyState::Idle;
@@ -282,4 +268,20 @@ protected:
 	uint32_t attackSEVoiceHandle_ = 0;
 	uint32_t hitSEVoiceHandle_ = 0;
 	uint32_t blownSEVoiceHandle_ = 0;
+
+private:
+	// --- パーティクル用 ---
+	std::unique_ptr<MyEngine::SmokeParticleManager> smokeManager_;
+	float smokeSpawnTimer_ = 0.0f;
+	float smokeSpawnInterval_;
+	KamataEngine::Vector3 smokeSize_;
+	std::unique_ptr<MyEngine::DustParticleManager> dustManager_;
+
+	// ---- スタン ----
+	float stunTimer_ = 0.0f;
+	float stunDuration_;
+	float stunShakeTime_ = 0.0f;
+	float stunShakeAmplitude_;
+	float stunShakeSpeed_;
+	KamataEngine::Vector3 originalPosition_ = {0.0f, 0.0f, 0.0f};
 };
