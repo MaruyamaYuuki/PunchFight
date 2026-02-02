@@ -34,10 +34,37 @@ void UI::Initialize(::Player* player) {
 	ctrlSprite_ = Sprite::Create(textureHandle_, {5.0f, 130.0f});
 	textureHandle_ = TextureManager::Load("UI/pause.png");
 	pauseSprite_ = Sprite::Create(textureHandle_, {0.0f, 0.0f});
-	textureHandle_ = TextureManager::Load("UI/selectBack.png");
-	selectSprite_[0] = Sprite::Create(textureHandle_, {0.0f, 0.0f});
 	textureHandle_ = TextureManager::Load("UI/selectRestart.png");
-	selectSprite_[1] = Sprite::Create(textureHandle_, {0.0f, 0.0f});
+	selectSprite_[0] = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f,0.5f});
+	textureHandle_ = TextureManager::Load("UI/selectToTitle.png");
+	selectSprite_[1] = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
+	textureHandle_ = TextureManager::Load("UI/cursor1.png");
+	selectCursorSprite_[0] = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
+	textureHandle_ = TextureManager::Load("UI/cursor2.png");
+	selectCursorSprite_[1] = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
+	textureHandle_ = TextureManager::Load("UI/checkFrame.png");
+	checkFrameSprite_ = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
+	textureHandle_ = TextureManager::Load("UI/CheckSelectYes.png");
+	checkSelectSprite_[0] = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
+	textureHandle_ = TextureManager::Load("UI/CheckSelectNo.png");
+	checkSelectSprite_[1] = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
+	textureHandle_ = TextureManager::Load("UI/checkCursor1.png");
+	checkCursorSprite_[0] = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
+	textureHandle_ = TextureManager::Load("UI/checkCursor2.png");
+	checkCursorSprite_[1] = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
+	textureHandle_ = TextureManager::Load("UI/selectWS.png");
+	selectKeySprite_[0] = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
+	textureHandle_ = TextureManager::Load("UI/selectAD.png");
+	selectKeySprite_[1] = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
+
+	checkFrameSprite_->SetPosition(checkPos_);
+	for (int i = 0; i < 2; i++) {
+		selectSprite_[i]->SetPosition(selectPos_[i]);
+		selectCursorSprite_[i]->SetPosition(selectPos_[i]);
+		checkSelectSprite_[i]->SetPosition(checkPos_);
+		checkCursorSprite_[i]->SetPosition(checkPos_);
+		selectKeySprite_[i]->SetPosition({selectKeyPos_});
+	}
 }
 
 void UI::Update() {
@@ -56,11 +83,22 @@ void UI::Draw() {
 
 	if (isPaused_) {
 		pauseSprite_->Draw();
-        if (pauseSelectIndex_ == 0) {
-    		selectSprite_[0]->Draw();
-    	} else if (pauseSelectIndex_ == 1) {
-    		selectSprite_[1]->Draw();
-    	}
+		for (int i = 0; i < 2; i++) {
+			selectSprite_[i]->Draw();
+			if (i == pauseSelectIndex_) {
+				selectCursorSprite_[i]->Draw();
+			}
+		}
+
+		if (isBackTitleChecked_) {
+			checkFrameSprite_->Draw();
+			checkSelectSprite_[0]->Draw();
+		    checkSelectSprite_[1]->Draw();
+			checkCursorSprite_[checkBackTitleIndex_]->Draw();
+			selectKeySprite_[1]->Draw();
+		} else {
+			selectKeySprite_[0]->Draw();
+		}
 	}	
 
 }
