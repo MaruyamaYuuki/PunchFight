@@ -3,7 +3,10 @@
 #include "../../Engine/Math/WorldTransformEx.h"
 
 /// <summary>
-/// ステージ
+/// ステージを構成する最小単位（1セクション）の保持と表示。
+/// 単一のステージモデルと、その配置座標（WorldTransformEx）の管理。
+/// モデルの描画、および個別のトランスフォーム更新。
+/// マネージャーから指定された座標への自己配置。
 /// </summary>
 class Stage {
 public:

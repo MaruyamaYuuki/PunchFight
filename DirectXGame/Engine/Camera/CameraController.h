@@ -4,7 +4,10 @@
 class Player;
 namespace MyEngine {
 /// <summary>
-/// カメラ制御
+/// プレイヤーの動きに合わせた視点制御。
+/// プレイヤー座標に基づいたスムーズな追従計算（線形補間等）。
+/// EnemyManager からの通知に基づいた、進行制限（スクロールロック）の適用。
+/// ゲーム進行（エリアクリア）に応じた可動範囲の動的更新。
 /// </summary>
 class CameraController {
 public:

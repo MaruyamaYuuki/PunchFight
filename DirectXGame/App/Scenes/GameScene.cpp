@@ -178,8 +178,6 @@ void GameScene::Draw() {
 	// 前景スプライト描画前処理
 	Sprite::PreDraw(dxCommon_->GetCommandList());
 
-	//backTextSprite_->Draw();
-
 	ui_->Draw();
 
 	switch (phase_) {
@@ -207,9 +205,6 @@ void GameScene::Draw() {
 			blackSprite_->Draw();
 			gameOverTextSprite_->Draw();
 		} 
-		if (player_->GetHP() > 0) {
-			//backTextSprite_->Draw();
-		}
 		if (isGameOverFallFinished_) {
 			resetTextSprite_->Draw();
 		}
