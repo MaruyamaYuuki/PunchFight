@@ -98,12 +98,12 @@ private:
 	void ExitPause();
 
 	/// <summary>
-	/// ポーズメニュー内の選択操作（上下移動や決定）を監視・実行する。
+	/// ボース処理の入力監視
 	/// </summary>
-	void UpdatePauseMenuInput();
+	void UpdatePauseInput();
 
 	/// <summary>
-	/// ポーズメニュー処理
+	/// ポーズメニュー内の選択操作（上下移動や決定）を監視・実行する。
 	/// </summary>
 	void UpdatePauseMenuInput();
 

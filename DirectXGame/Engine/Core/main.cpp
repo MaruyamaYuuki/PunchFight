@@ -7,9 +7,9 @@
 
 using namespace KamataEngine;
 
-TitleScene* titleScene = nullptr;
-GameScene* gameScene = nullptr;
-ClearScene* clearScene = nullptr;
+std::unique_ptr<TitleScene> titleScene;
+std::unique_ptr<GameScene> gameScene;
+std::unique_ptr<ClearScene> clearScene;
 
 /// <summary>
 /// シーンの状態
@@ -49,16 +49,15 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	MyEngine::GameConfigManager::GetInstance()->Initialize();
 
 #ifdef _DEBUG
-	gameScene = new GameScene();
+	// std::make_unique を使用して生成
+	gameScene = std::make_unique<GameScene>();
 	gameScene->Initialize();
-
 	scene = Scene::kGame;
 #else
-	titleScene = new TitleScene();
+	titleScene = std::make_unique<TitleScene>();
 	titleScene->Initialize();
-
 	scene = Scene::kTitle;
-#endif // DEBUG
+#endif
 
 	// メインループ
 	while (true) {
@@ -88,45 +87,33 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 void ChangeScene() {
 	switch (scene) {
 	case Scene::kTitle:
-		if (titleScene->IsFinished()) {
+		if (titleScene && titleScene->IsFinished()) {
 			scene = Scene::kGame;
-
-			delete titleScene;
-			titleScene = nullptr;
-
-			gameScene = new GameScene();
+			titleScene.reset();
+			gameScene = std::make_unique<GameScene>();
 			gameScene->Initialize();
 		}
 		break;
 	case Scene::kGame:
-		if (gameScene->IsFinished()){
+		if (gameScene && gameScene->IsFinished()) {
 			if (gameScene->IsBackToTitle()) {
 				scene = Scene::kTitle;
-
-				delete gameScene;
-				gameScene = nullptr;
-
-				titleScene = new TitleScene();
+				gameScene.reset();
+				titleScene = std::make_unique<TitleScene>();
 				titleScene->Initialize();
 			} else {
-    			scene = Scene::kClear;
-
-    			delete gameScene;
-    			gameScene = nullptr;
-
-    			clearScene = new ClearScene();
-    			clearScene->Initialize();
+				scene = Scene::kClear;
+				gameScene.reset();
+				clearScene = std::make_unique<ClearScene>();
+				clearScene->Initialize();
 			}
 		}
 		break;
 	case Scene::kClear:
-		if (clearScene->IsFinished()) {
+		if (clearScene && clearScene->IsFinished()) {
 			scene = Scene::kTitle;
-
-			delete clearScene;
-			clearScene = nullptr;
-
-			titleScene = new TitleScene();
+			clearScene.reset();
+			titleScene = std::make_unique<TitleScene>();
 			titleScene->Initialize();
 		}
 		break;

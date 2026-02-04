@@ -11,8 +11,22 @@ namespace MyEngine {
 /// </summary>
 class SmokeParticleManager : public ParticleManager {
 public:
+	/// <summary>
+	/// 煙モデルの読み込みと初期設定。
+	/// </summary>
 	void Initialize();
+
+	/// <summary>
+	/// 指定座標に、指定された初期サイズで煙パーティクルを生成する。
+	/// </summary>
+	/// <param name="pos">発生座標</param>
+	/// <param name="size">初期スケール（ここから時間経過で膨張する）</param>
 	void Spawn(const KamataEngine::Vector3& pos, const KamataEngine::Vector3& size);
+
+	/// <summary>
+	/// 煙パーティクル群を描画する。
+	/// </summary>
+	/// <param name="camera">描画用カメラ</param>
 	void Draw(KamataEngine::Camera& camera) override;
 
 	/// <summary>

@@ -19,17 +19,17 @@ public:
 	~Fade();
 
 	/// <summary>
-	/// 初期化
+	/// フェード用スプライトの生成と初期化。初期状態は非表示(Alpha=0)に設定される。
 	/// </summary>
 	void Initialize();
 
 	/// <summary>
-	/// 更新
+	/// ステータスに応じたアルファ値の更新。Startで指定されたdurationに基づき、1フレームあたりの変化量を計算・適用する。
 	/// </summary>
 	void Update();
 
 	/// <summary>
-	/// 描画
+	/// 全画面を覆うフェード用スプライトの描画。
 	/// </summary>
 	void Draw();
 
@@ -41,7 +41,7 @@ public:
 	void Start(Status status, float duration);
 
 	/// <summary>
-	/// フェードの終了処理
+	/// 現在進行中のフェード演出を強制停止し、状態を None に戻す。
 	/// </summary>
 	void Stop();
 

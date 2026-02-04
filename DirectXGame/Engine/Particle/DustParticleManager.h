@@ -11,11 +11,30 @@ namespace MyEngine {
 /// </summary>
 class DustParticleManager : public ParticleManager {
 public:
+	/// <summary>
+	/// 粉塵モデルの読み込みとテクスチャの設定。
+	/// </summary>
 	void Initialize();
+
+	/// <summary>
+	/// 指定座標から複数の粉塵パーティクルをランダムな方向に放出する。
+	/// </summary>
+	/// <param name="pos">発生源となる中心座標</param>
 	void Spawn(const KamataEngine::Vector3& pos);
+
+	/// <summary>
+	/// ビルボード形式で粉塵パーティクル群を描画する。
+	/// </summary>
+	/// <param name="camera">描画用カメラ</param>
 	void Draw(KamataEngine::Camera& camera) override;
 
 private:
+	/// <summary>
+	/// 指定範囲内からランダムな浮動小数点数を生成する。
+	/// </summary>
+	/// <param name="min">最小値</param>
+	/// <param name="max">最大値</param>
+	/// <returns>生成されたランダム値</returns>
 	float RandomRange(float min, float max);
 
 	KamataEngine::Model* model_ = nullptr;

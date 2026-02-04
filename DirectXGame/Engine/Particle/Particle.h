@@ -20,6 +20,11 @@ public:
 
 	WorldTransformEx transform;
 
+	/// <summary>
+	/// パーティクルの更新処理（純粋仮想関数）。
+	/// 経過時間の加算、および有効フラグ（active）の管理を派生クラスで行う。
+	/// </summary>
+	/// <param name="deltaTime">前フレームからの経過時間（秒）。物理計算やタイマー更新に使用する。</param>
 	virtual void Update(float deltaTime) = 0;
 };
 }

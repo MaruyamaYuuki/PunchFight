@@ -11,6 +11,11 @@ class SmokeParticle : public Particle {
 public:
 	KamataEngine::Vector3 initialScale;
 
+	/// <summary>
+	/// 煙パーティクルの挙動更新。
+	/// 経過時間に応じてスケールを徐々に拡大（膨張）させ、生存期間の終了と共に消失させる。
+	/// </summary>
+	/// <param name="deltaTime">前フレームからの経過時間（秒）</param>
 	void Update(float deltaTime) override;
 };
 }

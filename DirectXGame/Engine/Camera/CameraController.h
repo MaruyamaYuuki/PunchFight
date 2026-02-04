@@ -39,13 +39,13 @@ public:
 	void SetTarget(::Player* target) { target_ = target; }
 
 	/// <summary>
-	/// カメラを取得する
+	/// カメラオブジェクトを取得する
 	/// </summary>
-	/// <returns></returns>
+	/// <returns>エンジンのカメラクラスへの参照</returns>
 	const KamataEngine::Camera& GetCamera() const { return camera_; }
 
 	/// <summary>
-	/// カメラのリセット
+	/// カメラの状態（座標、補間フラグ等）を初期状態にリセットする
 	/// </summary>
 	void Reset();
 
@@ -70,6 +70,9 @@ public:
 	/// <returns>カメラの現在位置</returns>
 	KamataEngine::Vector3 GetPosition() const { return camera_.translation_; }
 
+	/// <summary>
+	/// 特定の注視対象からプレイヤーへのカメラ復帰アニメーションを開始する
+	/// </summary>
 	void StartReturnToPlayer();
 
 private:

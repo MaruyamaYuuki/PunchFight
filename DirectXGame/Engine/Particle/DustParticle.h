@@ -12,6 +12,11 @@ public:
 	float velocityX = 0.0f;
 	float velocityY = 0.02f;
 
+	/// <summary>
+	/// 粉塵パーティクルの挙動更新。
+	/// 速度に基づいた座標移動と、生存期間に応じたフェードアウト（Alpha値の計算）を実行する。
+	/// </summary>
+	/// <param name="deltaTime">前フレームからの経過時間（秒）</param>
 	void Update(float deltaTime) override;
 };
 }

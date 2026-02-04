@@ -11,7 +11,17 @@ class ParticleManager {
 public:
 	virtual ~ParticleManager() = default;
 
+	/// <summary>
+	/// 全パーティクルの状態更新。
+	/// 寿命が尽きた（active == false）パーティクルをリストから除外する。
+	/// </summary>
+	/// <param name="deltaTime">前フレームからの経過時間（秒）</param>
 	void Update(float deltaTime);
+
+	/// <summary>
+	/// 管理下の全パーティクルの一括描画（純粋仮想関数）。
+	/// </summary>
+	/// <param name="camera">描画に使用するビュープロジェクション変換用のカメラ</param>
 	virtual void Draw(KamataEngine::Camera& camera) = 0;
 
 protected:
