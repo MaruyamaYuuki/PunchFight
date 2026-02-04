@@ -204,6 +204,20 @@ private:
 	/// </summary>
 	void Move();
 
+	void ApplyInput();
+
+	void UpdateStep();
+
+	void ApplyStepMovement();
+
+	void ApplyNormalMovement();
+
+	void ConstrainPosition();
+
+	void UpdateMoveEffects();
+
+	void UpdateAnimationFrames();
+
 	/// <summary>
 	/// 通常攻撃（コンボパンチ）の入力受付とステート遷移
 	/// </summary>

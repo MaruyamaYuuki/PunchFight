@@ -233,14 +233,32 @@ void Player::ClearAnimation() {
 
 
 void Player::Move() {
-	// 攻撃中なら移動をキャンセル
-	if (isNormalAttacking_) {
+	// 1. 移動不可フラグのチェック
+	if (isNormalAttacking_ || HP_ <= 0)
 		return;
+
+	// 2. 入力から移動方向を決定
+	ApplyInput();
+
+	// 3. ステップ(回避)の更新
+	UpdateStep();
+
+	// 4. 通常移動またはステップの座標反映
+	if (isStepping_) {
+		ApplyStepMovement();
+	} else {
+		ApplyNormalMovement();
 	}
 
+	// 5. 仕上げ（制限、エフェクト、アニメ）
+	ConstrainPosition();
+	UpdateMoveEffects();
+	UpdateAnimationFrames();
+}
+
+void Player::ApplyInput() {
 	move_ = {0, 0, 0};
 
-	// 入力処理
 	if (input_->PushKey(DIK_W))
 		move_.z += 1.0f;
 	if (input_->PushKey(DIK_S))
@@ -250,81 +268,81 @@ void Player::Move() {
 	if (input_->PushKey(DIK_D))
 		move_.x += 1.0f;
 
-	// ベクトル正規化
+	// 移動入力がある場合のみ正規化と向きの更新
 	if (move_.x != 0.0f || move_.z != 0.0f) {
 		float length = std::sqrt(move_.x * move_.x + move_.z * move_.z);
 		move_.x /= length;
 		move_.z /= length;
 
-        // 一定間隔でパーティクル生成
-		trailSpawnTimer_ -= deltaTime_;
-		if (trailSpawnTimer_ <= 0.0f) {
-			trailSpawnTimer_ = trailSpawnInterval_; // 例: 0.05f
-
-			if (smokeManager_) {
-				Vector3 pos = worldTransform_.translation_;
-				pos.y -= 0.4f; // 足元に出す場合
-				smokeManager_->SetTexture(smokeTexture_);
-				smokeManager_->Spawn(pos, smokeSize_);
-			}
-		}
+		// キャラクターの向き（左右）
+		if (move_.x > 0.0f)
+			facingDir_ = 1.0f;
+		else if (move_.x < 0.0f)
+			facingDir_ = -1.0f;
 	}
-
-	// 向き更新（X方向に移動した場合のみ）
-	if (move_.x > 0.0f)
-		facingDir_ = 1.0f;
-	if (move_.x < 0.0f)
-		facingDir_ = -1.0f;
-
+}
+void Player::UpdateStep() {
 	// クールタイム減少
 	if (stepTimer_ > 0)
 		stepTimer_--;
 
-	// ステップ開始判定
+	// 開始判定（クールタイム終了済み 且つ ボタン入力 且つ 移動入力あり）
 	if (stepTimer_ <= 0 && input_->TriggerKey(DIK_H) && (move_.x != 0.0f || move_.z != 0.0f)) {
 		isStepping_ = true;
 		stepDirection_ = move_;
-		stepTimer_ = stepCooldown_; // クールタイム開始
-		stepFrame_ = 10;            // ステップ継続フレーム数
+		stepTimer_ = stepCooldown_;
+		stepFrame_ = 10;
 	}
+}
+void Player::ApplyStepMovement() {
+	float stepSpeed = moveSpeed_ * stepPower_;
+	worldTransform_.translation_.x += stepDirection_.x * stepSpeed;
+	worldTransform_.translation_.z += stepDirection_.z * stepSpeed;
 
-	// ステップ中の処理
-	if (isStepping_) {
-		float stepSpeed = moveSpeed_ * stepPower_;
-		worldTransform_.translation_.x += stepDirection_.x * stepSpeed;
-		worldTransform_.translation_.z += stepDirection_.z * stepSpeed;
-
-		stepFrame_--;
-		if (stepFrame_ <= 0) {
-			isStepping_ = false;
-		}
-		return; // ステップ中は通常移動を無効化
+	stepFrame_--;
+	if (stepFrame_ <= 0) {
+		isStepping_ = false;
 	}
+}
 
-	// 通常移動
+void Player::ApplyNormalMovement() {
 	worldTransform_.translation_.x += move_.x * moveSpeed_;
 	worldTransform_.translation_.z += move_.z * moveSpeed_;
+}
 
+void Player::ConstrainPosition() {
+	worldTransform_.translation_.x = std::clamp(worldTransform_.translation_.x, -startMoveLimitX, endMoveLimitX_);
+	worldTransform_.translation_.z = std::clamp(worldTransform_.translation_.z, -moveLimitZ, minMoveLimitZ);
+}
 
+void Player::UpdateMoveEffects() {
+	// 移動していないなら何もしない
+	if (move_.x == 0.0f && move_.z == 0.0f)
+		return;
 
-	// 範囲を越えない処理
-	worldTransform_.translation_.x = std::max(worldTransform_.translation_.x, -startMoveLimitX);
-	worldTransform_.translation_.x = std::min(worldTransform_.translation_.x, +endMoveLimitX_);
-	worldTransform_.translation_.z = std::max(worldTransform_.translation_.z, -moveLimitZ);
-	worldTransform_.translation_.z = std::min(worldTransform_.translation_.z, +minMoveLimitZ);
+	trailSpawnTimer_ -= deltaTime_;
+	if (trailSpawnTimer_ <= 0.0f) {
+		trailSpawnTimer_ = trailSpawnInterval_;
 
+		if (smokeManager_) {
+			Vector3 pos = worldTransform_.translation_;
+			pos.y -= 0.4f;
+			smokeManager_->SetTexture(smokeTexture_);
+			smokeManager_->Spawn(pos, smokeSize_);
+		}
+	}
+}
+
+void Player::UpdateAnimationFrames() {
 	bool isMoving = (move_.x != 0.0f || move_.z != 0.0f);
 
-	// 歩行アニメ進行
 	if (isMoving && !isStepping_ && !isNormalAttacking_ && HP_ > 0) {
 		walkFrameTimer_++;
-
 		if (walkFrameTimer_ >= walkFrameInterval_) {
 			walkFrameTimer_ = 0;
-			walkFrame_ = (walkFrame_ + 1) % 4; // 4枚ループ
+			walkFrame_ = (walkFrame_ + 1) % 4;
 		}
 	} else {
-		// 止まったらフレームリセットしてもOK（お好み）
 		walkFrame_ = 0;
 		walkFrameTimer_ = 0;
 	}
