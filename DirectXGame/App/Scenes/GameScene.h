@@ -7,7 +7,7 @@
 #include "../../Engine/Camera/CameraController.h"
 #include "../../Engine/Rendering/UI.h"
 #include "../Objects/StageManager.h"
-#include "../Objects/Player.h"
+#include "../Objects/Player/Player.h"
 #include "../Objects/Enemy/EnemyManager.h"
 
 /// <summary>

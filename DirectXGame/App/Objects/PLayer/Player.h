@@ -1,9 +1,10 @@
 #pragma once
 
 #include "KamataEngine.h"
-#include "../../Engine/Math/WorldTransformEx.h"
-#include "../../Engine//Math/Collider.h"
-#include "../../Engine/Particle/SmokeParticleManager.h"
+#include "PlayerInputController.h"
+#include "../../../Engine/Math/WorldTransformEx.h"
+#include "../../../Engine//Math/Collider.h"
+#include "../../../Engine/Particle/SmokeParticleManager.h"
 
 /// <summary>
 /// ユーザー操作による自キャラクターの制御と状態管理。
@@ -202,11 +203,7 @@ private:
 	/// <summary>
 	/// 入力に基づいた移動計算（通常移動、ステップ）の実行
 	/// </summary>
-	void Move();
-
-	void ApplyInput();
-
-	void UpdateStep();
+	void Move(const PlayerCommand& cmd);
 
 	void ApplyStepMovement();
 
@@ -243,10 +240,23 @@ private:
 	/// </summary>
 	void TextureUpdate();
 
+	void ApplyMovementTexture();
+
+	void ApplyStepTexture();
+
+	void ApplyAttackTexture();
+
+	void ApplyDeathTexture();
+
+	void ApplyVictoryTexture();
+
+	void ApplyCommand(const PlayerCommand& cmd);
+
 private:
 	KamataEngine::Input* input_ = nullptr;
 	KamataEngine::Audio* audio_ = nullptr;
 	MyEngine::GameConfigManager* cfg_ = nullptr;
+	std::unique_ptr<PlayerInputController> inputController_;
 
 	MyEngine::WorldTransformEx worldTransform_;
 	MyEngine::WorldTransformEx worldTransformSP_;

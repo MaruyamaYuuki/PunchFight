@@ -1,6 +1,6 @@
 #define NOMINMAX
 #include "CameraController.h"
-#include "../../App/Objects/Player.h"
+#include "../../App/Objects/Player/Player.h"
 #include "../Math/WorldTransformEx.h"
 #include <algorithm>
 

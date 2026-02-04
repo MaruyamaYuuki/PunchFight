@@ -1,7 +1,7 @@
 #pragma once
 #include "KamataEngine.h"
 #include "BaseScene.h"
-#include "../Objects/Player.h"
+#include "../Objects/Player/Player.h"
 
 /// <summary>
 /// ゲームクリア時のリザルト表示と、報酬演出の提供。
