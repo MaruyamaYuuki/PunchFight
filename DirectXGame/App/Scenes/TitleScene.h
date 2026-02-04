@@ -1,5 +1,6 @@
 #pragma once
 #include "KamataEngine.h"
+#include "BaseScene.h"
 #include "../../Engine/Math/WorldTransformEx.h"
 
 /// <summary>
@@ -14,7 +15,7 @@ namespace MyEngine {
     class Fade;
     class GameConfigManager;
 }
-class TitleScene {
+class TitleScene : public BaseScene {
 public:
 	/// <summary>
 	/// コンストラクタ
@@ -29,17 +30,17 @@ public:
 	/// <summary>
 	/// シーンの初期化。各種スプライト、カメラ、演出用タイマーの設定を行う。
 	/// </summary>
-	void Initialize();
+	void Initialize() override;
 
 	/// <summary>
 	/// 更新
 	/// </summary>
-	void Update();
+	void Update() override;
 
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw();
+	void Draw() override;
 
 	/// <summary>
 	/// ゲーム開始時のタイトルロゴのアニメーション処理
@@ -55,7 +56,13 @@ public:
 	/// タイトルシーンの終了判定
 	/// </summary>
 	/// <returns>終了していれば true、進行中であれば false を返す。</returns>
-	bool IsFinished() { return isFinished_; }
+	bool IsFinished() const override { return isFinished_; }
+
+    /// <summary>
+	/// 次の遷移先シーンを取得する
+	/// </summary>
+	/// <returns>ゲームへ行くフラグが立っていれば kGame</returns>
+	int GetNextScene() const override;
 
 private:
 	XINPUT_STATE state_, preState_;

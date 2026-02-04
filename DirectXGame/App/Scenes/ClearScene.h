@@ -1,5 +1,6 @@
 #pragma once
 #include "KamataEngine.h"
+#include "BaseScene.h"
 #include "../Objects/Player.h"
 
 /// <summary>
@@ -14,7 +15,7 @@ namespace MyEngine {
     class Fade;
     class GameConfigManager;
 }
-class ClearScene {
+class ClearScene : public BaseScene {
 	/// <summary>
 	/// クリアシーンの進行状態
 	/// </summary>
@@ -38,23 +39,29 @@ public:
 	/// <summary>
 	/// シーンの初期化。勝利ポーズ用のプレイヤーモデル生成やクリア演出用タイマーのリセットを行う。
 	/// </summary>
-	void Initialize();
+	void Initialize() override;
 
 	/// <summary>
 	/// 更新
 	/// </summary>
-	void Update();
+	void Update() override;
 
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw();
+	void Draw() override;
 
 	/// <summary>
 	/// ゲームシーンの終了判定
 	/// </summary>
 	/// <returns>終了していれば true、進行中であれば false を返す。</returns>
-	bool IsFinished() const { return isFinished_; }
+	bool IsFinished() const override { return isFinished_; }
+
+    /// <summary>
+	/// 次の遷移先シーンを取得する
+	/// </summary>
+	/// <returns>タイトルへ戻るフラグが立っていれば kTitle</returns>
+	int GetNextScene() const override;
 
 private:
 

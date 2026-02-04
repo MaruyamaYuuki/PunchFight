@@ -1,6 +1,7 @@
 #define NOMINMAX
 #include <algorithm>
 #include "ClearScene.h"
+#include "SceneManager.h"
 #include "../../Engine/Rendering/Fade.h"
 #include "../../Engine/Utility/GameConfigManager.h"
 
@@ -86,6 +87,11 @@ void ClearScene::Draw() {
 	fade_->Draw();
 	// 前景スプライト描画後処理
 	Sprite::PostDraw();
+}
+
+int ClearScene::GetNextScene() const {
+	// 次はTitleSceneへ行くことをマネージャーに伝える
+	return static_cast<int>(SceneManager::SceneType::kTitle);
 }
 
 void ClearScene::UpdateWait() { 

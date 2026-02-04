@@ -2,6 +2,7 @@
 #include "KamataEngine.h"
 #include <memory>
 #include <json.hpp>
+#include "BaseScene.h"
 #include "../../Engine/Math/WorldTransformEx.h"
 #include "../../Engine/Camera/CameraController.h"
 #include "../../Engine/Rendering/UI.h"
@@ -21,7 +22,7 @@ class Fade;
 class GameConfigManager;
 }
 
-class GameScene {
+class GameScene : public BaseScene{
 public:
 	/// <summary>
 	/// ゲーム全体の進行状態
@@ -49,29 +50,35 @@ public:
 	/// ゲームシーンの初期化。
 	/// JSONからの敵出現データの読み込み、プレイヤー・敵・ステージ各マネージャーの生成と初期設定を行う。
 	/// </summary>
-	void Initialize();
+	void Initialize() override;
 
 	/// <summary>
 	/// 更新
 	/// </summary>
-	void Update();
+	void Update() override;
 
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw();
+	void Draw() override;
 
     /// <summary>
 	/// ゲームシーンの終了判定
 	/// </summary>
 	/// <returns>シーン遷移が必要な状態（フェードアウト完了後等）であれば true</returns>
-	bool IsFinished() const { return isFinished_; }
+	bool IsFinished() const override { return isFinished_; }
 
 	/// <summary>
 	/// タイトル画面への戻り判定
 	/// </summary>
 	/// <returns>ポーズメニュー等で「タイトルへ戻る」が選択された場合 true</returns>
 	bool IsBackToTitle() const { return backToTitle_; }
+
+    /// <summary>
+	/// 次の遷移先シーンを取得する
+	/// </summary>
+	/// <returns>タイトルへ戻るフラグが立っていれば kTitle、そうでなければ（クリア等） kClear</returns>
+	int GetNextScene() const override;
 
 private:
 	/// <summary>

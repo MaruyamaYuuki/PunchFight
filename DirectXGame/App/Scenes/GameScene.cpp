@@ -1,6 +1,7 @@
 #define NOMINMAX
 #include "GameScene.h"
 #include <chrono>
+#include "SceneManager.h"
 #include "../../Engine/Rendering/Fade.h"
 #include "../../Engine/Math/Easing.h"
 #include "../../Engine//Math/Collision.h"
@@ -218,6 +219,14 @@ void GameScene::Draw() {
 
 	// 前景スプライト描画後処理
 	Sprite::PostDraw();
+}
+
+int GameScene::GetNextScene() const {
+	if (backToTitle_) {
+		return static_cast<int>(SceneManager::SceneType::kTitle);
+	}
+	// 通常の終了（全ステージクリア等）ならクリアシーンへ
+	return static_cast<int>(SceneManager::SceneType::kClear);
 }
 
 void GameScene::ChangePhase() {
