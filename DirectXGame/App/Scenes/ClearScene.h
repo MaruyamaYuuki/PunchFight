@@ -36,7 +36,7 @@ public:
 	~ClearScene();
 
 	/// <summary>
-	/// 初期化
+	/// シーンの初期化。勝利ポーズ用のプレイヤーモデル生成やクリア演出用タイマーのリセットを行う。
 	/// </summary>
 	void Initialize();
 
@@ -59,27 +59,27 @@ public:
 private:
 
 	/// <summary>
-	/// 待機フェースの更新
+	/// クリア直後の演出待機フェーズ。一定時間経過後にテキスト演出を開始する。
 	/// </summary>
 	void UpdateWait();
 
 	/// <summary>
-	/// プレイフェースの更新
+	/// メインの演出フェーズ。クリアテキストの表示やプレイヤーのアニメーションを行う。
 	/// </summary>
 	void UpdatePlay();
 
 	/// <summary>
-	/// クリアテキストの更新
+	/// 「CLEAR」ロゴの拡大・バウンド等の視覚効果アニメーション。
 	/// </summary>
 	void UpdateClearText();
 
 	/// <summary>
-	/// 入力処理の更新
+	/// 演出完了後のユーザー入力を監視。ボタン入力によりフェードアウトへ遷移させる。
 	/// </summary>
 	void UpdateInput();
 
 	/// <summary>
-	/// フェードアウトフェーズの更新
+	/// タイトルシーン等へ戻る際の暗転（フェードアウト）処理。
 	/// </summary>
 	void UpdateFadeOut();
 

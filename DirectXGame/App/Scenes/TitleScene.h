@@ -27,7 +27,7 @@ public:
 	~TitleScene();
 
 	/// <summary>
-	/// 初期化
+	/// シーンの初期化。各種スプライト、カメラ、演出用タイマーの設定を行う。
 	/// </summary>
 	void Initialize();
 
@@ -47,7 +47,7 @@ public:
 	void TitleAnimation();
 
 	/// <summary>
-	/// タイトルロゴ点滅処理
+	/// 「PRESS START」等のガイド表示の点滅制御。
 	/// </summary>
 	void SpriteFlashUpdate();
 

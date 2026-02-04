@@ -21,13 +21,13 @@ public:
 	~Stage() = default;
 
 	/// <summary>
-	/// 初期化
+	/// ステージセクションの初期化
 	/// </summary>
-	/// <param name="model"></param>
+	/// <param name="model">このセクションで使用する3Dモデルのポインタ</param>
 	void Initialize(KamataEngine::Model* model);
 
 	/// <summary>
-	/// 更新
+	/// ワールド行列の更新
 	/// </summary>
 	void Update();
 
@@ -37,13 +37,13 @@ public:
 	/// <param name="camera">カメラ</param>
 	void Draw(KamataEngine::Camera& camera);
 
-    /// <summary>
+	/// <summary>
 	/// ステージの位置を設定する
 	/// </summary>
-	/// <param name="x">X座標</param>
-	/// <param name="y">Y座標（省略時は0.0f）</param>
-	/// <param name="z">Z座標（省略時は0.0f）</param>
-	void SetPosition(float x, float y = 0.0f, float z = 0.0f) { worldTransform_.translation_ = {x, y, z};}
+	/// <param name="x">配置するX座標（進行方向）</param>
+	/// <param name="y">配置するY座標（高さ・省略時は0.0f）</param>
+	/// <param name="z">配置するZ座標（奥行・省略時は0.0f）</param>
+	void SetPosition(float x, float y = 0.0f, float z = 0.0f) { worldTransform_.translation_ = {x, y, z}; }
 
 	/// <summary>
 	///ステージのX座標を取得する

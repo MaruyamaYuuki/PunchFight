@@ -4,16 +4,21 @@
 class Player;
 namespace MyEngine {
 /// <summary>
-/// UI
+/// ゲームの進行状況やプレイヤーのステータスを視覚的にフィードバックする。
+/// 情報の可視化 : プレイヤーの現在HPやスキルのクールタイム（UpdateAbilityCoolTime）を、スプライトのスケールや色の変化として描画する。
+///システム状態の同期 : ポーズ画面（isPaused_）やタイトル確認（isBackTitleChecked_）の状態に応じて、メニュー項目やカーソル位置を動的に更新する。
+/// デバイス抽象化の補助 : キーボードとゲームパッド（keyCTRLSprite_ /
+/// padCTRLSprite_）の操作ガイドを動的に切り替え、ユーザーに適切な操作方法を提示する。
+/// GameConfigManagerとの連携 : 外部設定に基づいたUIの配置やパラメータの適用。
 /// </summary>
 class GameConfigManager;
 class UI {
 public:
 
-	/// <summary>
-	/// 初期化
+    /// <summary>
+	/// UIの初期化
 	/// </summary>
-	/// <param name="player">プレイヤー</param>
+	/// <param name="player">HP等のステータスを参照するためのプレイヤーオブジェクト</param>
 	void Initialize(::Player* player);
 
 	/// <summary>
@@ -31,18 +36,27 @@ public:
 	/// </summary>
 	void Reset();
 
-	/// <summary>
-	/// ポーズ中かを取得
+    /// ポーズ状態の設定
 	/// </summary>
+	/// <param name="pause">ポーズ中なら true、解除なら false</param>
 	void SetPause(bool pause) { isPaused_ = pause; }
 
 	/// <summary>
-	/// タイトルへ本当に戻るかのチェック中かを取得
+	/// タイトル確認画面の表示設定
 	/// </summary>
+	/// <param name="check">確認ダイアログを表示するなら true</param>
 	void SetBackTitleCheck(bool check) { isBackTitleChecked_ = check; }
 
+    /// <summary>
+	/// ポーズメニューの選択インデックス設定
+	/// </summary>
+	/// <param name="index">選択中の項目の番号</param>
 	void SetPauseSelectIndex(int32_t index) { pauseSelectIndex_ = index; }
 
+	/// <summary>
+	/// タイトル確認画面の選択インデックス設定
+	/// </summary>
+	/// <param name="index">選択中の項目の番号</param>
 	void SetCheckBackTitleIndex(int32_t index) { checkBackTitleIndex_ = index; }
 private:
 

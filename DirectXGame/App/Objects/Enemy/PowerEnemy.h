@@ -29,24 +29,35 @@ public:
 	/// <param name="data">エネミーデータ</param>
 	void Initialize(const EnemyData& data) override;
 
-	/// <summary>
-	/// 更新
+	/// 更新処理
 	/// </summary>
-	/// <param name="playerPos">プレイヤーの座標</param>
-	void Update(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) override;
+	/// <param name="playerPos">プレイヤーの座標（追従対象）</param>
+	/// <param name="allEnemies">全エネミーのリスト（他の敵との重なり回避計算に使用）</param>
+	virtual void Update(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies);
 
 private:
-
+	/// <summary>
+	/// 突進攻撃（タックル）の物理挙動およびタイマー制御
+	/// </summary>
 	void TackleAttack();
 
+	/// <summary>
+	/// 攻撃モードへの遷移判定と初期化
+	/// </summary>
+	/// <param name="playerPos">ターゲットとなるプレイヤーの座標</param>
 	void EnterAttackMode(const KamataEngine::Vector3& playerPos);
 
 protected:
+	/// <summary>
+	/// 通常攻撃とタックル攻撃の分岐・実行制御
+	/// </summary>
+	/// <param name="playerPos">プレイヤーの現在座標</param>
 	void AttackProcess(const KamataEngine::Vector3& playerPos) override;
 
+	/// <summary>
+	/// 重量級エネミー専用のテクスチャ（タックル予備動作等）への更新
+	/// </summary>
 	void UpdateTextures() override;
-
-
 
 private:
 	MyEngine::GameConfigManager* cfg_ = nullptr;

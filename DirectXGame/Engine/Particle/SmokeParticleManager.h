@@ -3,6 +3,12 @@
 #include "SmokeParticle.h"
 
 namespace MyEngine {
+/// <summary>
+/// 衝撃や爆発に伴う煙エフェクトの生成および管理。
+/// 特定サイズのアニメーション開始 : Spawn 関数において、呼び出し側から指定されたサイズ（size）を初期値として SmokeParticle を生成し、膨張アニメーションの起点を制御する。
+/// 前後関係の微調整 : 煙が他のオブジェクトと重なった際の描画順を考慮し、Z座標（translation_.z）を微調整して配置する。
+/// 柔軟な外見変更 : SetTexture インターフェースを提供し、状況に応じて異なる種類の煙を使い分けられるようにする。
+/// </summary>
 class SmokeParticleManager : public ParticleManager {
 public:
 	void Initialize();

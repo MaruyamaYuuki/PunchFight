@@ -58,10 +58,10 @@ public:
 	/// <param name="data">敵の情報</param>
 	virtual void Initialize(const EnemyData& data);
 
-	/// <summary>
-	/// 更新
+	/// 更新処理
 	/// </summary>
-	/// <param name="playerPos">プレイヤーの座標</param>
+	/// <param name="playerPos">プレイヤーの座標（追従対象）</param>
+	/// <param name="allEnemies">全エネミーのリスト（他の敵との重なり回避計算に使用）</param>
 	virtual void Update(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies);
 
 	/// <summary>
@@ -101,16 +101,16 @@ public:
 	/// <returns>敵の攻撃力</returns>
 	int32_t GetAttackPower() const { return attackPower_; }
 
-	/// <summary>
+    /// <summary>
 	/// 敵の座標を取得する
 	/// </summary>
-	/// <returns></returns>
+	/// <returns>現在のワールド座標（translation）</returns>
 	KamataEngine::Vector3 GetPosition() const { return worldTransform_.translation_; }
 
 	/// <summary>
 	/// 敵のHPを取得する
 	/// </summary>
-	/// <returns></returns>
+	/// <returns>現在のヒットポイント残り合計値</returns>
 	int32_t GetHP() const { return hp_; }
 
 	/// <summary>
@@ -187,6 +187,11 @@ protected:
 	/// <param name="playerPos">プレイヤーの座標</param>
 	virtual void AttackProcess(const KamataEngine::Vector3& playerPos) = 0;
 
+
+	// <summary>
+	/// 基本的な近接攻撃の実行
+	/// </summary>
+	/// <param name="playerPos">攻撃対象であるプレイヤーの現在座標</param>
 	void DoNormalAttack(const KamataEngine::Vector3& playerPos);
 
 	/// <summary>

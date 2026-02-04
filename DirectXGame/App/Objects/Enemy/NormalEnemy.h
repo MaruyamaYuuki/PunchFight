@@ -21,14 +21,16 @@ public:
 	/// <param name="data">エネミーデータ</param>
 	void Initialize(const EnemyData& data) override;
 
-	/// <summary>
-	/// 更新
+	/// 更新処理
 	/// </summary>
-	/// <param name="playerPos">プレイヤーの座標</param>
-	void Update(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) override;
+	/// <param name="playerPos">プレイヤーの座標（追従対象）</param>
+	/// <param name="allEnemies">全エネミーのリスト（他の敵との重なり回避計算に使用）</param>
+	virtual void Update(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies);
 
 protected:
-
-
+	/// <summary>
+	/// プレイヤーとの距離に基づいた通常攻撃の実行管理
+	/// </summary>
+	/// <param name="playerPos">プレイヤーの現在座標</param>
 	void AttackProcess(const KamataEngine::Vector3& playerPos) override;
 };
