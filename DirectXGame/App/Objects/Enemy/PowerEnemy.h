@@ -59,6 +59,15 @@ protected:
 	/// </summary>
 	void UpdateTextures() override;
 
+	/// <summary>
+	/// 動きを止めるべき状態かどうかを判定する
+	/// </summary>
+	/// <returns>ノックバック中、スタン中に0を返す</returns>
+	bool IsMovementInterrupted() const override {
+		// PowerEnemyはスタン中(isStun_)でも false を返すことで、Updateを続行させる
+		return isKnockBack_ || hp_ <= 0;
+	}
+
 private:
 	MyEngine::GameConfigManager* cfg_ = nullptr;
 

@@ -43,6 +43,9 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 	moveSpeed_ = cfg_->getFloat("Player.kMoveSpeed");
 	walkFrameInterval_ = cfg_->getInt("Player.kWalkFrameInterval");
 	playerHitBox_.size = cfg_->getVector3("Player.kHitBoxSize");
+	startMoveLimitX = cfg_->getFloat("Player.kStartMoveLimitX");
+	moveLimitZ = cfg_->getFloat("Player.kMoveLimitZ");
+	minMoveLimitZ = cfg_->getFloat("Player.kMinMoveLimitZ");
 
 	stepCooldown_ = cfg_->getInt("Player.Step.kStepCoolDown");
 	stepPower_ = cfg_->getFloat("Player.Step.kStepPower");
@@ -302,16 +305,13 @@ void Player::Move() {
 	worldTransform_.translation_.x += move_.x * moveSpeed_;
 	worldTransform_.translation_.z += move_.z * moveSpeed_;
 
-	// 移動限界座標
-	const float kStartMoveLimitX = 3.0f;
-	const float kMoveLimitZ = 3.5f;
-	const float kMinMoveLimitZ = 2.5f;
+
 
 	// 範囲を越えない処理
-	worldTransform_.translation_.x = std::max(worldTransform_.translation_.x, -kStartMoveLimitX);
+	worldTransform_.translation_.x = std::max(worldTransform_.translation_.x, -startMoveLimitX);
 	worldTransform_.translation_.x = std::min(worldTransform_.translation_.x, +endMoveLimitX_);
-	worldTransform_.translation_.z = std::max(worldTransform_.translation_.z, -kMoveLimitZ);
-	worldTransform_.translation_.z = std::min(worldTransform_.translation_.z, +kMinMoveLimitZ);
+	worldTransform_.translation_.z = std::max(worldTransform_.translation_.z, -moveLimitZ);
+	worldTransform_.translation_.z = std::min(worldTransform_.translation_.z, +minMoveLimitZ);
 
 	bool isMoving = (move_.x != 0.0f || move_.z != 0.0f);
 

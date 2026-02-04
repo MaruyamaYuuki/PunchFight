@@ -289,6 +289,10 @@ private:
 	int32_t walkFrame_ = 0;         // 0〜3でループ
 	int32_t walkFrameTimer_ = 0;    // テクスチャ切替タイマー
 	int32_t walkFrameInterval_; // 何フレームごとに切り替えるか
+	// 移動限界座標
+	float startMoveLimitX = 3.0f;
+	float moveLimitZ = 3.5f;
+	float minMoveLimitZ = 2.5f;
 
 	// --- ステップ関連 ---
     bool isStepping_ = false;
