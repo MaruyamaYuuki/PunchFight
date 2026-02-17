@@ -2,22 +2,27 @@
 #include "KamataEngine.h"
 #include <memory>
 #include <json.hpp>
+#include "BaseScene.h"
 #include "../../Engine/Math/WorldTransformEx.h"
 #include "../../Engine/Camera/CameraController.h"
 #include "../../Engine/Rendering/UI.h"
 #include "../Objects/StageManager.h"
-#include "../Objects/Player.h"
+#include "../Objects/Player/Player.h"
 #include "../Objects/Enemy/EnemyManager.h"
 
 /// <summary>
-/// ゲームシーン
+/// メインゲームのロジック実行と、複雑なゲームプレイ要素の統合管理。
+/// 状態遷移管理 : 導入（Fight演出）、プレイ中、ポーズ、ゲームオーバー等の内部フェーズ（Phase）の制御。
+/// オブジェクト連携 : プレイヤー、敵（Manager）、ステージ、カメラ、UIの各インスタンスの生成と、それら相互のデータ受け渡し。
+/// 進行制御 : JSONデータ（enemySpawnData_）に基づいた敵の生成トリガー、およびエリアクリアによる進行制限の解除。
+/// システム処理 : 全オブジェクト間の当たり判定（AllCollision）の実行と、ポーズメニュー等のシステム入力の監視。
 /// </summary>
 namespace MyEngine {
 class Fade;
 class GameConfigManager;
 }
 
-class GameScene {
+class GameScene : public BaseScene{
 public:
 	/// <summary>
 	/// ゲーム全体の進行状態
@@ -42,56 +47,70 @@ public:
 	~GameScene();
 
 	/// <summary>
-	/// 初期化
+	/// ゲームシーンの初期化。
+	/// JSONからの敵出現データの読み込み、プレイヤー・敵・ステージ各マネージャーの生成と初期設定を行う。
 	/// </summary>
-	void Initialize();
+	void Initialize() override;
 
 	/// <summary>
 	/// 更新
 	/// </summary>
-	void Update();
+	void Update() override;
 
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw();
+	void Draw() override;
 
-	/// <summary>
+    /// <summary>
 	/// ゲームシーンの終了判定
 	/// </summary>
-	/// <returns>終了していれば true、進行中であれば false を返す。</returns>
-	bool IsFinished() const { return isFinished_; }
+	/// <returns>シーン遷移が必要な状態（フェードアウト完了後等）であれば true</returns>
+	bool IsFinished() const override { return isFinished_; }
 
+	/// <summary>
+	/// タイトル画面への戻り判定
+	/// </summary>
+	/// <returns>ポーズメニュー等で「タイトルへ戻る」が選択された場合 true</returns>
 	bool IsBackToTitle() const { return backToTitle_; }
+
+    /// <summary>
+	/// 次の遷移先シーンを取得する
+	/// </summary>
+	/// <returns>タイトルへ戻るフラグが立っていれば kTitle、そうでなければ（クリア等） kClear</returns>
+	int GetNextScene() const override;
 
 private:
 	/// <summary>
-	/// シーン切り替え
+	/// 内部フェーズ（Phase）の遷移管理。
+	/// フェード完了時やアニメーション終了時など、条件を満たした際に次のステートへ移行させる。
 	/// </summary>
 	void ChangePhase();
 
 	/// <summary>
-	/// 開始時のアニメーション
+	/// 開幕の「READY...FIGHT!」演出の更新。
+	/// テキストの拡大・縮小アニメーションと、終了後のプレイフェーズへの遷移を行う。
 	/// </summary>
 	void FightAnimation();
 
 	/// <summary>
-	/// ポーズ開始
+	/// ポーズ状態への移行。
+	/// ゲームタイマーの停止や、ポーズメニューUIの表示フラグを立てる。
 	/// </summary>
 	void EnterPause();
 
 	/// <summary>
-	/// ポーズ終了
+	/// ポーズ状態の解除。ゲームプレイを再開する。
 	/// </summary>
 	void ExitPause();
 
 	/// <summary>
-	/// ポーズ画面管理
+	/// ボース処理の入力監視
 	/// </summary>
 	void UpdatePauseInput();
 
 	/// <summary>
-	/// ポーズメニュー処理
+	/// ポーズメニュー内の選択操作（上下移動や決定）を監視・実行する。
 	/// </summary>
 	void UpdatePauseMenuInput();
 
@@ -101,17 +120,18 @@ private:
 	void UpdateBackTitleCheckInput();
 
 	/// <summary>
-	/// ゲームオーバー時の演出
+	/// プレイヤー死亡時のスロー演出や、ゲームオーバーテキストの落下アニメーションを制御。
 	/// </summary>
 	void GameOver();
 
 	/// <summary>
-	/// ゲームの状態をリセット
+	/// プレイヤーの再生成、敵の全削除、エリアフラグのリセットを行い、ゲームを最初からやり直す。
 	/// </summary>
 	void ResetGame();
 
 	/// <summary>
-	/// 敵の生成
+	/// 読み込まれた敵出現データ（enemySpawnData_）とカメラ座標を照合し、
+	/// 条件を満たしたエリアに敵を動的に生成する。
 	/// </summary>
 	void EnemyGenerate();
 
@@ -119,19 +139,20 @@ private:
 	/// 敵の更新
 	/// </summary>
 	void EnemyUpdate();
-
+	
 	/// <summary>
-	/// 当たり判定
+	/// 全オブジェクト間の衝突判定を一括実行。
+	/// プレイヤー攻撃vs敵、敵攻撃vsプレイヤー、エリア進入判定などを含む。
 	/// </summary>
 	void AllCollision();
 
-	/// <summary>
-	/// プレイヤーの攻撃→敵の判定
+    /// <summary>
+	/// プレイヤーの攻撃ヒット判定とダメージ処理の実行
 	/// </summary>
-	/// <param name="attackHitBox攻撃ヒットボックスparam>
-	/// <param name="hitList">ヒットリスト</param>
-	/// <param name="attackPower">攻撃力</param>
-	/// <param name="attackDir">向いている方向</param>
+	/// <param name="attackHitBox">プレイヤーの攻撃判定用ボックス</param>
+	/// <param name="hitList">既にヒット済みの敵を重複ヒット防止のために格納するリスト</param>
+	/// <param name="attackPower">敵に与えるダメージ量</param>
+	/// <param name="attackDir">攻撃の向き（1.0f または -1.0f。ノックバック方向に使用）</param>
 	void CheckPlayerAttackToEnemies(const HitBox& attackHitBox, std::vector<EnemyBase*>& hitList, int attackPower, float attackDir);
 
 private:

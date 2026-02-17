@@ -4,20 +4,25 @@
 class Player;
 namespace MyEngine {
 /// <summary>
-/// UI
+/// ゲームの進行状況やプレイヤーのステータスを視覚的にフィードバックする。
+/// 情報の可視化 : プレイヤーの現在HPやスキルのクールタイム（UpdateAbilityCoolTime）を、スプライトのスケールや色の変化として描画する。
+///システム状態の同期 : ポーズ画面（isPaused_）やタイトル確認（isBackTitleChecked_）の状態に応じて、メニュー項目やカーソル位置を動的に更新する。
+/// デバイス抽象化の補助 : キーボードとゲームパッド（keyCTRLSprite_ /
+/// padCTRLSprite_）の操作ガイドを動的に切り替え、ユーザーに適切な操作方法を提示する。
+/// GameConfigManagerとの連携 : 外部設定に基づいたUIの配置やパラメータの適用。
 /// </summary>
 class GameConfigManager;
 class UI {
 public:
 
-	/// <summary>
-	/// 初期化
+    /// <summary>
+	/// UIの初期化
 	/// </summary>
-	/// <param name="player">プレイヤー</param>
+	/// <param name="player">HP等のステータスを参照するためのプレイヤーオブジェクト</param>
 	void Initialize(::Player* player);
 
 	/// <summary>
-	/// 更新
+	/// UI全体の更新。入力デバイスの検知（キーボード/パッド）や、HP・アビリティのゲージ計算を行う。
 	/// </summary>
 	void Update();
 
@@ -27,32 +32,42 @@ public:
 	void Draw();
 
 	/// <summary>
-	/// リセット処理
+	/// スプライトの再配置とタイマーのリセット。シーンのリトライ時などに呼び出す。
 	/// </summary>
 	void Reset();
 
 	/// <summary>
-	/// ポーズ中かを取得
+	/// ポーズメニューの表示状態を設定
 	/// </summary>
+	/// <param name="pause">trueを指定するとゲーム画面を暗転させ、メニュー項目を表示する</param>
 	void SetPause(bool pause) { isPaused_ = pause; }
 
 	/// <summary>
-	/// タイトルへ本当に戻るかのチェック中かを取得
+	/// タイトル確認画面の表示設定
 	/// </summary>
+	/// <param name="check">確認ダイアログを表示するなら true</param>
 	void SetBackTitleCheck(bool check) { isBackTitleChecked_ = check; }
 
+    /// <summary>
+	/// ポーズメニューの選択インデックス設定
+	/// </summary>
+	/// <param name="index">選択中の項目の番号</param>
 	void SetPauseSelectIndex(int32_t index) { pauseSelectIndex_ = index; }
 
+	/// <summary>
+	/// タイトル確認画面の選択インデックス設定
+	/// </summary>
+	/// <param name="index">選択中の項目の番号</param>
 	void SetCheckBackTitleIndex(int32_t index) { checkBackTitleIndex_ = index; }
 private:
 
 	/// <summary>
-	/// HPバーの更新
+	/// HPバーの長さをプレイヤーの現在HP/最大HPの割合に応じてスケーリングする。
 	/// </summary>
 	void UpdateHPBar();
 
 	/// <summary>
-	/// アビリティアイコンの更新
+	/// ダッシュや必殺技のクールタイムを監視し、使用不可時のアイコンの暗転（シャドウ表示）を更新する。
 	/// </summary>
 	void UpdateAbilityCoolTime();
 

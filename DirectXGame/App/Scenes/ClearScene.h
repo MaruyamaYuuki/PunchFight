@@ -1,21 +1,26 @@
 #pragma once
 #include "KamataEngine.h"
-#include "../Objects/Player.h"
+#include "BaseScene.h"
+#include "../Objects/Player/Player.h"
 
 /// <summary>
-/// クリアシーン
+/// ゲームクリア時のリザルト表示と、報酬演出の提供。
+/// ステージクリアを称えるテキスト（clearTextTexture_）の拡大・演出処理。
+/// プレイヤーキャラクターの勝利ポーズや特定の待機アニメーションの表示管理。
+/// 演出完了後の入力待ち状態の制御と、タイトルシーンへ戻るためのフェードアウト処理。
+/// 一定時間の待機フェーズ（Phase::kWaite）による、クリアの余韻を作るためのシーケンス管理。
 /// </summary>
 
 namespace MyEngine {
     class Fade;
     class GameConfigManager;
 }
-class ClearScene {
+class ClearScene : public BaseScene {
 	/// <summary>
 	/// クリアシーンの進行状態
 	/// </summary>
 	enum class Phase { 
-		kWaite, 
+		kWait, 
 		kPlay,
 		kFadeOut 
 	};
@@ -32,50 +37,56 @@ public:
 	~ClearScene();
 
 	/// <summary>
-	/// 初期化
+	/// シーンの初期化。勝利ポーズ用のプレイヤーモデル生成やクリア演出用タイマーのリセットを行う。
 	/// </summary>
-	void Initialize();
+	void Initialize() override;
 
 	/// <summary>
 	/// 更新
 	/// </summary>
-	void Update();
+	void Update() override;
 
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw();
+	void Draw() override;
 
 	/// <summary>
 	/// ゲームシーンの終了判定
 	/// </summary>
 	/// <returns>終了していれば true、進行中であれば false を返す。</returns>
-	bool IsFinished() const { return isFinished_; }
+	bool IsFinished() const override { return isFinished_; }
+
+    /// <summary>
+	/// 次の遷移先シーンを取得する
+	/// </summary>
+	/// <returns>タイトルへ戻るフラグが立っていれば kTitle</returns>
+	int GetNextScene() const override;
 
 private:
 
 	/// <summary>
-	/// 待機フェースの更新
+	/// クリア直後の演出待機フェーズ。一定時間経過後にテキスト演出を開始する。
 	/// </summary>
 	void UpdateWait();
 
 	/// <summary>
-	/// プレイフェースの更新
+	/// メインの演出フェーズ。クリアテキストの表示やプレイヤーのアニメーションを行う。
 	/// </summary>
 	void UpdatePlay();
 
 	/// <summary>
-	/// クリアテキストの更新
+	/// 「CLEAR」ロゴの拡大・バウンド等の視覚効果アニメーション。
 	/// </summary>
 	void UpdateClearText();
 
 	/// <summary>
-	/// 入力処理の更新
+	/// 演出完了後のユーザー入力を監視。ボタン入力によりフェードアウトへ遷移させる。
 	/// </summary>
 	void UpdateInput();
 
 	/// <summary>
-	/// フェードアウトフェーズの更新
+	/// タイトルシーン等へ戻る際の暗転（フェードアウト）処理。
 	/// </summary>
 	void UpdateFadeOut();
 

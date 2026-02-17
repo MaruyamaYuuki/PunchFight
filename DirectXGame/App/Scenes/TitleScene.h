@@ -1,16 +1,21 @@
 #pragma once
 #include "KamataEngine.h"
+#include "BaseScene.h"
 #include "../../Engine/Math/WorldTransformEx.h"
 
 /// <summary>
-/// タイトルシーン
+/// ゲーム起動時のエントリーポイントおよび待機画面の制御。
+/// タイトルロゴ、背景、および操作ガイド（ "Start"など）の描画管理。
+/// ロゴの拡大アニメーションや、ボタン入力待ちの点滅演出（SpriteFlashUpdate）の制御。
+/// 背景のループスクロール処理による動的な視覚演出の実行。
+/// ユーザーの開始入力を検知し、フェードアウト演出を経てメインゲームへの遷移フラグ（isFinished_）を管理する。
 /// </summary>
 
 namespace MyEngine {
     class Fade;
     class GameConfigManager;
 }
-class TitleScene {
+class TitleScene : public BaseScene {
 public:
 	/// <summary>
 	/// コンストラクタ
@@ -23,19 +28,19 @@ public:
 	~TitleScene();
 
 	/// <summary>
-	/// 初期化
+	/// シーンの初期化。各種スプライト、カメラ、演出用タイマーの設定を行う。
 	/// </summary>
-	void Initialize();
+	void Initialize() override;
 
 	/// <summary>
 	/// 更新
 	/// </summary>
-	void Update();
+	void Update() override;
 
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw();
+	void Draw() override;
 
 	/// <summary>
 	/// ゲーム開始時のタイトルロゴのアニメーション処理
@@ -43,7 +48,7 @@ public:
 	void TitleAnimation();
 
 	/// <summary>
-	/// タイトルロゴ点滅処理
+	/// 「PRESS START」等のガイド表示の点滅制御。
 	/// </summary>
 	void SpriteFlashUpdate();
 
@@ -51,7 +56,13 @@ public:
 	/// タイトルシーンの終了判定
 	/// </summary>
 	/// <returns>終了していれば true、進行中であれば false を返す。</returns>
-	bool IsFinished() { return isFinished_; }
+	bool IsFinished() const override { return isFinished_; }
+
+    /// <summary>
+	/// 次の遷移先シーンを取得する
+	/// </summary>
+	/// <returns>ゲームへ行くフラグが立っていれば kGame</returns>
+	int GetNextScene() const override;
 
 private:
 	XINPUT_STATE state_, preState_;

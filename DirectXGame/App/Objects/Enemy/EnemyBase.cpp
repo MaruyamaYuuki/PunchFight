@@ -223,9 +223,8 @@ void EnemyBase::MoveTowardPlayer(const Vector3& playerPos, const std::vector<std
 	}
 
 	// 移動
-	float moveSpeed = 0.025f;
-	worldTransform_.translation_.x += toPlayer.x * moveSpeed;
-	worldTransform_.translation_.z += toPlayer.z * moveSpeed;
+	worldTransform_.translation_.x += toPlayer.x * speed_;
+	worldTransform_.translation_.z += toPlayer.z * speed_;
 
 	// 向き
 	if (moveDir.x > 0.01f) facingDir_ = 1.0f;
@@ -332,5 +331,26 @@ void EnemyBase::UpdateTextures() {
 	case EnemyState::Dead:
 			textureHandle_ = (facingDir_ > 0) ? RStunTexture_ : LStunTexture_;
 		break;
+	}
+}
+
+bool EnemyBase::IsMovementInterrupted() const {
+	// 基本ルール：ノックバック中、スタン中、死亡時は動きを止める
+	return isKnockBack_ || isStun_ || hp_ <= 0;
+}
+
+void EnemyBase::UpdateBasicState() {
+	// 共通のステータス更新処理
+	if (isKnockBack_)
+		state_ = EnemyState::Knockback;
+	else if (hp_ <= 0)
+		state_ = EnemyState::Dead;
+	else if (isStun_)
+		state_ = EnemyState::Stunned;
+
+	if (isKnockBack_ || isStun_ || hp_ <= 0) {
+		isAttackMode_ = false;
+		isAttacking_ = false;
+		attackHitBox_.active = false;
 	}
 }

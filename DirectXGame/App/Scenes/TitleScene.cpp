@@ -1,4 +1,5 @@
 #include "TitleScene.h"
+#include "SceneManager.h"
 #include "../../Engine/Math/Easing.h"
 #include "../../Engine/Rendering/Fade.h"
 #include "../../Engine/Utility/GameConfigManager.h"
@@ -228,4 +229,9 @@ void TitleScene::SpriteFlashUpdate() {
 	} else {
 		startSprite_->SetColor({1.0f, 1.0f, 1.0f, 0.0f});
 	}
+}
+
+int TitleScene::GetNextScene() const {
+	// 次はGameSceneへ行くことをマネージャーに伝える
+	return static_cast<int>(SceneManager::SceneType::kGame);
 }

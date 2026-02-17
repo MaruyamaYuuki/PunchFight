@@ -32,7 +32,11 @@ struct EnemyArea {
 };
 
 /// <summary>
-/// 敵の管理
+/// 敵キャラクター全体の一括管理と制御。
+/// 全エネミーオブジェクトの生成・破棄（ライフサイクル）の管理。
+/// エネミーとプレイヤー、またはエリア判定との衝突検知の仲介。
+/// エリアごとの敵生存数の監視と、エリアクリアフラグの更新。
+/// ポリモーフィズムを利用した、基底クラスポインタによる一括更新・描画の実行。
 /// </summary>
 namespace MyEngine {
     class GameConfigManager;
@@ -87,8 +91,8 @@ public:
 	/// <summary>
 	/// エリア内にいる敵の全滅判定
 	/// </summary>
-	/// <param name="areaIndex">エリア番号</param>
-	/// <returns></returns>
+	/// <param name="areaIndex">判定対象のエリア番号</param>
+	/// <returns>エリア内の全ての敵（SpawnTrigger）が出現し、かつ撃破されていれば true</returns>
 	bool IsAreaCleared(int32_t areaIndex) const;
 
 	/// <summary>
@@ -99,13 +103,19 @@ public:
 
 private:
 	/// <summary>
-	/// 敵の出現情報を設定する
+	/// 敵キャラクターの動的生成
 	/// </summary>
-	/// <param name="type">敵の種類</param>
-	/// <param name="pos">出現座標</param>
+	/// <param name="type">生成する敵の種類（Normal/Power）</param>
+	/// <param name="pos">生成時のワールド座標</param>
 	void SpawnEnemy(EnemyType type, const KamataEngine::Vector3& pos);
 
 
+	/// <summary>
+	/// Zソートされた敵リストの取得
+	/// </summary>
+	/// <param name="playerPos">プレイヤーの現在座標（前後判定の基準）</param>
+	/// <param name="backSide">プレイヤーより奥の敵を取得する場合は true、手前の場合は false</param>
+	/// <returns>指定された条件でソートされた敵ポインタのリスト</returns>
 	std::vector<EnemyBase*> GetEnemiesSortedByZ(const KamataEngine::Vector3& playerPos, bool backSide);
 
 private:

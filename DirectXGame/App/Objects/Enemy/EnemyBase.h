@@ -31,7 +31,11 @@ enum class EnemyState {
 };
 
 /// <summary>
-/// 敵の基盤
+/// 全エネミーの共通インターフェースおよび共通ロジックの提供。
+/// HP、座標、速度などの共通ステータスの保持。
+/// 被弾時のダメージ計算、ノックバック物理、スタン状態の処理。
+/// 派生クラスが実装すべき「攻撃AI」等の純粋仮想関数の定義。
+/// 共通の描画処理（Zソート対応の描画パス）の実行。
 /// </summary>
 namespace MyEngine {
     class GameConfigManager;
@@ -54,10 +58,10 @@ public:
 	/// <param name="data">敵の情報</param>
 	virtual void Initialize(const EnemyData& data);
 
-	/// <summary>
-	/// 更新
+	/// 更新処理
 	/// </summary>
-	/// <param name="playerPos">プレイヤーの座標</param>
+	/// <param name="playerPos">プレイヤーの座標（追従対象）</param>
+	/// <param name="allEnemies">全エネミーのリスト（他の敵との重なり回避計算に使用）</param>
 	virtual void Update(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies);
 
 	/// <summary>
@@ -97,16 +101,16 @@ public:
 	/// <returns>敵の攻撃力</returns>
 	int32_t GetAttackPower() const { return attackPower_; }
 
-	/// <summary>
+    /// <summary>
 	/// 敵の座標を取得する
 	/// </summary>
-	/// <returns></returns>
+	/// <returns>現在のワールド座標（translation）</returns>
 	KamataEngine::Vector3 GetPosition() const { return worldTransform_.translation_; }
 
 	/// <summary>
 	/// 敵のHPを取得する
 	/// </summary>
-	/// <returns></returns>
+	/// <returns>現在のヒットポイント残り合計値</returns>
 	int32_t GetHP() const { return hp_; }
 
 	/// <summary>
@@ -183,12 +187,28 @@ protected:
 	/// <param name="playerPos">プレイヤーの座標</param>
 	virtual void AttackProcess(const KamataEngine::Vector3& playerPos) = 0;
 
+
+	// <summary>
+	/// 基本的な近接攻撃の実行
+	/// </summary>
+	/// <param name="playerPos">攻撃対象であるプレイヤーの現在座標</param>
 	void DoNormalAttack(const KamataEngine::Vector3& playerPos);
 
 	/// <summary>
 	/// テクスチャの更新
 	/// </summary>
 	virtual void UpdateTextures();
+
+	/// <summary>
+	/// 動きを止めるべき状態かどうかを判定する仮想関数
+	/// </summary>
+	/// <returns>基本ルール：ノックバック中、スタン中、死亡時は0を返す</returns>
+	virtual bool IsMovementInterrupted() const;
+
+	/// <summary>
+	/// 状態を自動で更新するヘルパー関数
+	/// </summary>
+	void UpdateBasicState();
 
 protected:
 	MyEngine::GameConfigManager* cfg_ = nullptr;

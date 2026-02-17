@@ -1,12 +1,17 @@
 #pragma once
 
 #include "KamataEngine.h"
-#include "../../Engine/Math/WorldTransformEx.h"
-#include "../../Engine//Math/Collider.h"
-#include "../../Engine/Particle/SmokeParticleManager.h"
+#include "PlayerInputController.h"
+#include "../../../Engine/Math/WorldTransformEx.h"
+#include "../../../Engine//Math/Collider.h"
+#include "../../../Engine/Particle/SmokeParticleManager.h"
 
 /// <summary>
-/// プレイヤー
+/// ユーザー操作による自キャラクターの制御と状態管理。
+/// 入力デバイス（キーボード /ゲームパッド）からの入力を受け取り、移動や攻撃アクションへ変換する。
+/// 攻撃アニメーションのステート（状態）管理。
+/// 自身の当たり判定（攻撃用・被弾用）の更新と、カメラに対する位置情報の提供。
+/// プレイヤー固有の特殊アクション（回避、必殺技など）のロジック実行。
 /// </summary>
 namespace MyEngine {
     class GameConfigManager;
@@ -18,10 +23,10 @@ public:
 	/// </summary>
 	~Player() = default;
 
-	/// <summary>
-	/// 初期化
 	/// </summary>
-	/// <param name="model"></param>
+	/// <param name="model">通常時（プレイヤー本体）のモデル</param>
+	/// <param name="modelSP">強攻撃演出用の特殊モデル</param>
+	/// <param name="modelBox">デバッグ用ヒットボックス表示モデル</param>
 	void Initialize(KamataEngine::Model* model, KamataEngine::Model* modelSP, KamataEngine::Model* modelBox);
 
 	/// <summary>
@@ -72,7 +77,7 @@ public:
 	/// <summary>
 	/// プレイヤーのHPを取得する
 	/// </summary>
-	/// <returns></returns>
+	/// <returns>現在の体力値（0以下で死亡状態へ遷移）</returns>
 	int32_t GetHP() const { return HP_; }
 
 	/// <summary>
@@ -165,6 +170,10 @@ public:
 	/// <returns>強攻撃のクールタイムの最大値</returns>
 	float GetSPAttackCooldownMax() const { return spAttackCoolDown_; }
 
+	/// <summary>
+	/// 強攻撃（スペシャル）が実行された瞬間の判定
+	/// </summary>
+	/// <returns>このフレームで強攻撃を発動した直後なら true</returns>
 	bool DidSpecialAttack() const { return justSpecialAttacked_; }
 
 	/// <summary>
@@ -186,46 +195,68 @@ public:
 	void SetRotateX(float rotX) { worldTransform_.rotation_.x = rotX; }
 
 	/// <summary>
-	/// クリアシーンでのアニメーション
+	/// クリアシーン用の演出アニメーション制御
 	/// </summary>
-	/// <param name="isSpot">スポットライト</param>
 	void ClearAnimation();
 
 private:
 	/// <summary>
-	/// 移動
+	/// 入力に基づいた移動計算（通常移動、ステップ）の実行
 	/// </summary>
-	void Move();
+	void Move(const PlayerCommand& cmd);
+
+	void ApplyStepMovement();
+
+	void ApplyNormalMovement();
+
+	void ConstrainPosition();
+
+	void UpdateMoveEffects();
+
+	void UpdateAnimationFrames();
 
 	/// <summary>
-	/// 攻撃
+	/// 通常攻撃（コンボパンチ）の入力受付とステート遷移
 	/// </summary>
 	void Attack();
 
 	/// <summary>
-	/// 攻撃の更新
+	/// 通常攻撃のタイマー更新とヒットボックスの有効化制御
 	/// </summary>
 	void AttackUpdate();
 
 	/// <summary>
-	/// 強攻撃
+	/// 強攻撃（遠距離/突進攻撃）の発動制御
 	/// </summary>
 	void SpecialAttack();
 
 	/// <summary>
-	/// 強攻撃の更新
+	/// 強攻撃のアニメーション進行と移動、エフェクト発生の更新
 	/// </summary>
 	void SpecialAttackUpdate();
 
 	/// <summary>
-	/// テクスチャの更新
+	/// 現在の状態（移動・攻撃・ダメージ）に応じた描画テクスチャの切り替え
 	/// </summary>
 	void TextureUpdate();
+
+	void ApplyMovementTexture();
+
+	void ApplyStepTexture();
+
+	void ApplyAttackTexture();
+
+	void ApplyDeathTexture();
+
+	void ApplyVictoryTexture();
+
+	void ApplyCommand(const PlayerCommand& cmd);
 
 private:
 	KamataEngine::Input* input_ = nullptr;
 	KamataEngine::Audio* audio_ = nullptr;
 	MyEngine::GameConfigManager* cfg_ = nullptr;
+	std::unique_ptr<PlayerInputController> inputController_;
 
 	MyEngine::WorldTransformEx worldTransform_;
 	MyEngine::WorldTransformEx worldTransformSP_;
@@ -282,6 +313,10 @@ private:
 	int32_t walkFrame_ = 0;         // 0〜3でループ
 	int32_t walkFrameTimer_ = 0;    // テクスチャ切替タイマー
 	int32_t walkFrameInterval_; // 何フレームごとに切り替えるか
+	// 移動限界座標
+	float startMoveLimitX = 3.0f;
+	float moveLimitZ = 3.5f;
+	float minMoveLimitZ = 2.5f;
 
 	// --- ステップ関連 ---
     bool isStepping_ = false;

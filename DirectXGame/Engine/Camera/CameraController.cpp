@@ -1,6 +1,6 @@
 #define NOMINMAX
 #include "CameraController.h"
-#include "../../App/Objects/Player.h"
+#include "../../App/Objects/Player/Player.h"
 #include "../Math/WorldTransformEx.h"
 #include <algorithm>
 
@@ -19,7 +19,6 @@ void CameraController::Update() {
 	}
 
 	const WorldTransform& targetWT = target_->GetWorldTransform();
-	//const Vector3& targetVelocity = target_->GetVelocity();
 
     // ===== 基本追従位置 =====
 	Vector3 followPos;

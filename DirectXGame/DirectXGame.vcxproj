@@ -168,13 +168,14 @@
     <ClCompile Include="Engine\Math\WorldTransformEx.cpp" />
     <ClCompile Include="Engine\Rendering\Fade.cpp" />
     <ClCompile Include="App\Objects\Stage.cpp" />
-    <ClCompile Include="App\Objects\Player.cpp" />
+    <ClCompile Include="App\Objects\PLayer\Player.cpp" />
     <ClCompile Include="App\Objects\StageManager.cpp" />
     <ClCompile Include="Engine\Rendering\UI.cpp" />
     <ClCompile Include="Engine\Particle\SmokeParticleManager.cpp" />
     <ClCompile Include="Engine\Utility\GameConfigManager.cpp" />
     <ClCompile Include="Engine\Particle\SmokeParticle.cpp" />
     <ClCompile Include="Engine\Particle\ParticleManager.cpp" />
+    <ClCompile Include="App\Scenes\SceneManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
@@ -279,6 +280,7 @@
     <ClInclude Include="App\Objects\Enemy\NormalEnemy.h" />
     <ClInclude Include="App\Objects\Enemy\PowerEnemy.h" />
     <ClInclude Include="App\Scenes\ClearScene.h" />
+    <ClInclude Include="App\Scenes\BaseScene.h" />
     <ClInclude Include="Engine\Particle\DustParticleManager.h" />
     <ClInclude Include="Engine\Particle\DustParticle.h" />
     <ClInclude Include="Engine\Math\Collision.h" />
@@ -292,7 +294,7 @@
     <ClInclude Include="Engine\Math\WorldTransformEx.h" />
     <ClInclude Include="Engine\Rendering\Fade.h" />
     <ClInclude Include="App\Objects\Stage.h" />
-    <ClInclude Include="App\Objects\Player.h" />
+    <ClInclude Include="App\Objects\PLayer\Player.h" />
     <ClInclude Include="App\Objects\StageManager.h" />
     <ClInclude Include="Engine\Rendering\UI.h" />
     <ClInclude Include="Engine\Particle\SmokeParticle.h" />
@@ -300,6 +302,9 @@
     <ClInclude Include="Engine\Utility\GameConfigManager.h" />
     <ClInclude Include="Engine\Particle\Particle.h" />
     <ClInclude Include="Engine\Particle\ParticleManager.h" />
+    <ClInclude Include="App\Scenes\SceneManager.h" />
+    <ClInclude Include="App\Objects\PLayer\PlayerStructs.h" />
+    <ClInclude Include="App\Objects\PLayer\PlayerInputController.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Engine\Core\IconResource.rc" />

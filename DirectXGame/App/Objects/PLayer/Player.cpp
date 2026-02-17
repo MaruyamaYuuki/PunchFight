@@ -2,7 +2,7 @@
 #include "Player.h"
 #include <cassert>
 #include <algorithm>
-#include "../../Engine/Utility/GameConfigManager.h"
+#include "../../../Engine/Utility/GameConfigManager.h"
 
 using namespace KamataEngine;
 using namespace KamataEngine::MathUtility;
@@ -43,6 +43,9 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 	moveSpeed_ = cfg_->getFloat("Player.kMoveSpeed");
 	walkFrameInterval_ = cfg_->getInt("Player.kWalkFrameInterval");
 	playerHitBox_.size = cfg_->getVector3("Player.kHitBoxSize");
+	startMoveLimitX = cfg_->getFloat("Player.kStartMoveLimitX");
+	moveLimitZ = cfg_->getFloat("Player.kMoveLimitZ");
+	minMoveLimitZ = cfg_->getFloat("Player.kMinMoveLimitZ");
 
 	stepCooldown_ = cfg_->getInt("Player.Step.kStepCoolDown");
 	stepPower_ = cfg_->getFloat("Player.Step.kStepPower");
@@ -101,11 +104,10 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 }
 
 void Player::Update() {
-
-	DebugText::GetInstance()->ConsolePrintf("Player HP: %d\n", HP_);
+	PlayerCommand cmd = inputController_->GetCommand();
 
 	if (HP_ > 0){
-    	Move();
+    	Move(cmd);
 
     	// 攻撃入力チェック
     	if (input_->TriggerKey(DIK_J)) { // Jキーでパンチ
@@ -170,36 +172,20 @@ void Player::Draw(Camera& camera) {
 
 void Player::ClearAnimation() {
 	const float targetX = 0.0f;
+	PlayerCommand autoCmd;
 
-	// ===== ゴールまで自動移動 =====
+	// ===== ゴールまでの移動ロジック =====
 	if (!isGoal_) {
 		if (worldTransform_.translation_.x < targetX) {
-			move_.x = 1.0f;
+			autoCmd.moveDirection.x = 1.0f;
 		} else {
-			move_.x = 0.0f;
 			isGoal_ = true;
-
-			// ★ ゴール到達時に待ち時間をセット
-			poseWaitTimer_ = 2.0f; // ← 好きな秒数
+			// ゴール到達時に待ち時間をセット
+			poseWaitTimer_ = 2.0f;
 		}
-
-		// 正規化
-		if (move_.x != 0.0f || move_.z != 0.0f) {
-			float length = std::sqrt(move_.x * move_.x + move_.z * move_.z);
-			move_.x /= length;
-			move_.z /= length;
-		}
-
-		// 向き
-		if (move_.x > 0.0f)
-			facingDir_ = 1.0f;
-		if (move_.x < 0.0f)
-			facingDir_ = -1.0f;
-
-		worldTransform_.translation_.x += move_.x * moveSpeed_;
 	} else {
 		// ===== ゴール後：数秒待ってポーズ =====
-		move_.x = 0.0f;
+		autoCmd.moveDirection = {0, 0, 0};
 
 		if (!isVictory_) {
 			poseWaitTimer_ -= deltaTime_;
@@ -209,19 +195,8 @@ void Player::ClearAnimation() {
 		}
 	}
 
-	// ===== 歩行アニメ =====
-	bool isMoving = (move_.x != 0.0f || move_.z != 0.0f);
-
-	if (isMoving && !isStepping_ && !isNormalAttacking_ && HP_ > 0 && !isVictory_) {
-		walkFrameTimer_++;
-		if (walkFrameTimer_ >= walkFrameInterval_) {
-			walkFrameTimer_ = 0;
-			walkFrame_ = (walkFrame_ + 1) % 4;
-		}
-	} else {
-		walkFrame_ = 0;
-		walkFrameTimer_ = 0;
-	}
+	// ===== 共通関数を呼ぶ =====
+	Move(autoCmd);
 
 	TextureUpdate();
 	worldTransform_.UpdateMatrix();
@@ -229,102 +204,76 @@ void Player::ClearAnimation() {
 
 
 
-void Player::Move() {
-	// 攻撃中なら移動をキャンセル
-	if (isNormalAttacking_) {
+void Player::Move(const PlayerCommand& cmd) {
+	// 移動不可フラグのチェック
+	if (!isGoal_ && (isNormalAttacking_ || HP_ <= 0))
 		return;
-	}
 
-	move_ = {0, 0, 0};
+	// 入力コマンドを反映
+	ApplyCommand(cmd);
 
-	// 入力処理
-	if (input_->PushKey(DIK_W))
-		move_.z += 1.0f;
-	if (input_->PushKey(DIK_S))
-		move_.z -= 1.0f;
-	if (input_->PushKey(DIK_A))
-		move_.x -= 1.0f;
-	if (input_->PushKey(DIK_D))
-		move_.x += 1.0f;
-
-	// ベクトル正規化
-	if (move_.x != 0.0f || move_.z != 0.0f) {
-		float length = std::sqrt(move_.x * move_.x + move_.z * move_.z);
-		move_.x /= length;
-		move_.z /= length;
-
-        // 一定間隔でパーティクル生成
-		trailSpawnTimer_ -= deltaTime_;
-		if (trailSpawnTimer_ <= 0.0f) {
-			trailSpawnTimer_ = trailSpawnInterval_; // 例: 0.05f
-
-			if (smokeManager_) {
-				Vector3 pos = worldTransform_.translation_;
-				pos.y -= 0.4f; // 足元に出す場合
-				smokeManager_->SetTexture(smokeTexture_);
-				smokeManager_->Spawn(pos, smokeSize_);
-			}
-		}
-	}
-
-	// 向き更新（X方向に移動した場合のみ）
-	if (move_.x > 0.0f)
-		facingDir_ = 1.0f;
-	if (move_.x < 0.0f)
-		facingDir_ = -1.0f;
-
-	// クールタイム減少
-	if (stepTimer_ > 0)
-		stepTimer_--;
-
-	// ステップ開始判定
-	if (stepTimer_ <= 0 && input_->TriggerKey(DIK_H) && (move_.x != 0.0f || move_.z != 0.0f)) {
-		isStepping_ = true;
-		stepDirection_ = move_;
-		stepTimer_ = stepCooldown_; // クールタイム開始
-		stepFrame_ = 10;            // ステップ継続フレーム数
-	}
-
-	// ステップ中の処理
+	// 通常移動またはステップの座標反映
 	if (isStepping_) {
-		float stepSpeed = moveSpeed_ * stepPower_;
-		worldTransform_.translation_.x += stepDirection_.x * stepSpeed;
-		worldTransform_.translation_.z += stepDirection_.z * stepSpeed;
-
-		stepFrame_--;
-		if (stepFrame_ <= 0) {
-			isStepping_ = false;
-		}
-		return; // ステップ中は通常移動を無効化
+		ApplyStepMovement();
+	} else {
+		ApplyNormalMovement();
 	}
 
-	// 通常移動
+	// 仕上げ（制限、エフェクト、アニメ）
+	ConstrainPosition();
+	UpdateMoveEffects();
+	UpdateAnimationFrames();
+}
+
+void Player::ApplyStepMovement() {
+	float stepSpeed = moveSpeed_ * stepPower_;
+	worldTransform_.translation_.x += stepDirection_.x * stepSpeed;
+	worldTransform_.translation_.z += stepDirection_.z * stepSpeed;
+
+	stepFrame_--;
+	if (stepFrame_ <= 0) {
+		isStepping_ = false;
+	}
+}
+
+void Player::ApplyNormalMovement() {
 	worldTransform_.translation_.x += move_.x * moveSpeed_;
 	worldTransform_.translation_.z += move_.z * moveSpeed_;
+}
 
-	// 移動限界座標
-	const float kStartMoveLimitX = 3.0f;
-	const float kMoveLimitZ = 3.5f;
-	const float kMinMoveLimitZ = 2.5f;
+void Player::ConstrainPosition() {
+	worldTransform_.translation_.x = std::clamp(worldTransform_.translation_.x, -startMoveLimitX, endMoveLimitX_);
+	worldTransform_.translation_.z = std::clamp(worldTransform_.translation_.z, -moveLimitZ, minMoveLimitZ);
+}
 
-	// 範囲を越えない処理
-	worldTransform_.translation_.x = std::max(worldTransform_.translation_.x, -kStartMoveLimitX);
-	worldTransform_.translation_.x = std::min(worldTransform_.translation_.x, +endMoveLimitX_);
-	worldTransform_.translation_.z = std::max(worldTransform_.translation_.z, -kMoveLimitZ);
-	worldTransform_.translation_.z = std::min(worldTransform_.translation_.z, +kMinMoveLimitZ);
+void Player::UpdateMoveEffects() {
+	// 移動していないなら何もしない
+	if (move_.x == 0.0f && move_.z == 0.0f)
+		return;
 
+	trailSpawnTimer_ -= deltaTime_;
+	if (trailSpawnTimer_ <= 0.0f) {
+		trailSpawnTimer_ = trailSpawnInterval_;
+
+		if (smokeManager_) {
+			Vector3 pos = worldTransform_.translation_;
+			pos.y -= 0.4f;
+			smokeManager_->SetTexture(smokeTexture_);
+			smokeManager_->Spawn(pos, smokeSize_);
+		}
+	}
+}
+
+void Player::UpdateAnimationFrames() {
 	bool isMoving = (move_.x != 0.0f || move_.z != 0.0f);
 
-	// 歩行アニメ進行
 	if (isMoving && !isStepping_ && !isNormalAttacking_ && HP_ > 0) {
 		walkFrameTimer_++;
-
 		if (walkFrameTimer_ >= walkFrameInterval_) {
 			walkFrameTimer_ = 0;
-			walkFrame_ = (walkFrame_ + 1) % 4; // 4枚ループ
+			walkFrame_ = (walkFrame_ + 1) % 4;
 		}
 	} else {
-		// 止まったらフレームリセットしてもOK（お好み）
 		walkFrame_ = 0;
 		walkFrameTimer_ = 0;
 	}
@@ -441,39 +390,32 @@ void Player::SpecialAttackUpdate() {
 }
 
 
-void Player::TextureUpdate() {	
-	bool isMoving = (move_.x != 0.0f || move_.z != 0.0f);
-	// 勝利ポーズ
+void Player::TextureUpdate() {
+	// 優先順位が高い順に判定し、確定したら return する
 	if (isVictory_) {
-		textureHandle_ = RUppercutTexture_;
-	}
-	// 攻撃
-	else if (isNormalAttacking_) {
-		if (nAttackFromRight_) {
-			textureHandle_ = (facingDir_ > 0) ? RRightPunchTexture_ : LRightPunchTexture_;
-		} else {
-			textureHandle_ = (facingDir_ > 0) ? RLeftPunchTexture_ : LLeftPunchTexture_;
-		}
-	}  
-	// ダウン
-	else if (HP_ <= 0) {
-		knockDownTimer_ -= deltaTime_;
-		if (knockDownTimer_ <= 0) {
-			isDead_ = true;
-		} else if (knockDownTimer_ <= 1.0f) {
-			textureHandle_ = (facingDir_ > 0) ? RKnockDownTexture_[1] : LKnockDownTexture_[1];
-		} else {
-			textureHandle_ = (facingDir_ > 0) ? RKnockDownTexture_[0] : LKnockDownTexture_[0];
-		}
-
-	} 
-	// ステップ
-	else if (isStepping_) {
-		textureHandle_ = (facingDir_ > 0) ? RRunTexture_[0] : LRunTexture_[0];
+		ApplyVictoryTexture();
 		return;
 	}
-	// 移動
-	else if (isMoving) {
+	if (HP_ <= 0) {
+		ApplyDeathTexture();
+		return;
+	}
+	if (isNormalAttacking_) {
+		ApplyAttackTexture();
+		return;
+	}
+	if (isStepping_) {
+		ApplyStepTexture();
+		return;
+	}
+
+	// それ以外（移動中か待機中）
+	ApplyMovementTexture();
+}
+
+void Player::ApplyMovementTexture() { 
+	bool isMoving = (move_.x != 0.0f || move_.z != 0.0f); 
+	if (isMoving) {
 		// 0,1,2,1 のループを配列で
 		static const int walkPattern[4] = {0, 1, 2, 1};
 
@@ -481,6 +423,64 @@ void Player::TextureUpdate() {
 		textureHandle_ = (facingDir_ > 0) ? RRunTexture_[texIndex] : LRunTexture_[texIndex];
 	} else {
 		textureHandle_ = (facingDir_ > 0) ? RPlayerTexture_ : LPlayerTexture_;
+	}
+}
+
+void Player::ApplyStepTexture() {
+	textureHandle_ = (facingDir_ > 0) ? RRunTexture_[0] : LRunTexture_[0];
+}
+
+void Player::ApplyAttackTexture() {
+	if (nAttackFromRight_) {
+		textureHandle_ = (facingDir_ > 0) ? RRightPunchTexture_ : LRightPunchTexture_;
+	} else {
+		textureHandle_ = (facingDir_ > 0) ? RLeftPunchTexture_ : LLeftPunchTexture_;
+	}
+}
+
+void Player::ApplyDeathTexture() {
+	knockDownTimer_ -= deltaTime_;
+	if (knockDownTimer_ <= 0) {
+		isDead_ = true;
+	} else if (knockDownTimer_ <= 1.0f) {
+		textureHandle_ = (facingDir_ > 0) ? RKnockDownTexture_[1] : LKnockDownTexture_[1];
+	} else {
+		textureHandle_ = (facingDir_ > 0) ? RKnockDownTexture_[0] : LKnockDownTexture_[0];
+	}
+}
+
+void Player::ApplyVictoryTexture() { 
+	textureHandle_ = RUppercutTexture_; 
+}
+
+void Player::ApplyCommand(const PlayerCommand& cmd) {
+	// 1. 移動方向ベクトルのセット
+	move_ = cmd.moveDirection;
+
+	// 2. 移動入力がある場合のみ正規化と向きの更新
+	if (move_.x != 0.0f || move_.z != 0.0f) {
+		float length = std::sqrt(move_.x * move_.x + move_.z * move_.z);
+		move_.x /= length;
+		move_.z /= length;
+
+		// 向きの更新
+		if (move_.x > 0.0f)
+			facingDir_ = 1.0f;
+		else if (move_.x < 0.0f)
+			facingDir_ = -1.0f;
+	}
+
+	// 3. ステップ（回避）の開始判定
+	// クールタイム減少
+	if (stepTimer_ > 0)
+		stepTimer_--;
+
+	// 開始条件：クールタイム終了 且つ ステップボタン 且つ 移動中
+	if (stepTimer_ <= 0 && cmd.doStep && (move_.x != 0.0f || move_.z != 0.0f)) {
+		isStepping_ = true;
+		stepDirection_ = move_; // 現在の移動方向へステップ
+		stepTimer_ = stepCooldown_;
+		stepFrame_ = 10; // 10フレーム継続
 	}
 }
 

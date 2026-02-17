@@ -1,6 +1,7 @@
 #define NOMINMAX
 #include <algorithm>
 #include "ClearScene.h"
+#include "SceneManager.h"
 #include "../../Engine/Rendering/Fade.h"
 #include "../../Engine/Utility/GameConfigManager.h"
 
@@ -47,7 +48,7 @@ void ClearScene::Initialize() {
 
 void ClearScene::Update() {
 	switch (phase_) {
-	case ClearScene::Phase::kWaite:
+	case ClearScene::Phase::kWait:
 		UpdateWait();
 		break;
 	case ClearScene::Phase::kPlay:
@@ -69,7 +70,7 @@ void ClearScene::Draw() {
 
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw();
-	if (phase_ != Phase::kWaite) {
+	if (phase_ != Phase::kWait) {
     	player_->Draw(camera_);
 	}
 	// 3Dオブジェクト描画後処理
@@ -86,6 +87,11 @@ void ClearScene::Draw() {
 	fade_->Draw();
 	// 前景スプライト描画後処理
 	Sprite::PostDraw();
+}
+
+int ClearScene::GetNextScene() const {
+	// 次はTitleSceneへ行くことをマネージャーに伝える
+	return static_cast<int>(SceneManager::SceneType::kTitle);
 }
 
 void ClearScene::UpdateWait() { 

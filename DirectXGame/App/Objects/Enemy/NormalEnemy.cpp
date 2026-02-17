@@ -31,21 +31,9 @@ void NormalEnemy::Initialize(const EnemyData& data) {
 void NormalEnemy::Update(const Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) {
 
     // ===== ノックバック中・スタン中・ノックアウト中は何もしない =====
-	if (isKnockBack_ || isStun_ || hp_ <= 0) {
+	if (IsMovementInterrupted()) {
+		UpdateBasicState();
 		EnemyBase::Update(playerPos, allEnemies);
-		isAttackMode_ = false;
-		isAttacking_ = false;
-		attackHitBox_.active = false;
-		worldTransform_.UpdateMatrix();
-
-		// 状態をDeadまたはKnockbackに設定
-		if (isKnockBack_)
-			state_ = EnemyState::Knockback;
-		else if (hp_ <= 0)
-			state_ = EnemyState::Dead;
-		else if (isStun_)
-			state_ = EnemyState::Stunned;
-
 		return;
 	}
 

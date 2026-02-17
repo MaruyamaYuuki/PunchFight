@@ -66,7 +66,7 @@
     <ClCompile Include="Engine\Rendering\Fade.cpp">
       <Filter>Engine\Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="App\Objects\Player.cpp">
+    <ClCompile Include="App\Objects\PLayer\Player.cpp">
       <Filter>App\Objects</Filter>
     </ClCompile>
     <ClCompile Include="App\Objects\Stage.cpp">
@@ -112,6 +112,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Particle\ParticleManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="App\Scenes\SceneManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -186,7 +189,7 @@
     <ClInclude Include="Engine\Rendering\Fade.h">
       <Filter>Engine\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="App\Objects\Player.h">
+    <ClInclude Include="App\Objects\PLayer\Player.h">
       <Filter>App\Objects</Filter>
     </ClInclude>
     <ClInclude Include="App\Objects\Stage.h">
@@ -241,6 +244,18 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Particle\ParticleManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="App\Scenes\BaseScene.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="App\Scenes\SceneManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="App\Objects\PLayer\PlayerStructs.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="App\Objects\PLayer\PlayerInputController.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
