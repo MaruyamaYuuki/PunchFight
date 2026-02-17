@@ -48,7 +48,7 @@ void ClearScene::Initialize() {
 
 void ClearScene::Update() {
 	switch (phase_) {
-	case ClearScene::Phase::kWaite:
+	case ClearScene::Phase::kWait:
 		UpdateWait();
 		break;
 	case ClearScene::Phase::kPlay:
@@ -70,7 +70,7 @@ void ClearScene::Draw() {
 
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw();
-	if (phase_ != Phase::kWaite) {
+	if (phase_ != Phase::kWait) {
     	player_->Draw(camera_);
 	}
 	// 3Dオブジェクト描画後処理

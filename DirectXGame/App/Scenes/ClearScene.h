@@ -20,7 +20,7 @@ class ClearScene : public BaseScene {
 	/// クリアシーンの進行状態
 	/// </summary>
 	enum class Phase { 
-		kWaite, 
+		kWait, 
 		kPlay,
 		kFadeOut 
 	};
