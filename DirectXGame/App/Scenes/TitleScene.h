@@ -100,6 +100,7 @@ private:
 	bool titleBGMStarted_ = false;
 	float bgmVolume_ ;
 	float seVolume_;
+	float floatingTimer_ = 0.0f;
 
 	KamataEngine::Vector2 titlePos_;
 	KamataEngine::Vector2 titleSize_ ;
@@ -116,6 +117,7 @@ private:
 	float blinkTimer_ = 0.0f;
 	int32_t blinkCount_ = 0;
 	int maxBlinkCount_ ;
+	KamataEngine::Vector2 baseStartSize_;
 	// フェード用
 	std::unique_ptr<MyEngine::Fade> fade_;
 	float fadeTime_;
