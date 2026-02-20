@@ -62,6 +62,8 @@ void TitleScene::Initialize() {
 	prevTime_ = std::chrono::high_resolution_clock::now();
 	waitTimer_ = 0.0f;
 
+	baseStartSize_ = startSprite_->GetSize();
+
 	fade_ = std::make_unique<Fade>();
 	fade_->Initialize();
 	fade_->Start(MyEngine::Fade::Status::FadeOut, fadeTime_);
@@ -80,6 +82,11 @@ void TitleScene::Update() {
 
 		titleBackSprite_[0]->SetPosition({bgPosX_[0], 0.0f});
 		titleBackSprite_[1]->SetPosition({bgPosX_[1], 0.0f});
+
+		// 背景の明るさをサイン波で変える (0.8f〜1.0fの間で変化)
+		float bgBrightness = 0.9f + std::sin(floatingTimer_ * 0.5f) * 0.1f;
+		titleBackSprite_[0]->SetColor({bgBrightness, bgBrightness, bgBrightness, 1.0f});
+		titleBackSprite_[1]->SetColor({bgBrightness, bgBrightness, bgBrightness, 1.0f});
 	}
 
 	TitleAnimation();
@@ -178,6 +185,16 @@ void TitleScene::TitleAnimation() {
 		}
 	}
 	// -------------------------------------
+
+	// タイトルアニメーション終了後、常に実行
+	if (titleAnimeFinished_) {
+		// 時間経過でsin波を作る (0.05fは速度、2.0fは揺れ幅)
+		floatingTimer_ += 0.05f;
+		float offset = std::sin(floatingTimer_) * 5.0f;
+
+		// 元の座標(titlePos_)にオフセットを加える
+		titleSprite_->SetPosition({titlePos_.x, titlePos_.y + offset});
+	}
 }
 
 void TitleScene::SpriteFlashUpdate() {
@@ -220,9 +237,23 @@ void TitleScene::SpriteFlashUpdate() {
 		// ----------------
 
 		else {
-			// 通常の「PRESS START」点滅
+			// 通常の「PRESS START」演出
 			blinkTime_ += 0.03f;
-			float alpha = (std::sin(blinkTime_ - 3.14159265f / 2.0f) + 1.0f) / 2.0f;
+
+			// 1. サイン波の基準値を計算 (共通の波形を使用する)
+			// sinの結果は -1.0 ～ 1.0 なので、+1.0して 0.0 ～ 2.0 に変換
+			float sinValue = std::sin(blinkTime_);
+
+			// 2. アルファ値の計算 (0.0 ～ 1.0)
+			// sinValue が 0.0（元のsinが-1.0）のとき、透明になる
+			float alpha = (sinValue + 1.0f) / 2.0f;
+
+			// 3. 鼓動演出の計算 (0.95 ～ 1.05)
+			// sinValue が 0.0（最小）のとき、倍率は 1.0 + (-0.05) = 0.95 となる
+			float beat = 1.0f + (sinValue * 0.05f);
+
+			// サイズと色を適用
+			startSprite_->SetSize({baseStartSize_.x * beat, baseStartSize_.y * beat});
 			startSprite_->SetColor({1.0f, 1.0f, 1.0f, alpha});
 		}
 

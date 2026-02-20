@@ -117,7 +117,7 @@ private:
 	float waitTimer_ = 2.0f;
 	float deltaTime_ = 1.0f / 60.0f;
 
-	Phase phase_ = Phase::kWaite;
+	Phase phase_ = Phase::kWait;
 
     float clearScale_ = 0.0f;      // 0 → 1 に拡大させる
 	float clearScaleSpeed_ = 2.0f; // 拡大スピード
