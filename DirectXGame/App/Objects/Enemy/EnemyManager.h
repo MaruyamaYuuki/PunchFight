@@ -11,7 +11,7 @@
 /// <summary>
 /// 敵の種類
 /// </summary>
-enum class EnemyType { Normal, Power };
+enum class EnemyType { Normal, Power, Fast };
 
 /// <summary>
 /// 敵の出現トリガー

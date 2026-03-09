@@ -70,69 +70,40 @@ public:
 	/// <param name="camera">カメラ</param>
 	virtual void Draw(KamataEngine::Camera& camera);
 
-	/// <summary>
-	/// 接触判定
-	/// </summary>
-	/// <param name="damage">ダメージ量</param>
-	/// <param name="attackDir">攻撃の方向	</param>
-	virtual void OnHit(int32_t damage, const KamataEngine::Vector3& attackDir);
+	///
+	/// トランスフォーム・移動関連
+	/// 
+	
+	// --- Getter ---
 
 	/// <summary>
-	/// 敵の死亡判定
+	/// 敵の現在座標を取得する
 	/// </summary>
-	/// <returns>死亡していれば true、生存していれば false</returns>
-	bool IsDead() const { return isDead_; }
-
-	/// <summary>
-	/// 敵のヒットボックスを取得する
-	/// </summary>
-	/// <returns>当たり判定の情報（位置・サイズ・有効状態など）</returns>
-	const HitBox& GetHitBox() const { return hitBox_; }
-
-	/// <summary>
-	/// 敵の攻撃のヒットボックスを取得する
-	/// </summary>
-	/// <returns>攻撃判定の情報（位置・サイズ・有効状態など）</returns>
-	const HitBox& GetAttackHitBox() const { return attackHitBox_; }
-
-	/// <summary>
-	/// 攻撃力を取得する
-	/// </summary>
-	/// <returns>敵の攻撃力</returns>
-	int32_t GetAttackPower() const { return attackPower_; }
-
-    /// <summary>
-	/// 敵の座標を取得する
-	/// </summary>
-	/// <returns>現在のワールド座標（translation）</returns>
+	/// <returns>ワールド座標（Vector3）</returns>
 	KamataEngine::Vector3 GetPosition() const { return worldTransform_.translation_; }
 
 	/// <summary>
-	/// 敵のHPを取得する
+	/// 敵の移動スピードを取得する
 	/// </summary>
-	/// <returns>現在のヒットポイント残り合計値</returns>
-	int32_t GetHP() const { return hp_; }
+	/// <returns>移動速度（float）</returns>
+	float GetSpeed() const { return speed_; }
 
 	/// <summary>
-	/// ノックバック判定
+	/// 敵の向いている方向を取得する
 	/// </summary>
-	/// <returns>ノックバックしていれば true、していなければ false</returns>
-	bool IsKnockBack() const { return isKnockBack_; }
+	/// <returns>左なら -1.0f、 右なら 1.0f</returns>
+	float GetFacingDir() const { return facingDir_; }
 
 	/// <summary>
-	/// 攻撃中か判定
+	/// 敵の攻撃方向を取得する
 	/// </summary>
-	/// <returns>攻撃中なら true、してなければ false</returns>
-	bool IsAttacking() const { return attackHitBox_.active; }
+	/// <returns>左なら -1.0f、 右なら 1.0f</returns>
+	float GetAttackDirX() const { return attackDirX_; }
+
+	// --- Setter ---
 
 	/// <summary>
-	/// ダメージを与えるか判定
-	/// </summary>
-	/// <returns>与えるなら true、与えないなら false</returns>
-	bool HasDealtDamage() const { return hasDealtDamage_; }
-
-	/// <summary>
-	/// 敵の座標を設定する
+	/// 敵の座標を直接設定する
 	/// </summary>
 	/// <param name="x">X座標</param>
 	/// <param name="y">Y座標</param>
@@ -142,27 +113,240 @@ public:
 	/// <summary>
 	/// 敵の大きさを設定する
 	/// </summary>
-	/// <param name="scale">大きさ</param>
+	/// <param name="scale">スケーリング値</param>
 	void SetScale(const KamataEngine::Vector3& scale);
 
 	/// <summary>
-	/// 敵のヒットボックスを設定する
+	/// 敵の向き（左右）を設定する
 	/// </summary>
-	/// <param name="center">中心座標</param>
-	/// <param name="size">大きさ</param>
+	/// <param name="dir">方向値（1.0f または -1.0f）</param>
+	void SetFacingDir(float dir) { facingDir_ = dir; }
+
+	/// <summary>
+	/// 敵の攻撃の向き（左右）を設定する
+	/// </summary>
+	/// <param name="dir">方向値（1.0f または -1.0f）</param>
+	void SetAttackDirX(float dir) { attackDirX_ = dir; }
+
+	/// <summary>
+	/// X座標に値を加算する（移動用ヘルパー）
+	/// </summary>
+	/// <param name="x">加算するX量（正の数で右、負の数で左）</param>
+	void AddPositionX(float x) { worldTransform_.translation_.x += x; }
+
+	///
+	/// ステータス・状態管理関連
+	/// 
+	
+	// --- Getter ---
+
+	/// <summary>
+	/// 現在のHPを取得する
+	/// </summary>
+	/// <returns>残りHP</returns>
+	int32_t GetHP() const { return hp_; }
+
+	/// <summary>
+	/// 敵の死亡判定を取得する
+	/// </summary>
+	/// <returns>死亡していれば true</returns>
+	bool IsDead() const { return isDead_; }
+
+	/// <summary>
+	/// ノックバック中かどうかを取得する
+	/// </summary>
+	/// <returns>ノックバック中なら true</returns>
+	bool IsKnockBack() const { return isKnockBack_; }
+
+	/// <summary>
+	/// 現在の行動状態（ステート）を取得する
+	/// </summary>
+	/// <returns>EnemyState列挙型</returns>
+	EnemyState GetState() const { return state_; }
+
+	// --- Setter ---
+
+	/// <summary>
+	/// 行動状態（ステート）を直接設定する
+	/// </summary>
+	/// <param name="state">設定するEnemyState</param>
+	void SetState(EnemyState state) { state_ = state; }
+
+	///
+	/// 攻撃・判定(HitBox)関連
+	/// 
+	
+	// --- Getter ---
+
+	/// <summary>
+	/// 攻撃力を取得する
+	/// </summary>
+	/// <returns>攻撃力数値</returns>
+	int32_t GetAttackPower() const { return attackPower_; }
+
+	/// <summary>
+	/// 攻撃射程距離を取得する
+	/// </summary>
+	/// <returns>射程距離（float）</returns>
+	float GetAttackRange() const { return attackRange_; }
+
+	/// <summary>
+	/// 敵自身の被弾判定（ヒットボックス）を取得する
+	/// </summary>
+	/// <returns>HitBox構造体への参照</returns>
+	const HitBox& GetHitBox() const { return hitBox_; }
+
+	/// <summary>
+	/// 敵の攻撃判定（ヒットボックス）を取得する
+	/// </summary>
+	/// <returns>HitBox構造体への参照</returns>
+	const HitBox& GetAttackHitBox() const { return attackHitBox_; }
+
+	/// <summary>
+	/// 攻撃判定が現在アクティブ（有効）かを取得する
+	/// </summary>
+	/// <returns>有効なら true</returns>
+	bool IsAttackHitBoxActive() const { return attackHitBox_.active; }
+
+	/// <summary>
+	/// 攻撃アクション中（予備動作含む）であるかを取得する
+	/// </summary>
+	/// <returns>攻撃中なら true</returns>
+	bool IsAttacking() const { return isAttacking_; }
+
+	/// <summary>
+	/// 攻撃モード（索敵範囲に入り攻撃体制）であるかを取得する
+	/// </summary>
+	/// <returns>モード中なら true</returns>
+	bool IsAttackMode() const { return isAttackMode_; }
+
+	/// <summary>
+	/// 攻撃後のクールタイム残り時間を取得する
+	/// </summary>
+	/// <returns>残り秒数</returns>
+	float GetAttackCoolDownTimer() const { return attackCooldownTimer_; }
+
+	/// <summary>
+	/// この攻撃ですでにダメージを与えたかを取得する（多段ヒット防止用）
+	/// </summary>
+	/// <returns>ダメージ済みなら true</returns>
+	bool HasDealtDamage() const { return hasDealtDamage_; }
+
+	// --- Setter ---
+
+	/// <summary>
+	/// 敵自身の被弾判定（ヒットボックス）のパラメータを設定する
+	/// </summary>
+	/// <param name="center">中心オフセット座標</param>
+	/// <param name="size">判定サイズ</param>
 	void SetHitBox(const KamataEngine::Vector3& center, const KamataEngine::Vector3& size);
 
 	/// <summary>
-	/// 攻撃のヒットボックスを設定する
+	/// 攻撃判定（ヒットボックス）のパラメータを一括設定する
 	/// </summary>
-	/// <param name="pos">座標</param>
+	/// <param name="pos">ワールド座標</param>
 	void SetAttackHitBox(const KamataEngine::Vector3& pos);
 
 	/// <summary>
-	/// ダメージを与えるか設定
+	/// 攻撃モード（フラグ）を切り替える
 	/// </summary>
-	/// <param name="flag">フラグ</param>
+	/// <param name="flag">有効なら true</param>
+	void SetAttackMode(bool flag) { isAttackMode_ = flag; }
+
+	/// <summary>
+	/// 攻撃アクション実行中フラグを切り替える
+	/// </summary>
+	/// <param name="flag">実行中なら true</param>
+	void SetAttacking(bool flag) { isAttacking_ = flag; }
+
+	/// <summary>
+	/// 攻撃当たり判定の有効・無効を個別に切り替える
+	/// </summary>
+	/// <param name="flag">有効にするなら true</param>
+	void SetAttackHitBoxActive(bool flag) { attackHitBox_.active = flag; }
+
+	/// <summary>
+	/// 攻撃当たり判定の位置のみを更新する
+	/// </summary>
+	/// <param name="pos">ワールド座標</param>
+	void SetAttackHitBoxPos(const KamataEngine::Vector3& pos) { attackHitBox_.pos = pos; }
+
+	/// <summary>
+	/// 攻撃当たり判定のサイズのみを更新する
+	/// </summary>
+	/// <param name="size">サイズ（Vector3）</param>
+	void SetAttackHitBoxSize(const KamataEngine::Vector3& size) { attackHitBox_.size = size; }
+
+	/// <summary>
+	/// ダメージ済みフラグを設定する
+	/// </summary>
+	/// <param name="flag">設定する真偽値</param>
 	void SetHasDealtDamage(bool flag) { hasDealtDamage_ = flag; }
+
+	// --- Timer Update ---
+
+	/// <summary>
+	/// 攻撃クールタイムを更新する（0.0fでクランプ処理付き）
+	/// </summary>
+	/// <param name="dt">経過時間（デルタタイム）</param>
+	void UpdateAttackCooldown(float dt) {
+		attackCooldownTimer_ -= dt;
+		if (attackCooldownTimer_ < 0.0f) {
+			attackCooldownTimer_ = 0.0f;
+		}
+	}
+
+	/// <summary>
+	/// 攻撃クールタイムを最大値にリセットする
+	/// </summary>
+	void ResetAttackCooldown() { attackCooldownTimer_ = attackCooldown_; }
+
+	///
+	/// システム・リソース関連
+	///
+
+	// --- Getter ---
+
+	/// <summary>
+	/// 敵のワールドトランスフォームを取得する
+	/// </summary>
+	/// <returns>worldTransform</returns>
+	MyEngine::WorldTransformEx& GetWorldTransform() { return worldTransform_; }
+
+	/// <summary>
+	/// フレーム間の固定デルタタイムを取得する
+	/// </summary>
+	/// <returns>経過時間（秒）</returns>
+	float GetDeltaTime() const { return deltaTime_; }
+
+	/// <summary>
+	/// オーディオマネージャーへのポインタを取得する
+	/// </summary>
+	/// <returns>Audioポインタ</returns>
+	KamataEngine::Audio* GetAudio() const { return audio_; }
+
+	/// <summary>
+	/// テクスチャハンドルを取得する
+	/// </summary>
+	/// <returns>テクスチャハンドル</returns>
+	uint32_t GetTextureHandle() const { return textureHandle_; }
+
+	/// --- Setter ---
+
+	/// <summary>
+	/// テクスチャハンドルを設定する
+	/// </summary>
+	/// <param name="handle">テクスチャハンドル</param>
+	void SetTextureHandle(uint32_t handle) { textureHandle_ = handle; }
+
+	// --- Virtual Callback ---
+
+	/// <summary>
+	/// 接触（被弾）時のコールバック関数
+	/// </summary>
+	/// <param name="damage">受けたダメージ量</param>
+	/// <param name="attackDir">攻撃の飛んできた方向</param>
+	virtual void OnHit(int32_t damage, const KamataEngine::Vector3& attackDir);
 
 	/// <summary>
 	/// 他の敵との距離を見て分離ベクトルを計算
@@ -210,7 +394,7 @@ protected:
 	/// </summary>
 	void UpdateBasicState();
 
-protected:
+private:
 	MyEngine::GameConfigManager* cfg_ = nullptr;
 	KamataEngine::Audio* audio_ = nullptr;
 
@@ -245,7 +429,7 @@ protected:
 	float attackTimer_ = 0.0f;
 	bool isAttacking_ = false;
 	bool isAttackMode_ = false;
-	float ATTACK_RANGE_ = 1.0f;
+	float attackRange_ = 1.0f;
 	float attackDirX_ = 0.0f;
 
 	bool hasDealtDamage_ = false;
@@ -264,7 +448,21 @@ protected:
 
 	// ---- スタン ----
 	bool isStun_ = false;
+	float stunTimer_ = 0.0f;
+	float stunDuration_;
+	float stunShakeTime_ = 0.0f;
+	float stunShakeAmplitude_;
+	float stunShakeSpeed_;
+	KamataEngine::Vector3 originalPosition_ = {0.0f, 0.0f, 0.0f};
 
+	// --- パーティクル用 ---
+	std::unique_ptr<MyEngine::SmokeParticleManager> smokeManager_;
+	float smokeSpawnTimer_ = 0.0f;
+	float smokeSpawnInterval_;
+	KamataEngine::Vector3 smokeSize_;
+	std::unique_ptr<MyEngine::DustParticleManager> dustManager_;
+
+protected:
 	// ---- テクスチャ ----
 	EnemyState state_ = EnemyState::Idle;
 
@@ -288,20 +486,4 @@ protected:
 	uint32_t attackSEVoiceHandle_ = 0;
 	uint32_t hitSEVoiceHandle_ = 0;
 	uint32_t blownSEVoiceHandle_ = 0;
-
-private:
-	// --- パーティクル用 ---
-	std::unique_ptr<MyEngine::SmokeParticleManager> smokeManager_;
-	float smokeSpawnTimer_ = 0.0f;
-	float smokeSpawnInterval_;
-	KamataEngine::Vector3 smokeSize_;
-	std::unique_ptr<MyEngine::DustParticleManager> dustManager_;
-
-	// ---- スタン ----
-	float stunTimer_ = 0.0f;
-	float stunDuration_;
-	float stunShakeTime_ = 0.0f;
-	float stunShakeAmplitude_;
-	float stunShakeSpeed_;
-	KamataEngine::Vector3 originalPosition_ = {0.0f, 0.0f, 0.0f};
 };

@@ -62,6 +62,12 @@ void EnemyManager::SpawnEnemy(EnemyType type, const KamataEngine::Vector3& pos) 
 		enemy->SetHitBox(pos, cfg_->getVector3("Enemy.Types.Power.hitBoxSize"));
 		enemy->SetScale(cfg_->getVector3("Enemy.Types.Power.scale"));
 		break;
+	case EnemyType::Fast:
+		data = {cfg_->getString("Global.kCharacterModelPath"), cfg_->getFloat("Enemy.Types.Fast.speed"), cfg_->getInt("Enemy.Types.Fast.hp"), cfg_->getInt("Enemy.Types.Fast.attackPower")};
+		enemy = std::make_unique<PowerEnemy>();
+		enemy->SetHitBox(pos, cfg_->getVector3("Enemy.Types.Fast.hitBoxSize"));
+		enemy->SetScale(cfg_->getVector3("Enemy.Types.Fast.scale"));
+		break;
 	}
 
 	enemy->Initialize(data);

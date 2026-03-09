@@ -36,7 +36,7 @@ void EnemyBase::Initialize(const EnemyData& data) {
 	knockbackDuration_ = cfg_->getFloat("Enemy.Default.kKnockbackDuration");
 	attackDuration_ = cfg_->getFloat("Enemy.Default.kAttackDuration");
 	attackCooldown_ = cfg_->getFloat("Enemy.Default.kAttackCooldown");
-	ATTACK_RANGE_ = cfg_->getFloat("Enemy.Default.kATTACK_RANGE");
+	attackRange_ = cfg_->getFloat("Enemy.Default.kAttackRange");
 	stunDuration_ = cfg_->getFloat("Enemy.Default.kStunDuration");
 	stunShakeAmplitude_ = cfg_->getFloat("Enemy.Default.kStunShakeAmplitude");
 	stunShakeSpeed_ = cfg_->getFloat("Enemy.Default.kStunShakeSpeed");
@@ -250,7 +250,7 @@ void EnemyBase::DoNormalAttack(const Vector3& playerPos) {
 	float dist = sqrtf(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y + toPlayer.z * toPlayer.z);
 
 	// ===== 一定距離以内なら攻撃モードON（離れてもOFFにしない） =====
-	if (!isAttackMode_ && dist <= ATTACK_RANGE_) {
+	if (!isAttackMode_ && dist <= attackRange_) {
 		isAttackMode_ = true;
 
 		// 向きを固定する

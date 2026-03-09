@@ -25,7 +25,7 @@ void NormalEnemy::Initialize(const EnemyData& data) {
 	LWalkTexture_[2] = TextureManager::Load("enemies/normalEnemy/LWalk3.png");
 	LWalkTexture_[3] = TextureManager::Load("enemies/normalEnemy/LWalk2.png");
 
-	attackCooldownTimer_ = attackCooldown_;
+	ResetAttackCooldown();
 }
 
 void NormalEnemy::Update(const Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) {
@@ -38,13 +38,14 @@ void NormalEnemy::Update(const Vector3& playerPos, const std::vector<std::unique
 	}
 
 	// ===== プレイヤーとの距離計算 =====
-	Vector3 toPlayer = playerPos - worldTransform_.translation_;
+	Vector3 toPlayer = playerPos - GetPosition();
 	float dist = std::sqrtf(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y + toPlayer.z * toPlayer.z);
 
 	// プレイヤー方向（左右）を決める
-	if (!isAttackMode_ && !isAttacking_) {
+	if (!IsAttackMode() && !IsAttacking()) {
 		if (fabs(toPlayer.x) > 0.01f) {
-			facingDir_ = (toPlayer.x > 0) ? 1.0f : -1.0f;
+			float dir_ = (toPlayer.x > 0) ? 1.0f : -1.0f;
+			SetFacingDir(dir_);
 		}
 	}
 
@@ -52,23 +53,23 @@ void NormalEnemy::Update(const Vector3& playerPos, const std::vector<std::unique
 	AttackProcess(playerPos);
 
 	// ===== 攻撃中じゃない＆クールタイム中じゃない =====
-	if (dist > ATTACK_RANGE_ && !isAttackMode_) {
+	if (dist > GetAttackRange() && !IsAttackMode()) {
 		MoveTowardPlayer(playerPos, allEnemies);
 	} 
 
     // 移動・攻撃などの状態判定
-	if (isAttacking_)
+	if (IsAttacking())
 		state_ = EnemyState::Attacking;
-	else if (isAttackMode_)
+	else if (IsAttackMode())
 		state_ = EnemyState::AttackWait;
-	else if (speed_ > 0.0f)
+	else if (GetSpeed() > 0.0f)
 		state_ = EnemyState::Walking;
 	else
 		state_ = EnemyState::Idle;
 
 	// 親クラス処理
 	EnemyBase::Update(playerPos, allEnemies);
-	worldTransform_.UpdateMatrix();
+	GetWorldTransform().UpdateMatrix();
 }
 
 void NormalEnemy::AttackProcess(const Vector3& playerPos) { 
