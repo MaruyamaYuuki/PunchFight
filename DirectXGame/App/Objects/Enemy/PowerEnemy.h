@@ -65,7 +65,7 @@ protected:
 	/// <returns>ノックバック中、スタン中に0を返す</returns>
 	bool IsMovementInterrupted() const override {
 		// PowerEnemyはスタン中(isStun_)でも false を返すことで、Updateを続行させる
-		return isKnockBack_ || hp_ <= 0;
+		return IsKnockBack() || GetHP() <= 0;
 	}
 
 private:

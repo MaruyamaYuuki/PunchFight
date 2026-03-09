@@ -38,9 +38,9 @@ void PowerEnemy::Initialize(const EnemyData& data) {
 	LWalkTexture_[2] = TextureManager::Load("enemies/powerEnemy/LWalk3.png");
 	LWalkTexture_[3] = TextureManager::Load("enemies/powerEnemy/LWalk4.png");
 
-	attackSEDataHandle_ = audio_->LoadWave("audio/SE/headbuttSE.wav");
+	attackSEDataHandle_ = GetAudio()->LoadWave("audio/SE/headbuttSE.wav");
 
-	attackCooldownTimer_ = attackCooldown_;
+	ResetAttackCooldown();
 }
 
 void PowerEnemy::Update(const Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) {
@@ -53,13 +53,14 @@ void PowerEnemy::Update(const Vector3& playerPos, const std::vector<std::unique_
 	}
 
 	// ===== プレイヤーとの距離計算 =====
-	Vector3 toPlayer = playerPos - worldTransform_.translation_;
+	Vector3 toPlayer = playerPos - GetPosition();
 	float dist = std::sqrtf(toPlayer.x * toPlayer.x + toPlayer.y * toPlayer.y + toPlayer.z * toPlayer.z);
 
 	// プレイヤー方向（左右）を決める
-	if (!isAttackMode_ && !isAttacking_) {
+	if (!IsAttackMode() && !IsAttacking()) {
     	if (fabs(toPlayer.x) > 0.01f) {
-    		facingDir_ = (toPlayer.x > 0) ? 1.0f : -1.0f;
+    		float dir_ = (toPlayer.x > 0) ? 1.0f : -1.0f;
+			SetFacingDir(dir_);
     	}
 	}
 
@@ -67,23 +68,23 @@ void PowerEnemy::Update(const Vector3& playerPos, const std::vector<std::unique_
 	AttackProcess(playerPos);
 
 	// ===== 攻撃中じゃない＆クールタイム中じゃない =====
-	if (dist > ATTACK_RANGE_ && !isAttackMode_) {
+	if (dist > GetAttackRange() && !IsAttackMode()) {
 		MoveTowardPlayer(playerPos, allEnemies);
 	}
 
 	// 移動・攻撃などの状態判定
-	if (isAttacking_)
+	if (IsAttacking())
 		state_ = EnemyState::Attacking;
-	else if (isAttackMode_)
+	else if (IsAttackMode())
 		state_ = EnemyState::AttackWait;
-	else if (speed_ > 0.0f)
+	else if (GetSpeed() > 0.0f)
 		state_ = EnemyState::Walking;
 	else
 		state_ = EnemyState::Idle;
 
 	// 親クラス処理
 	EnemyBase::Update(playerPos, allEnemies);
-	worldTransform_.UpdateMatrix();
+	GetWorldTransform().UpdateMatrix();
 }
 
 void PowerEnemy::TackleAttack() {
@@ -96,50 +97,52 @@ void PowerEnemy::TackleAttack() {
 
 	// ===== 溜め中 =====
 	if (isTackleCharging_) {
-		tackleChargeTimer_ -= deltaTime_;
+		tackleChargeTimer_ -= GetDeltaTime();
 
 		if (tackleChargeTimer_ <= 0.0f) {
 			isTackleCharging_ = false;
 			isTackling_ = true;
-			isAttacking_ = true;
+			SetAttacking(true);
 
 			tackleMoveTimer_ = tackleMoveTime_;
 
 			// 自分自身を攻撃判定に
-			attackHitBox_.active = true;
-			attackHitBox_.pos = worldTransform_.translation_;
-			attackHitBox_.size = hitBox_.size;
+			SetAttackHitBoxActive(true);
+			SetAttackHitBoxPos(GetPosition());
+			SetAttackHitBoxSize(GetHitBox().size);
 		}
 		return;
 	}
 
 	// ===== タックル中 =====
 	if (isTackling_) {
-		tackleMoveTimer_ -= deltaTime_;
+		tackleMoveTimer_ -= GetDeltaTime();
 
 		// 固定した向きで突進
-		worldTransform_.translation_.x += facingDir_ * tackleSpeed_;
+		float dir_ = GetFacingDir();
+		AddPositionX(dir_ * tackleSpeed_);
 
-		attackHitBox_.pos = worldTransform_.translation_;
+		SetAttackHitBoxPos(GetPosition());
 
 		if (tackleMoveTimer_ <= 0.0f) {
 			isTackling_ = false;
-			isAttacking_ = false;
-			isAttackMode_ = false;
+			SetAttacking(false);
+			SetAttackMode(false);
 
-			attackHitBox_.active = false;
-			attackCooldownTimer_ = attackCooldown_;
+			SetAttackHitBoxActive(false);
+			ResetAttackCooldown();
 		}
 	}
 }
 
 void PowerEnemy::EnterAttackMode(const Vector3& playerPos) { 
-	isAttackMode_ = true;
+	SetAttackMode(true);
 
 	// 向き固定
-	Vector3 toPlayer = playerPos - worldTransform_.translation_;
-	attackDirX_ = (toPlayer.x >= 0) ? 1.0f : -1.0f;
-	facingDir_ = attackDirX_;
+	Vector3 toPlayer = playerPos - GetPosition();
+	SetAttackDirX((toPlayer.x >= 0) ? 1.0f : -1.0f);
+	float dir_ = GetAttackDirX();
+	SetFacingDir(dir_);
 
 	// 攻撃タイプ抽選
 	float r = static_cast<float>(rand()) / RAND_MAX;
@@ -154,11 +157,11 @@ void PowerEnemy::EnterAttackMode(const Vector3& playerPos) {
 
 void PowerEnemy::AttackProcess(const KamataEngine::Vector3& playerPos) {
 	// 攻撃モードに入ってないならチェック
-	if (!isAttackMode_) {
-		Vector3 toPlayer = playerPos - worldTransform_.translation_;
+	if (!IsAttackMode()) {
+		Vector3 toPlayer = playerPos - GetPosition();
 		float dist = Length(toPlayer);
 
-		if (dist <= ATTACK_RANGE_) {
+		if (dist <= GetAttackRange()) {
 			EnterAttackMode(playerPos); // ★ここで一度だけ決定
 		} else {
 			return;
@@ -182,20 +185,20 @@ void PowerEnemy::UpdateTextures() {
 	// 攻撃タイプで使用テクスチャを決定
 	switch (attackType_) {
 	case AttackType::Normal:
-		waitTex = (facingDir_ > 0) ? RWaitTexture_ : LWaitTexture_;
-		attackTex = (facingDir_ > 0) ? RAttackTexture_ : LAttackTexture_;
+		waitTex = (GetFacingDir() > 0) ? RWaitTexture_ : LWaitTexture_;
+		attackTex = (GetFacingDir() > 0) ? RAttackTexture_ : LAttackTexture_;
 		break;
 
 	case AttackType::Tackle:
-		waitTex = (facingDir_ > 0) ? RTackleWaitTexture_ : LTackleWaitTexture_;
-		attackTex = (facingDir_ > 0) ? RTackleTexture_ : LTackleTexture_;
+		waitTex = (GetFacingDir() > 0) ? RTackleWaitTexture_ : LTackleWaitTexture_;
+		attackTex = (GetFacingDir() > 0) ? RTackleTexture_ : LTackleTexture_;
 		break;
 	}
 
 	// 状態で最終決定
 	if (state_ == EnemyState::AttackWait) {
-		textureHandle_ = waitTex;
+		SetTextureHandle(waitTex);
 	} else if (state_ == EnemyState::Attacking) {
-		textureHandle_ = attackTex;
+		SetTextureHandle(attackTex);
 	}
 }

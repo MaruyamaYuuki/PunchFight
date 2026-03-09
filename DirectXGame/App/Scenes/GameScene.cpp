@@ -614,7 +614,7 @@ void GameScene::AllCollision() {
 	for (auto& e : enemies) {
 
 		// 敵が攻撃状態ではないならスルー
-		if (!e->IsAttacking()) {
+		if (!e->IsAttackHitBoxActive()) {
 			continue;
 		}
 
