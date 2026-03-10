@@ -23,7 +23,7 @@
       "FightTextAnime": {
         "kFightTextCenterPos": [640.0, 300.0],
         "kFightTextBaseSize": [400.0, 150.0],
-        "kFightTextWaitDuration": 0.1,
+        "kFightTextWaitDuration": 0.2,
         "kFightTextAnimeDuration": 0.1,
         "kFightTextStartScale": 1.6
       },
