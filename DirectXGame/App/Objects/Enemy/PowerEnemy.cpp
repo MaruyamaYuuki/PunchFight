@@ -16,29 +16,29 @@ void PowerEnemy::Initialize(const EnemyData& data) {
 	tackleSpeed_ = cfg_->getFloat("Enemy.Types.Power.kTackleSpeed");
 
 
-	RIdleTexture_ = TextureManager::Load("enemies/powerEnemy/RPower.png");
-	RWaitTexture_ = TextureManager::Load("enemies/powerEnemy/RHeadbutt1.png");
-	RAttackTexture_ = TextureManager::Load("enemies/powerEnemy/RHeadbutt2.png");
+	SetRIdleTexture(TextureManager::Load("enemies/powerEnemy/RPower.png"));
+	SetRWaitTexture(TextureManager::Load("enemies/powerEnemy/RHeadbutt1.png"));
+	SetRAttackTexture(TextureManager::Load("enemies/powerEnemy/RHeadbutt2.png"));
 	RTackleTexture_ = TextureManager::Load("enemies/powerEnemy/RTackle.png");
 	RTackleWaitTexture_ = TextureManager::Load("enemies/powerEnemy/RTackleWait.png");
-	RStunTexture_ = TextureManager::Load("enemies/powerEnemy/RStun.png");
-	RWalkTexture_[0] = TextureManager::Load("enemies/powerEnemy/RWalk1.png");
-	RWalkTexture_[1] = TextureManager::Load("enemies/powerEnemy/RWalk2.png");
-	RWalkTexture_[2] = TextureManager::Load("enemies/powerEnemy/RWalk3.png");
-	RWalkTexture_[3] = TextureManager::Load("enemies/powerEnemy/RWalk4.png");
+	SetRStunTexture(TextureManager::Load("enemies/powerEnemy/RStun.png"));
+	SetRWalkTexture(0, TextureManager::Load("enemies/powerEnemy/RWalk1.png"));
+	SetRWalkTexture(1, TextureManager::Load("enemies/powerEnemy/RWalk2.png"));
+	SetRWalkTexture(2, TextureManager::Load("enemies/powerEnemy/RWalk3.png"));
+	SetRWalkTexture(3, TextureManager::Load("enemies/powerEnemy/RWalk4.png"));
 
-	LIdleTexture_ = TextureManager::Load("enemies/powerEnemy/LPower.png");
-	LWaitTexture_ = TextureManager::Load("enemies/powerEnemy/LHeadbutt1.png");
-	LAttackTexture_ = TextureManager::Load("enemies/powerEnemy/LHeadbutt2.png");
+	SetLIdleTexture(TextureManager::Load("enemies/powerEnemy/LPower.png"));
+	SetLWaitTexture(TextureManager::Load("enemies/powerEnemy/LHeadbutt1.png"));
+	SetLAttackTexture(TextureManager::Load("enemies/powerEnemy/LHeadbutt2.png"));
 	LTackleTexture_ = TextureManager::Load("enemies/powerEnemy/LTackle.png");
 	LTackleWaitTexture_ = TextureManager::Load("enemies/powerEnemy/LTackleWait.png");
-	LStunTexture_ = TextureManager::Load("enemies/powerEnemy/LStun.png");
-	LWalkTexture_[0] = TextureManager::Load("enemies/powerEnemy/LWalk1.png");
-	LWalkTexture_[1] = TextureManager::Load("enemies/powerEnemy/LWalk2.png");
-	LWalkTexture_[2] = TextureManager::Load("enemies/powerEnemy/LWalk3.png");
-	LWalkTexture_[3] = TextureManager::Load("enemies/powerEnemy/LWalk4.png");
+	SetLStunTexture(TextureManager::Load("enemies/powerEnemy/RStun.png"));
+	SetLWalkTexture(0, TextureManager::Load("enemies/powerEnemy/LWalk1.png"));
+	SetLWalkTexture(1, TextureManager::Load("enemies/powerEnemy/LWalk2.png"));
+	SetLWalkTexture(2, TextureManager::Load("enemies/powerEnemy/LWalk3.png"));
+	SetLWalkTexture(3, TextureManager::Load("enemies/powerEnemy/LWalk4.png"));
 
-	attackSEDataHandle_ = GetAudio()->LoadWave("audio/SE/headbuttSE.wav");
+	SetAttackSEDataHandle(GetAudio()->LoadWave("audio/SE/headbuttSE.wav"));
 
 	ResetAttackCooldown();
 }
@@ -73,14 +73,19 @@ void PowerEnemy::Update(const Vector3& playerPos, const std::vector<std::unique_
 	}
 
 	// 移動・攻撃などの状態判定
-	if (IsAttacking())
-		state_ = EnemyState::Attacking;
-	else if (IsAttackMode())
-		state_ = EnemyState::AttackWait;
-	else if (GetSpeed() > 0.0f)
-		state_ = EnemyState::Walking;
-	else
-		state_ = EnemyState::Idle;
+	if (IsAttacking()) {
+		if (GetState() != EnemyState::Attacking)
+			ChangeState<EnemyStateAttacking>();
+	} else if (IsAttackMode()) {
+		if (GetState() != EnemyState::AttackWait)
+			ChangeState<EnemyStateAttackWait>();
+	} else if (GetSpeed() > 0.0f && dist > GetAttackRange()) {
+		if (GetState() != EnemyState::Walking)
+			ChangeState<EnemyStateWalking>();
+	} else {
+		if (GetState() != EnemyState::Idle)
+			ChangeState<EnemyStateIdle>();
+	}
 
 	// 親クラス処理
 	EnemyBase::Update(playerPos, allEnemies);
@@ -178,27 +183,4 @@ void PowerEnemy::AttackProcess(const KamataEngine::Vector3& playerPos) {
 void PowerEnemy::UpdateTextures() {
 	// 共通処理
 	EnemyBase::UpdateTextures();
-
-    uint32_t waitTex = 0;
-	uint32_t attackTex = 0;
-
-	// 攻撃タイプで使用テクスチャを決定
-	switch (attackType_) {
-	case AttackType::Normal:
-		waitTex = (GetFacingDir() > 0) ? RWaitTexture_ : LWaitTexture_;
-		attackTex = (GetFacingDir() > 0) ? RAttackTexture_ : LAttackTexture_;
-		break;
-
-	case AttackType::Tackle:
-		waitTex = (GetFacingDir() > 0) ? RTackleWaitTexture_ : LTackleWaitTexture_;
-		attackTex = (GetFacingDir() > 0) ? RTackleTexture_ : LTackleTexture_;
-		break;
-	}
-
-	// 状態で最終決定
-	if (state_ == EnemyState::AttackWait) {
-		SetTextureHandle(waitTex);
-	} else if (state_ == EnemyState::Attacking) {
-		SetTextureHandle(attackTex);
-	}
 }

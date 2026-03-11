@@ -160,6 +160,7 @@
     <ClCompile Include="App\Objects\Enemy\PowerEnemy.cpp" />
     <ClCompile Include="App\Scenes\GameScene.cpp" />
     <ClCompile Include="App\Scenes\ClearScene.cpp" />
+    <ClCompile Include="App\Objects\Enemy\EnemyState.cpp" />
     <ClCompile Include="Engine\Particle\DustParticle.cpp" />
     <ClCompile Include="Engine\Particle\DustParticleManager.cpp" />
     <ClCompile Include="Engine\Camera\CameraController.cpp" />
@@ -282,6 +283,7 @@
     <ClInclude Include="App\Objects\Enemy\PowerEnemy.h" />
     <ClInclude Include="App\Scenes\ClearScene.h" />
     <ClInclude Include="App\Scenes\BaseScene.h" />
+    <ClInclude Include="App\Objects\Enemy\EnemyState.h" />
     <ClInclude Include="Engine\Particle\DustParticleManager.h" />
     <ClInclude Include="Engine\Particle\DustParticle.h" />
     <ClInclude Include="Engine\Math\Collision.h" />

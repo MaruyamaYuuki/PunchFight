@@ -12,23 +12,23 @@ void FastEnemy::Initialize(const EnemyData& data) {
 	retreatDuration_ = cfg_->getFloat("Enemy.Types.Fast.kRetreatDuration");
 	retreatSpeedMultiplier_ = cfg_->getFloat("Enemy.Types.Fast.kRetreatSpeedMultiplier");
 
-	RIdleTexture_ = TextureManager::Load("enemies/normalEnemy/RNormal.png");
-	RAttackTexture_ = TextureManager::Load("enemies/normalEnemy/RPunch.png");
-	RWaitTexture_ = TextureManager::Load("enemies/normalEnemy/RNormal.png");
-	RStunTexture_ = TextureManager::Load("enemies/normalEnemy/RStun.png");
-	RWalkTexture_[0] = TextureManager::Load("enemies/normalEnemy/RWalk1.png");
-	RWalkTexture_[1] = TextureManager::Load("enemies/normalEnemy/RWalk2.png");
-	RWalkTexture_[2] = TextureManager::Load("enemies/normalEnemy/RWalk3.png");
-	RWalkTexture_[3] = TextureManager::Load("enemies/normalEnemy/RWalk2.png");
+	SetRIdleTexture(TextureManager::Load("enemies/normalEnemy/RNormal.png"));
+	SetRAttackTexture(TextureManager::Load("enemies/normalEnemy/RPunch.png"));
+	SetRWaitTexture(TextureManager::Load("enemies/normalEnemy/RNormal.png"));
+	SetRStunTexture(TextureManager::Load("enemies/normalEnemy/RStun.png"));
+	SetRWalkTexture(0, TextureManager::Load("enemies/normalEnemy/RWalk1.png"));
+	SetRWalkTexture(1, TextureManager::Load("enemies/normalEnemy/RWalk2.png"));
+	SetRWalkTexture(2, TextureManager::Load("enemies/normalEnemy/RWalk3.png"));
+	SetRWalkTexture(3, TextureManager::Load("enemies/normalEnemy/RWalk2.png"));
 
-	LIdleTexture_ = TextureManager::Load("enemies/normalEnemy/LNormal.png");
-	LAttackTexture_ = TextureManager::Load("enemies/normalEnemy/LPunch.png");
-	LWaitTexture_ = TextureManager::Load("enemies/normalEnemy/LNormal.png");
-	LStunTexture_ = TextureManager::Load("enemies/normalEnemy/LStun.png");
-	LWalkTexture_[0] = TextureManager::Load("enemies/normalEnemy/LWalk1.png");
-	LWalkTexture_[1] = TextureManager::Load("enemies/normalEnemy/LWalk2.png");
-	LWalkTexture_[2] = TextureManager::Load("enemies/normalEnemy/LWalk3.png");
-	LWalkTexture_[3] = TextureManager::Load("enemies/normalEnemy/LWalk2.png");
+	SetLIdleTexture(TextureManager::Load("enemies/normalEnemy/LNormal.png"));
+	SetLAttackTexture(TextureManager::Load("enemies/normalEnemy/LPunch.png"));
+	SetLWaitTexture(TextureManager::Load("enemies/normalEnemy/LNormal.png"));
+	SetLStunTexture(TextureManager::Load("enemies/normalEnemy/LStun.png"));
+	SetLWalkTexture(0, TextureManager::Load("enemies/normalEnemy/LWalk1.png"));
+	SetLWalkTexture(1, TextureManager::Load("enemies/normalEnemy/LWalk2.png"));
+	SetLWalkTexture(2, TextureManager::Load("enemies/normalEnemy/LWalk3.png"));
+	SetLWalkTexture(3, TextureManager::Load("enemies/normalEnemy/LWalk2.png"));
 
 	ResetAttackCooldown();
 }
