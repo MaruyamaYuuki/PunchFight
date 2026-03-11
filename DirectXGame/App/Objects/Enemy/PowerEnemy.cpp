@@ -40,6 +40,7 @@ void PowerEnemy::Initialize(const EnemyData& data) {
 
 	SetAttackSEDataHandle(GetAudio()->LoadWave("audio/SE/headbuttSE.wav"));
 
+
 	ResetAttackCooldown();
 }
 
