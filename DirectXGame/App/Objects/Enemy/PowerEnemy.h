@@ -35,6 +35,15 @@ public:
 	/// <param name="allEnemies">全エネミーのリスト（他の敵との重なり回避計算に使用）</param>
 	virtual void Update(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies);
 
+	// 攻撃タイプに応じて返すテクスチャを切り替える
+	uint32_t GetRWaitTexture() const override { return (attackType_ == AttackType::Tackle) ? RTackleWaitTexture_ : EnemyBase::GetRWaitTexture(); }
+
+	uint32_t GetRAttackTexture() const override { return (attackType_ == AttackType::Tackle) ? RTackleTexture_ : EnemyBase::GetRAttackTexture(); }
+
+	uint32_t GetLWaitTexture() const override { return (attackType_ == AttackType::Tackle) ? LTackleWaitTexture_ : EnemyBase::GetLWaitTexture(); }
+
+	uint32_t GetLAttackTexture() const override { return (attackType_ == AttackType::Tackle) ? LTackleTexture_ : EnemyBase::GetLAttackTexture(); }
+
 private:
 	/// <summary>
 	/// 突進攻撃（タックル）の物理挙動およびタイマー制御
@@ -67,6 +76,8 @@ protected:
 		// PowerEnemyはスタン中(isStun_)でも false を返すことで、Updateを続行させる
 		return IsKnockBack() || GetHP() <= 0;
 	}
+
+
 
 private:
 	MyEngine::GameConfigManager* cfg_ = nullptr;

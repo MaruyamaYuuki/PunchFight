@@ -6,6 +6,7 @@
 #include "../../../Engine/Particle/SmokeParticleManager.h"
 #include "../../../Engine//Particle/DustParticleManager.h"
 #include "KamataEngine.h"
+#include "EnemyState.h"
 
 /// <summary>
 /// 敵の情報
@@ -331,6 +332,74 @@ public:
 	/// <returns>テクスチャハンドル</returns>
 	uint32_t GetTextureHandle() const { return textureHandle_; }
 
+	/// <summary>
+	/// 右向きの停止中テクスチャハンドルを取得する。
+	/// </summary>
+	/// <returns>右向きの停止中テクスチャハンドル</returns>
+	virtual uint32_t GetRIdleTexture() const { return RIdleTexture_; }
+
+	/// <summary>
+	/// 右向きの攻撃待機テクスチャハンドルを取得する。
+	/// </summary>
+	/// <returns>右向きの攻撃待機テクスチャハンドル</returns>
+	virtual uint32_t GetRWaitTexture() const { return RWaitTexture_; }
+
+	/// <summary>
+	/// 右向きの攻撃テクスチャハンドルを取得する。
+	/// </summary>
+	/// <returns>右向きの攻撃テクスチャハンドル</returns>
+	virtual uint32_t GetRAttackTexture() const { return RAttackTexture_; }
+
+	/// <summary>
+	/// 右向きのスタンテクスチャハンドルを取得する。
+	/// </summary>
+	/// <returns>右向きのスタンテクスチャハンドル</returns>
+	virtual uint32_t GetRStunTexture() const { return RStunTexture_; }
+
+	/// <summary>
+	/// 左左向きの停止中テクスチャハンドルを取得する。
+	/// </summary>
+	/// <returns>右向きの停止中テクスチャハンドル</returns>
+	virtual uint32_t GetLIdleTexture() const { return LIdleTexture_; }
+
+	/// <summary>
+	/// 左向きの攻撃待機テクスチャハンドルを取得する。
+	/// </summary>
+	/// <returns>右向きの攻撃待機テクスチャハンドル</returns>
+	virtual uint32_t GetLWaitTexture() const { return LWaitTexture_; }
+
+	/// <summary>
+	/// 左向きの攻撃テクスチャハンドルを取得する。
+	/// </summary>
+	/// <returns>右向きの攻撃テクスチャハンドル</returns>
+	virtual uint32_t GetLAttackTexture() const { return LAttackTexture_; }
+
+	/// <summary>
+	/// 右向きのスタンテクスチャハンドルを取得する。
+	/// </summary>
+	/// <returns>右向きのスタンテクスチャハンドル</returns>
+	virtual uint32_t GetLStunTexture() const { return LStunTexture_; }
+
+	/// <summary>
+	/// 右向き歩行アニメーションの特定のテクスチャを取得する
+	/// </summary>
+	/// <param name="index">テクスチャの番号</param>
+	/// <returns>右向き歩行アニメーションの特定のテクスチャ</returns>
+	virtual uint32_t GetRWalkTexture(int index) const { return RWalkTexture_[index]; }
+
+	/// <summary>
+	/// 左向き歩行アニメーションの特定のテクスチャを取得する
+	/// </summary>
+	/// <param name="index">テクスチャの番号</param>
+	/// <returns>左向き歩行アニメーションの特定のテクスチャ</returns>
+	virtual uint32_t GetLWalkTexture(int index) const { return LWalkTexture_[index]; }
+
+	/// <summary>
+	/// 現在の歩行アニメーションフレーム番号を取得する
+	/// </summary>
+	/// <returns>0〜3のフレーム番号</returns>
+	virtual int32_t GetWalkFrame() const { return walkFrame_; }
+
 	/// --- Setter ---
 
 	/// <summary>
@@ -338,6 +407,74 @@ public:
 	/// </summary>
 	/// <param name="handle">テクスチャハンドル</param>
 	void SetTextureHandle(uint32_t handle) { textureHandle_ = handle; }
+
+	/// <summary>
+	/// 右向きの停止中テクスチャハンドルを設定する
+	/// </summary>
+	/// <param name="handle">テクスチャハンドル</param>
+	void SetRIdleTexture(uint32_t handle) { RIdleTexture_ = handle; }
+
+	/// <summary>
+	/// 右向きの攻撃待機中テクスチャハンドルを設定する
+	/// </summary>
+	/// <param name="handle">テクスチャハンドル</param>
+	void SetRWaitTexture(uint32_t handle) { RWaitTexture_ = handle; }
+
+	/// <summary>
+	/// 右向きの攻撃中テクスチャハンドルを設定する
+	/// </summary>
+	/// <param name="handle">テクスチャハンドル</param>
+	void SetRAttackTexture(uint32_t handle) { RAttackTexture_ = handle; }
+
+	/// <summary>
+	/// 右向きのスタン中テクスチャハンドルを設定する
+	/// </summary>
+	/// <param name="handle">テクスチャハンドル</param>
+	void SetRStunTexture(uint32_t handle) { RStunTexture_ = handle; }
+
+	/// <summary>
+	/// 右向き歩行アニメーションの特定のテクスチャを設定する
+	/// </summary>
+	/// <param name="index">テクスチャ番号</param>
+	/// <param name="handle">テクスチャハンドル</param>
+	void SetRWalkTexture(int index, uint32_t handle) { RWalkTexture_[index] = handle; }
+
+	/// <summary>
+	/// 左向きの停止中テクスチャハンドルを設定する
+	/// </summary>
+	/// <param name="handle">テクスチャハンドル</param>
+	void SetLIdleTexture(uint32_t handle) { LIdleTexture_ = handle; }
+
+	/// <summary>
+	/// 左向きの攻撃待機中テクスチャハンドルを設定する
+	/// </summary>
+	/// <param name="handle">テクスチャハンドル</param>
+	void SetLWaitTexture(uint32_t handle) { LWaitTexture_ = handle; }
+
+	/// <summary>
+	/// 左向きの攻撃中テクスチャハンドルを設定する
+	/// </summary>
+	/// <param name="handle">テクスチャハンドル</param>
+	void SetLAttackTexture(uint32_t handle) { LAttackTexture_ = handle; }
+
+	/// <summary>
+	/// 左向きのスタン中テクスチャハンドルを設定する
+	/// </summary>
+	/// <param name="handle">テクスチャハンドル</param>
+	void SetLStunTexture(uint32_t handle) { LStunTexture_ = handle; }
+
+	/// <summary>
+	/// 左向きの歩行アニメーションの特定のテクスチャを設定する
+	/// </summary>
+	/// <param name="index">テクスチャ番号</param>
+	/// <param name="handle">テクスチャハンドル</param>
+	void SetLWalkTexture(int index, uint32_t handle) { LWalkTexture_[index] = handle; }
+
+	/// <summary>
+	/// 攻撃時のSEデータハンドルを設定留守
+	/// </summary>
+	/// <param name="handle">データハンドル</param>
+	void SetAttackSEDataHandle(uint32_t handle) { attackSEDataHandle_ = handle; }
 
 	// --- Virtual Callback ---
 
@@ -355,6 +492,15 @@ public:
 	/// <param name="separationDistance">最低距離</param>
 	/// <returns>分離用オフセットベクトル</returns>
 	KamataEngine::Vector3 ComputeSeparation(const std::vector<std::unique_ptr<EnemyBase>>& allEnemies, float separationDistance);
+
+	/// <summary>
+	/// 新しい状態へ切り替える
+	/// </summary>
+	/// <param name="newState">次に遷移する状態オブジェクト</param>
+	void ChangeState(std::unique_ptr<BaseEnemyState> newState);
+
+	// テンプレート版（ChangeState<EnemyStateIdle>() のように呼べて便利です）
+	template<class T> void ChangeState() { ChangeState(std::make_unique<T>()); }
 
 protected:
 
@@ -406,6 +552,9 @@ private:
 	KamataEngine::Model* modelEHitBox_ = nullptr;
 	KamataEngine::Model* modelAHitBox_ = nullptr;
 	uint32_t textureHandle_ = 0;
+
+	// 現在の状態を保持するスマートポインタ
+	std::unique_ptr<BaseEnemyState> enemyState_;
 
 	// ---- ステータス ----
 	float speed_ = 0.0f;
@@ -462,7 +611,6 @@ private:
 	KamataEngine::Vector3 smokeSize_;
 	std::unique_ptr<MyEngine::DustParticleManager> dustManager_;
 
-protected:
 	// ---- テクスチャ ----
 	EnemyState state_ = EnemyState::Idle;
 
@@ -486,4 +634,7 @@ protected:
 	uint32_t attackSEVoiceHandle_ = 0;
 	uint32_t hitSEVoiceHandle_ = 0;
 	uint32_t blownSEVoiceHandle_ = 0;
+
+protected:
+
 };

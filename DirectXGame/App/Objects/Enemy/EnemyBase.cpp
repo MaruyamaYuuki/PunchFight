@@ -46,9 +46,17 @@ void EnemyBase::Initialize(const EnemyData& data) {
 	attackSEDataHandle_ = audio_->LoadWave("audio/SE/punchSE.wav");
 	hitSEDataHandle_ = audio_->LoadWave("audio/SE/hitSE.wav");
 	blownSEDataHandle_ = audio_->LoadWave("audio/SE/blownSE.wav");
+
+	ChangeState<EnemyStateIdle>();
 }
 
 void EnemyBase::Update(const Vector3&, const std::vector<std::unique_ptr<EnemyBase>>&) {
+	UpdateBasicState();
+
+	if (enemyState_) {
+		enemyState_->Update(this);
+	}
+
 	if (isKnockBack_) {
 
 		knockbackTime_ += deltaTime_;
@@ -198,6 +206,21 @@ Vector3 EnemyBase::ComputeSeparation(const std::vector<std::unique_ptr<EnemyBase
 	return offset;
 }
 
+void EnemyBase::ChangeState(std::unique_ptr<BaseEnemyState> newState) {
+	// 1. 現在の状態があれば、終了処理（Exit）を呼ぶ
+	if (enemyState_) {
+		enemyState_->Exit(this);
+	}
+
+	// 2. 新しい状態に差し替え（古い状態は自動的にメモリ解放されます）
+	enemyState_ = std::move(newState);
+
+	// 3. 新しい状態の開始処理（Enter）を呼ぶ
+	if (enemyState_) {
+		enemyState_->Enter(this);
+	}
+}
+
 void EnemyBase::MoveTowardPlayer(const Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) {
 	Vector3 moveDir{0, 0, 0};
 
@@ -304,33 +327,8 @@ void EnemyBase::DoNormalAttack(const Vector3& playerPos) {
 }
 
 void EnemyBase::UpdateTextures() {
-	switch (state_) {
-	case EnemyState::Idle:
-		textureHandle_ = (facingDir_ > 0) ? RIdleTexture_ : LIdleTexture_;
-		break;
-	case EnemyState::Walking: {
-		// 0,1,2,3 のループを配列で
-		static const int walkPattern[4] = {0, 1, 2, 3};
-
-		int texIndex = walkPattern[walkFrame_];
-		textureHandle_ = (facingDir_ > 0) ? RWalkTexture_[texIndex] : LWalkTexture_[texIndex];
-		break;
-	}
-	case EnemyState::AttackWait:
-		textureHandle_ = (facingDir_ > 0) ? RWaitTexture_ : LWaitTexture_;
-		break;
-	case EnemyState::Attacking:
-		textureHandle_ = (facingDir_ > 0) ? RAttackTexture_ : LAttackTexture_;
-		break;
-	case EnemyState::Stunned:
-		textureHandle_ = (facingDir_ > 0) ? RStunTexture_ : LStunTexture_;
-		break;
-	case EnemyState::Knockback:
-		textureHandle_ = (facingDir_ > 0) ? RStunTexture_ : LStunTexture_;
-		break;
-	case EnemyState::Dead:
-			textureHandle_ = (facingDir_ > 0) ? RStunTexture_ : LStunTexture_;
-		break;
+	if (enemyState_) {
+		textureHandle_ = enemyState_->GetTexture(this);
 	}
 }
 
@@ -341,12 +339,22 @@ bool EnemyBase::IsMovementInterrupted() const {
 
 void EnemyBase::UpdateBasicState() {
 	// 共通のステータス更新処理
-	if (isKnockBack_)
-		state_ = EnemyState::Knockback;
-	else if (hp_ <= 0)
-		state_ = EnemyState::Dead;
-	else if (isStun_)
-		state_ = EnemyState::Stunned;
+	if (isKnockBack_) {
+		if (state_ != EnemyState::Knockback) {
+			state_ = EnemyState::Knockback;
+			ChangeState<EnemyStateKnockback>();
+		}
+	} else if (hp_ <= 0) {
+		if (state_ != EnemyState::Dead) {
+			state_ = EnemyState::Dead;
+			ChangeState<EnemyStateDead>();
+		}
+	} else if (isStun_) {
+		if (state_ != EnemyState::Stunned) {
+			state_ = EnemyState::Stunned;
+			ChangeState<EnemyStateStunned>();
+		}
+	}
 
 	if (isKnockBack_ || isStun_ || hp_ <= 0) {
 		isAttackMode_ = false;
