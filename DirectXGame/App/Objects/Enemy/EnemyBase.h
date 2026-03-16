@@ -502,6 +502,12 @@ public:
 	// テンプレート版（ChangeState<EnemyStateIdle>() のように呼べて便利です）
 	template<class T> void ChangeState() { ChangeState(std::make_unique<T>()); }
 
+	/// <summary>
+	/// 動きを止めるべき状態かどうかを判定する仮想関数
+	/// </summary>
+	/// <returns>基本ルール：ノックバック中、スタン中、死亡時は0を返す</returns>
+	virtual bool IsMovementInterrupted() const;
+
 protected:
 
 	/// <summary>
@@ -529,16 +535,7 @@ protected:
 	/// </summary>
 	virtual void UpdateTextures();
 
-	/// <summary>
-	/// 動きを止めるべき状態かどうかを判定する仮想関数
-	/// </summary>
-	/// <returns>基本ルール：ノックバック中、スタン中、死亡時は0を返す</returns>
-	virtual bool IsMovementInterrupted() const;
 
-	/// <summary>
-	/// 状態を自動で更新するヘルパー関数
-	/// </summary>
-	void UpdateBasicState();
 
 private:
 	MyEngine::GameConfigManager* cfg_ = nullptr;

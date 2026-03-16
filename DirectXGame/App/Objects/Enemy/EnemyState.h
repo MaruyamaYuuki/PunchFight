@@ -77,3 +77,11 @@ public:
 	void Update(EnemyBase* enemy) override;
 	uint32_t GetTexture(EnemyBase* enemy) override;
 };
+
+/// <summary> 離脱状態（ヒット＆アラン） </summary>
+class EnemyStateRetreat : public BaseEnemyState {
+public:
+public:
+	void Update(EnemyBase* enemy) override;
+	uint32_t GetTexture(EnemyBase* enemy) override;
+};

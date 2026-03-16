@@ -36,64 +36,40 @@ void FastEnemy::Initialize(const EnemyData& data) {
 void FastEnemy::Update(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) {
 	// 1. 中断状態のチェック
 	if (IsMovementInterrupted()) {
-		UpdateBasicState();
 		EnemyBase::Update(playerPos, allEnemies);
 		return;
 	}
 
-	// 2. 離脱（ヒット＆アラン）処理
-	if (isRetreating_) {
-		retreatTimer_ -= GetDeltaTime();
+	// 2. 攻撃終了の検知用
+	bool wasAttacking = IsAttacking();
 
-		// プレイヤーから離れる方向に移動
-		float retreatDir = (playerPos.x > GetPosition().x) ? -1.0f : 1.0f;
-		AddPositionX(retreatDir * GetSpeed() * retreatSpeedMultiplier_);
+	// 3. 通常の追従・攻撃ロジック
+	if (GetState() == EnemyState::Idle || GetState() == EnemyState::Walking) {
+		Vector3 toPlayer = playerPos - GetPosition();
+		float dist = Length(toPlayer);
 
-		SetFacingDir(retreatDir);
-		SetState(EnemyState::Walking);
-
-		if (retreatTimer_ <= 0.0f) {
-			isRetreating_ = false;
-			ResetAttackCooldown();
+		if (dist <= GetAttackRange() && GetAttackCoolDownTimer() <= 0.0f) {
+			SetAttackMode(true);
 		}
 
-		EnemyBase::Update(playerPos, allEnemies);
-		return;
+		if (IsAttackMode()) {
+			AttackProcess(playerPos);
+		} else {
+			MoveTowardPlayer(playerPos, allEnemies);
+			// 状態が変わったことをステートクラスに伝える
+			if (GetState() != EnemyState::Walking)
+				ChangeState<EnemyStateWalking>();
+		}
 	}
 
-	// 3. 通常の追従・攻撃処理
-	Vector3 toPlayer = playerPos - GetPosition();
-	float dist = Length(toPlayer);
-
-	// 攻撃前の状態を記録しておく
-	bool wasAttackMode = IsAttackMode();
-
-	// 攻撃範囲内かつクールタイムが終わっていれば攻撃開始
-	if (dist <= GetAttackRange() && !IsAttackMode() && GetAttackCoolDownTimer() <= 0.0f) {
-		SetAttackMode(true);
+	// ★重要：攻撃が終わった瞬間に「離脱ステート」へ切り替える
+	if (wasAttacking && !IsAttacking()) {
+		ChangeState<EnemyStateRetreat>();
 	}
 
-	if (IsAttackMode()) {
-		AttackProcess(playerPos);
-	} else {
-		// プレイヤーを追いかける
-		MoveTowardPlayer(playerPos, allEnemies);
-		SetState(EnemyState::Walking);
-	}
-
-	// ★修正のキモ：攻撃モードが「ON」から「OFF」に切り替わった瞬間を検知
-	if (wasAttackMode && !IsAttackMode()) {
-		StartRetreat();
-	}
-
-	// プレイヤーの方向を向く（攻撃中・離脱中でない場合のみ）
-	if (!IsAttackMode() && !isRetreating_ && std::abs(toPlayer.x) > 0.01f) {
-		SetFacingDir((toPlayer.x > 0) ? 1.0f : -1.0f);
-	}
-
+	// 親クラスの更新
 	EnemyBase::Update(playerPos, allEnemies);
 }
-
 void FastEnemy::StartRetreat() {
 	isRetreating_ = true;
 	retreatTimer_ = retreatDuration_;

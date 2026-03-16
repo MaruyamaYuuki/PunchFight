@@ -51,8 +51,6 @@ void EnemyBase::Initialize(const EnemyData& data) {
 }
 
 void EnemyBase::Update(const Vector3&, const std::vector<std::unique_ptr<EnemyBase>>&) {
-	UpdateBasicState();
-
 	if (enemyState_) {
 		enemyState_->Update(this);
 	}
@@ -151,6 +149,7 @@ void EnemyBase::OnHit(int32_t damage, const Vector3& attackDir) {
 
 		hp_ = 0;
 		isKnockBack_ = true;
+		ChangeState<EnemyStateKnockback>();
 		knockbackTime_ = 0.0f;
 
 		// スマブラ風 初速
@@ -162,6 +161,7 @@ void EnemyBase::OnHit(int32_t damage, const Vector3& attackDir) {
 		hitSEVoiceHandle_ = audio_->PlayWave(hitSEDataHandle_, false, 0.5f);
 
     	isStun_ = true;
+		ChangeState<EnemyStateStunned>();
      	stunTimer_ = stunDuration_;
     	stunShakeTime_ = 0.0f;
     	originalPosition_ = worldTransform_.translation_;
@@ -335,30 +335,4 @@ void EnemyBase::UpdateTextures() {
 bool EnemyBase::IsMovementInterrupted() const {
 	// 基本ルール：ノックバック中、スタン中、死亡時は動きを止める
 	return isKnockBack_ || isStun_ || hp_ <= 0;
-}
-
-void EnemyBase::UpdateBasicState() {
-	// 共通のステータス更新処理
-	if (isKnockBack_) {
-		if (state_ != EnemyState::Knockback) {
-			state_ = EnemyState::Knockback;
-			ChangeState<EnemyStateKnockback>();
-		}
-	} else if (hp_ <= 0) {
-		if (state_ != EnemyState::Dead) {
-			state_ = EnemyState::Dead;
-			ChangeState<EnemyStateDead>();
-		}
-	} else if (isStun_) {
-		if (state_ != EnemyState::Stunned) {
-			state_ = EnemyState::Stunned;
-			ChangeState<EnemyStateStunned>();
-		}
-	}
-
-	if (isKnockBack_ || isStun_ || hp_ <= 0) {
-		isAttackMode_ = false;
-		isAttacking_ = false;
-		attackHitBox_.active = false;
-	}
 }
