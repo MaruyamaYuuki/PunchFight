@@ -32,7 +32,6 @@ void NormalEnemy::Update(const Vector3& playerPos, const std::vector<std::unique
 
     // ===== ノックバック中・スタン中・ノックアウト中は何もしない =====
 	if (IsMovementInterrupted()) {
-		UpdateBasicState();
 		EnemyBase::Update(playerPos, allEnemies);
 		return;
 	}
