@@ -196,7 +196,7 @@
       "kKnockbackDragFactor": 0.95,
       "kAttackDuration": 1.0,
       "kAttackCooldown": 1.0,
-      "kStunDuration": 1.0,
+      "kStunDuration": 0.5,
       "kStunShakeAmplitude": 0.05,
       "kStunShakeSpeed": 80.0,
       "kSmokeSpawnInterval": 0.05,
