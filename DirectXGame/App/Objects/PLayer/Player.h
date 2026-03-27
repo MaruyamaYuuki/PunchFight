@@ -177,6 +177,12 @@ public:
 	bool DidSpecialAttack() const { return justSpecialAttacked_; }
 
 	/// <summary>
+	/// プレイヤーの体力を設定する
+	/// </summary>
+	/// <param name="hp">体力</param>
+	void SetHP(int32_t hp) { HP_ = hp; }
+
+	/// <summary>
 	/// X軸での移動限界座標を設定する
 	/// </summary>
 	/// <param name="limit">移動限界</param>

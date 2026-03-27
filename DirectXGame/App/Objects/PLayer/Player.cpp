@@ -77,7 +77,7 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 	RRightPunchTexture_ = TextureManager::Load("playerTextures/RRightPunch.png");
 	RUppercutTexture_ = TextureManager::Load("playerTextures/RUppercut.png");
 	RKnockDownTexture_[0] = TextureManager::Load("playerTextures/RKnockDown.png");
-	RKnockDownTexture_[1] = TextureManager::Load("playerTextures/RKnockDown.png");
+	RKnockDownTexture_[1] = TextureManager::Load("playerTextures/RKnockDown2.png");
 	RRunTexture_[0] = TextureManager::Load("playerTextures/RRun1.png");
 	RRunTexture_[1] = TextureManager::Load("playerTextures/RRun2.png");
 	RRunTexture_[2] = TextureManager::Load("playerTextures/RRun3.png");
@@ -110,9 +110,9 @@ void Player::Update() {
     	Move(cmd);
 
     	// 攻撃入力チェック
-    	if (input_->TriggerKey(DIK_J)) { // Jキーでパンチ
+    	if (cmd.doAttack) { // Jキーでパンチ
     		Attack();
-		} else if (input_->TriggerKey(DIK_K)) {
+		} else if (cmd.doSpecialAttack) {
 			SpecialAttack();
 		}
 	}

@@ -51,8 +51,9 @@ void TitleScene::Initialize() {
 	titleSprite_.reset(Sprite::Create(textureHandle_, titlePos_, {1, 1, 1, 1}, {0.5f, 0.5f}));
 	titleSprite_->SetSize(titleSize_);
 
-	textureHandle_ = TextureManager::Load("eStart.png");
-	startSprite_.reset(Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1, 1, 1, 0}, {0.5f, 0.5f}));
+	keyTexture_ = TextureManager::Load("eStart.png");
+	padTexture_ = TextureManager::Load("padStart.png");
+	startSprite_.reset(Sprite::Create(keyTexture_, {0.0f, 0.0f}, {1, 1, 1, 0}, {0.5f, 0.5f}));
 	startSprite_->SetPosition({640.0f, 500.0f});
 
 	hitSEDataHandle_ = audio_->LoadWave("audio/SE/hitSE.wav");
@@ -72,7 +73,11 @@ void TitleScene::Initialize() {
 void TitleScene::Update() { 
 	Input::GetInstance()->GetJoystickState(0, state_);
 	Input::GetInstance()->GetJoystickStatePrevious(0, preState_);
-	isAButtonPressed_ = (state_.Gamepad.wButtons & XINPUT_GAMEPAD_A) && !(preState_.Gamepad.wButtons & XINPUT_GAMEPAD_A);
+
+	isPadConnected_ = Input::GetInstance()->GetJoystickState(0, state_);
+	Input::GetInstance()->GetJoystickStatePrevious(0, preState_);
+
+	isBButtonPressed_ = (state_.Gamepad.wButtons & XINPUT_GAMEPAD_B) && !(preState_.Gamepad.wButtons & XINPUT_GAMEPAD_B);
 
 	for (int32_t i = 0; i < 2; i++) {
 		bgPosX_[i] -= bgScrollSpeed_;
@@ -97,6 +102,12 @@ void TitleScene::Update() {
 	if (fade_->IsFinished()) {
 		fade_->Stop();
 		isFinished_ = true;
+	}
+
+	if (isPadConnected_) {
+		startSprite_->SetTextureHandle(padTexture_);
+	} else {
+		startSprite_->SetTextureHandle(keyTexture_);
 	}
 }
 

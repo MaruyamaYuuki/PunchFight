@@ -53,7 +53,7 @@
           },
           {"triggerX": 30.0,
            "enemies": [
-            {"type": "Power", "pos": [40,1,0]}
+            {"type": "Fast", "pos": [40,1,0]}
            ]
           },
           {"triggerX": 45.0,

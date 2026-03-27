@@ -6,6 +6,7 @@
 #include "../../Engine/Math/WorldTransformEx.h"
 #include "../../Engine/Camera/CameraController.h"
 #include "../../Engine/Rendering/UI.h"
+#include "../../Engine/Rendering/UIInputController.h"
 #include "../Objects/StageManager.h"
 #include "../Objects/Player/Player.h"
 #include "../Objects/Enemy/EnemyManager.h"
@@ -160,6 +161,8 @@ private:
 	KamataEngine::Input* input_ = nullptr;
 	KamataEngine::Audio* audio_ = nullptr;
 	MyEngine::GameConfigManager* cfg_ = nullptr;
+	std::unique_ptr<MyEngine::UIInputController> uiInput_;
+	UICommand cmd;
 
 	KamataEngine::Camera camera_;
 	MyEngine::WorldTransformEx worldTransform_;
@@ -177,6 +180,7 @@ private:
 	std::unique_ptr<KamataEngine::Sprite> blackSprite_;
 	std::unique_ptr<KamataEngine::Sprite> resetTextSprite_;
 	std::unique_ptr<KamataEngine::Sprite> guideTexture_;
+	std::unique_ptr<KamataEngine::Sprite> gameOverTextGuideSprite_;
 
 	uint32_t startGongSEDataHandle_ = 0;
 	uint32_t bgmDataHandle_ = 0;

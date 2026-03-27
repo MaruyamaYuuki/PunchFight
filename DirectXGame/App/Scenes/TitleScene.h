@@ -76,6 +76,8 @@ private:
 	MyEngine::WorldTransformEx worldTransform_;
 
 	uint32_t textureHandle_ = 0;
+	uint32_t keyTexture_ = 0;
+	uint32_t padTexture_ = 0;
 
     std::array<std::unique_ptr<KamataEngine::Sprite>, 2> titleBackSprite_;
 	std::unique_ptr<KamataEngine::Sprite> titleSprite_;
@@ -130,7 +132,7 @@ private:
 	uint32_t titleBGMDataHandle_ = 0;
 	uint32_t titleBGMVoiceHandle_ = 0;
 
-	bool isAButtonPressed_ = false;
+	bool isBButtonPressed_ = false;
 
-
+	bool isPadConnected_ = false;
 };

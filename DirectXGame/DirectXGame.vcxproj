@@ -309,6 +309,8 @@
     <ClInclude Include="App\Objects\PLayer\PlayerStructs.h" />
     <ClInclude Include="App\Objects\PLayer\PlayerInputController.h" />
     <ClInclude Include="App\Objects\Enemy\FastEnemy.h" />
+    <ClInclude Include="Engine\Rendering\UICommand.h" />
+    <ClInclude Include="Engine\Rendering\UIInputController.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Engine\Core\IconResource.rc" />

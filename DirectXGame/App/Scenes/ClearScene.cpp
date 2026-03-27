@@ -28,13 +28,14 @@ void ClearScene::Initialize() {
 	modelBoxFrame_.reset(Model::CreateFromOBJ("boxFrame", true));
 
 	textureHandle_ = TextureManager::Load("clearScene/clearBack.png");
-	backTexture_ = Sprite::Create(textureHandle_, {0.0f, 0.0f});
+	backSprite_ = Sprite::Create(textureHandle_, {0.0f, 0.0f});
 	textureHandle_ = TextureManager::Load("clearScene/clearText.png");
-	clearTextTexture_ = Sprite::Create(textureHandle_, {640.0f, 200.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
+	clearSprite_ = Sprite::Create(textureHandle_, {640.0f, 200.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
 	clearScale_ = 0.2f;
-	clearTextTexture_->SetSize({0.0f, 0.0f}); // テクスチャサイズは拡大で調整するので0でOK
-	textureHandle_ = TextureManager::Load("clearScene/keyGuide.png");
-	pushSpaceTexture_ = Sprite::Create(textureHandle_, {640.0f, 360.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
+	clearSprite_->SetSize({0.0f, 0.0f}); // テクスチャサイズは拡大で調整するので0でOK
+	keyPushTexture_ = TextureManager::Load("clearScene/keyGuide.png");
+	padPushTexture_ = TextureManager::Load("clearScene/padGuide.png");
+	pushGuideSprite_ = Sprite::Create(keyPushTexture_, {640.0f, 360.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
 
 	player_ = std::make_unique<Player>();
 	player_->Initialize(modelPlayer_.get(), modelBoxFrame_.get(), modelBoxFrame_.get());
@@ -47,6 +48,14 @@ void ClearScene::Initialize() {
 }
 
 void ClearScene::Update() {
+	Input::GetInstance()->GetJoystickState(0, state_);
+	Input::GetInstance()->GetJoystickStatePrevious(0, preState_);
+
+	isPadConnected_ = Input::GetInstance()->GetJoystickState(0, state_);
+	Input::GetInstance()->GetJoystickStatePrevious(0, preState_);
+
+	isAButtonPressed_ = (state_.Gamepad.wButtons & XINPUT_GAMEPAD_A) && !(preState_.Gamepad.wButtons & XINPUT_GAMEPAD_A);
+
 	switch (phase_) {
 	case ClearScene::Phase::kWait:
 		UpdateWait();
@@ -58,12 +67,18 @@ void ClearScene::Update() {
 		UpdateFadeOut();
 		break;
 	}
+
+	if (isPadConnected_) {
+		pushGuideSprite_->SetTextureHandle(padPushTexture_);
+	} else {
+		pushGuideSprite_->SetTextureHandle(keyPushTexture_);
+	}
 }
 
 void ClearScene::Draw() {
 	// 背景スプライト描画前処理
 	Sprite::PreDraw(dxCommon_->GetCommandList());
-	backTexture_->Draw();
+	backSprite_->Draw();
 	// スプライト描画後処理
 	Sprite::PostDraw();
 	dxCommon_->ClearDepthBuffer();
@@ -79,9 +94,9 @@ void ClearScene::Draw() {
 	// 前景スプライト描画前処理
 	Sprite::PreDraw(dxCommon_->GetCommandList());
 	if (player_->IsVictory()) {
-		clearTextTexture_->Draw();
+		clearSprite_->Draw();
 		if (pushSpaceShown_) {
-			pushSpaceTexture_->Draw();
+			pushGuideSprite_->Draw();
 		}
 	}
 	fade_->Draw();
@@ -129,7 +144,7 @@ void ClearScene::UpdateClearText() {
 
 	const float baseW = cfg_->getFloat("Scene.Clear.ClearText.kClearTextBaseWidth");
 	const float baseH = cfg_->getFloat("Scene.Clear.ClearText.kClearTextBaseHeight");
-	clearTextTexture_->SetSize({baseW * clearScale_, baseH * clearScale_});
+	clearSprite_->SetSize({baseW * clearScale_, baseH * clearScale_});
 
 	if (clearScale_ >= kScaleEnd && clearWaitTimer_ > 0.0f) {
 		clearWaitTimer_ -= deltaTime_;
@@ -143,7 +158,7 @@ void ClearScene::UpdateInput() {
 	if (!pushSpaceShown_)
 		return;
 
-	if (input_->TriggerKey(DIK_E)) {
+	if (input_->TriggerKey(DIK_E) || isAButtonPressed_) {
 		fade_->Start(MyEngine::Fade::Status::AlphaFadeOut, cfg_->getFloat("Scene.Clear.kFadeOutDuration"));
 		phase_ = Phase::kFadeOut;
 	}

@@ -71,19 +71,30 @@ private:
 	/// </summary>
 	void UpdateAbilityCoolTime();
 
+	/// <summary>
+	/// ゲームパッド接続時のテクスチャの切り替え関数
+	/// </summary>
+	void UpdateControlUI();
+
 private:
 	GameConfigManager* cfg_ = nullptr;
 
 	uint32_t textureHandle_ = 0;
+	uint32_t keyBaseCtrlTexture_ = 0;
+	uint32_t padBaseCtrlTexture_ = 0;
+	uint32_t keySelectTexture_ = 0;
+	uint32_t keyCheckSelectTexture_ = 0;
+	uint32_t padSelectTexture_ = 0;
+	uint32_t keyCtrlTexture_ = 0;
+	uint32_t padCtrlTexture_ = 0;
 
 	KamataEngine::Sprite* hpBarSprite_ = nullptr;
 	KamataEngine::Sprite* hpSprite_ = nullptr;
 	KamataEngine::Sprite* hpBackSprite_ = nullptr;
 	KamataEngine::Sprite* dashShadowSprite_ = nullptr;
 	KamataEngine::Sprite* spShadowSprite_ = nullptr;
-	KamataEngine::Sprite* keyCTRLSprite_ = nullptr;
-	KamataEngine::Sprite* padCTRLSprite_ = nullptr;
 	KamataEngine::Sprite* ctrlSprite_ = nullptr;
+	KamataEngine::Sprite* baseCtrlSprite_ = nullptr;
 	KamataEngine::Sprite* pauseSprite_ = nullptr;
 	KamataEngine::Sprite* selectSprite_[2];
 	KamataEngine::Sprite* selectCursorSprite_[2];
@@ -108,6 +119,9 @@ private:
 	KamataEngine::Vector2 selectKeyPos_ = {115.0f, 683.0f};
 
 	Player* player_ = nullptr;
+
+	bool isPadConnected_ = false;
+	XINPUT_STATE state_{};
 };
 }
 
