@@ -69,6 +69,8 @@ void GameScene::Initialize() {
 	resetTextSprite_.reset(Sprite::Create(textureHandle_, {640.0f, 500.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
 	textureHandle_ = TextureManager::Load("scrollGuide.png");
 	guideTexture_.reset(Sprite::Create(textureHandle_, {1100.0f, 450.0f},{1, 1, 1, 1}, {0.5f, 0.5f}));
+	textureHandle_ = TextureManager::Load("gameOverGuide.png");
+	gameOverTextGuideSprite_.reset(Sprite::Create(textureHandle_, {640.0f, 400.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
 
 	startGongSEDataHandle_ = audio_->LoadWave("audio/SE/startGong.wav");
 	bgmDataHandle_ = audio_->LoadWave("audio/BGM/gameBGM.wav");
@@ -102,9 +104,12 @@ void GameScene::Initialize() {
 
 	prevTime_ = std::chrono::high_resolution_clock::now();
 	waitTimer_ = 0.0f;
+
+	uiInput_ = std::make_unique<MyEngine::UIInputController>();
 }
 
 void GameScene::Update() {
+	cmd = uiInput_->GetCommand();
 	ChangePhase();
 	GameOver();
 
@@ -116,7 +121,7 @@ void GameScene::Update() {
 		player_->UpdateWorldTransform();
 		break;
 	case GameScene::Phase::kPlay:
-		if (input_->TriggerKey(DIK_ESCAPE)) {
+		if (cmd.pause) {
 			if (isPaused_) {
 				ExitPause();
 			} else {
@@ -258,9 +263,6 @@ void GameScene::ChangePhase() {
 		}
 		break;
 	case GameScene::Phase::kPlay:
-		if (input_->TriggerKey(DIK_T)) {
-			player_->OnHit(5);
-		}
 		if (!moveLimit_.empty() && player_->GetWorldTransform().translation_.x >= moveLimit_.back()) {
 			audio_->StopWave(bgmVoiceHandle_);
 			phase_ = Phase::kFadeOut;
@@ -360,26 +362,22 @@ void GameScene::UpdatePauseInput() {
 
 void GameScene::UpdatePauseMenuInput() {
 
-	// 上移動
-	if (input_->TriggerKey(DIK_W)) {
-		pauseSelectIndex_ = (pauseSelectIndex_ + 1) % 2;
+	if (cmd.move != 0) {
+		pauseSelectIndex_ += cmd.move;
+		pauseSelectIndex_ = std::clamp(pauseSelectIndex_, 0, 1);
 	}
 
-	// 下移動
-	if (input_->TriggerKey(DIK_S)) {
-		pauseSelectIndex_ = (pauseSelectIndex_ + 1) % 2;
-	}
+	if (cmd.decide) {
 
-	if (input_->TriggerKey(DIK_SPACE)) {
 		switch (pauseSelectIndex_) {
+
 		case 0: // 再開
-			isPaused_ = false;
-			ui_->SetPause(false);
+			ExitPause();
 			break;
 
 		case 1: // タイトル
 			isBackTitleChecked_ = true;
-			checkBackTitleIndex_ = 1; // 初期は「No」
+			checkBackTitleIndex_ = 1;
 			ui_->SetBackTitleCheck(true);
 			break;
 		}
@@ -391,11 +389,11 @@ void GameScene::UpdatePauseMenuInput() {
 void GameScene::UpdateBackTitleCheckInput() {
 
 	// 左右で Yes / No 切り替え
-	if (input_->TriggerKey(DIK_A) || input_->TriggerKey(DIK_D)) {
+	if (cmd.moveLR != 0){
 		checkBackTitleIndex_ = 1 - checkBackTitleIndex_;
 	}
 
-	if (input_->TriggerKey(DIK_SPACE)) {
+	if (cmd.decide) {
 		if (checkBackTitleIndex_ == 0) {
 			// Yes → タイトルへ
 			backToTitle_ = true;
@@ -461,7 +459,7 @@ void GameScene::GameOver() {
 		}
 
 		// リトライ入力
-		if (input_->TriggerKey(DIK_R)) {
+		if (cmd.decide) {
 			phase_ = Phase::kFadeOut;
 			fade_->Start(MyEngine::Fade::Status::FadeOut, fadeTime_);
 		}

@@ -26,12 +26,10 @@ void UI::Initialize(::Player* player) {
 	dashShadowSprite_->SetSize({64.0f, 0.0f});
 	spShadowSprite_ = Sprite::Create(textureHandle_, {178.0f, 58.0f});
 	spShadowSprite_->SetSize({64.0f, 0.0f});
-	textureHandle_ = TextureManager::Load("UI/keyCTRL.png");
-	keyCTRLSprite_ = Sprite::Create(textureHandle_, {5.0f, 5.0f});
-	textureHandle_ = TextureManager::Load("UI/padCTRL.png");
-	padCTRLSprite_ = Sprite::Create(textureHandle_, {5.0f, 5.0f});
-	textureHandle_ = TextureManager::Load("UI/baseCTRLTest.png");
-	ctrlSprite_ = Sprite::Create(textureHandle_, {5.0f, 130.0f});
+	keyCtrlTexture_ = TextureManager::Load("UI/keyCTRL.png");
+	ctrlSprite_ = Sprite::Create(keyCtrlTexture_, {5.0f, 5.0f});
+	keyBaseCtrlTexture_ = TextureManager::Load("UI/baseCTRLTest.png");
+	baseCtrlSprite_ = Sprite::Create(keyBaseCtrlTexture_, {5.0f, 130.0f});
 	textureHandle_ = TextureManager::Load("UI/pause.png");
 	pauseSprite_ = Sprite::Create(textureHandle_, {0.0f, 0.0f});
 	textureHandle_ = TextureManager::Load("UI/selectRestart.png");
@@ -52,10 +50,14 @@ void UI::Initialize(::Player* player) {
 	checkCursorSprite_[0] = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
 	textureHandle_ = TextureManager::Load("UI/checkCursor2.png");
 	checkCursorSprite_[1] = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
-	textureHandle_ = TextureManager::Load("UI/selectWS.png");
-	selectKeySprite_[0] = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
-	textureHandle_ = TextureManager::Load("UI/selectAD.png");
-	selectKeySprite_[1] = Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
+	keySelectTexture_ = TextureManager::Load("UI/selectWS.png");
+	selectKeySprite_[0] = Sprite::Create(keySelectTexture_, {0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
+	keyCheckSelectTexture_ = TextureManager::Load("UI/selectAD.png");
+	selectKeySprite_[1] = Sprite::Create(keyCheckSelectTexture_, {0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
+
+	padBaseCtrlTexture_ = TextureManager::Load("UI/padBaseCTRL.png");
+	padSelectTexture_ = TextureManager::Load("UI/selectPad.png");
+	padCtrlTexture_ = TextureManager::Load("UI/padCTRL.png");
 
 	checkFrameSprite_->SetPosition(checkPos_);
 	for (int i = 0; i < 2; i++) {
@@ -68,8 +70,12 @@ void UI::Initialize(::Player* player) {
 }
 
 void UI::Update() {
+	isPadConnected_ = KamataEngine::Input::GetInstance()->GetJoystickState(0, state_);
+
 	UpdateHPBar();
 	UpdateAbilityCoolTime();
+
+	UpdateControlUI();
 }
 
 void UI::Draw() {
@@ -78,8 +84,8 @@ void UI::Draw() {
 	hpBarSprite_->Draw();
 	dashShadowSprite_->Draw();
 	spShadowSprite_->Draw();
-	keyCTRLSprite_->Draw();
 	ctrlSprite_->Draw();
+	baseCtrlSprite_->Draw();
 
 	if (isPaused_) {
 		pauseSprite_->Draw();
@@ -174,5 +180,22 @@ void UI::UpdateAbilityCoolTime() {
 	float newSPHeight = spIconSize.y * spRate;
 
 	spShadowSprite_->SetSize({spIconSize.x, newSPHeight});
+}
+void UI::UpdateControlUI() {
+	if (isPadConnected_) {
+		// パッド用UI
+		ctrlSprite_->SetTextureHandle(padCtrlTexture_);
+		baseCtrlSprite_->SetTextureHandle(padBaseCtrlTexture_);
+
+		selectKeySprite_[0]->SetTextureHandle(padSelectTexture_);
+		selectKeySprite_[1]->SetTextureHandle(padSelectTexture_);
+	} else {
+		// キーボード用UI
+		ctrlSprite_->SetTextureHandle(keyCtrlTexture_);
+		baseCtrlSprite_->SetTextureHandle(keyBaseCtrlTexture_);
+
+		selectKeySprite_[0]->SetTextureHandle(keySelectTexture_);
+		selectKeySprite_[1]->SetTextureHandle(keyCheckSelectTexture_);
+	}
 }
 } // namespace MyEngine

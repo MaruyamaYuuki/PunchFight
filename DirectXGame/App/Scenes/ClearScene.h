@@ -91,6 +91,8 @@ private:
 	void UpdateFadeOut();
 
 private:
+	XINPUT_STATE state_, preState_;
+
 	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
 	KamataEngine::Input* input_ = nullptr;
 	KamataEngine::Audio* audio_ = nullptr;
@@ -102,10 +104,12 @@ private:
 	std::unique_ptr<KamataEngine::Model> modelBoxFrame_;
 
 	uint32_t textureHandle_ = 0;
+	uint32_t keyPushTexture_ = 0;
+	uint32_t padPushTexture_ = 0;
 
-	KamataEngine::Sprite* backTexture_ = 0;
-	KamataEngine::Sprite* clearTextTexture_ = 0;
-	KamataEngine::Sprite* pushSpaceTexture_ = 0;
+	KamataEngine::Sprite* backSprite_ = 0;
+	KamataEngine::Sprite* clearSprite_ = 0;
+	KamataEngine::Sprite* pushGuideSprite_ = 0;
 
 	std::unique_ptr<Player> player_;
 
@@ -124,4 +128,7 @@ private:
 	bool clearStart_ = false;
 	float clearWaitTimer_ = 0.0f; // 拡大後の待機タイマー
 	bool pushSpaceShown_ = false; // 一度だけ表示するフラグ
+
+	bool isAButtonPressed_ = false;
+	bool isPadConnected_ = false;
 };
