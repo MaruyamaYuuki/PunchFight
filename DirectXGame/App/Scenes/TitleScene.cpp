@@ -77,7 +77,7 @@ void TitleScene::Update() {
 	isPadConnected_ = Input::GetInstance()->GetJoystickState(0, state_);
 	Input::GetInstance()->GetJoystickStatePrevious(0, preState_);
 
-	isBButtonPressed_ = (state_.Gamepad.wButtons & XINPUT_GAMEPAD_B) && !(preState_.Gamepad.wButtons & XINPUT_GAMEPAD_B);
+	isAButtonPressed_ = (state_.Gamepad.wButtons & XINPUT_GAMEPAD_A) && !(preState_.Gamepad.wButtons & XINPUT_GAMEPAD_A);
 
 	for (int32_t i = 0; i < 2; i++) {
 		bgPosX_[i] -= bgScrollSpeed_;
