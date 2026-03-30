@@ -132,7 +132,7 @@ private:
 	uint32_t titleBGMDataHandle_ = 0;
 	uint32_t titleBGMVoiceHandle_ = 0;
 
-	bool isAButtonPressed_ = false;
+	bool isBButtonPressed_ = false;
 
 	bool isPadConnected_ = false;
 };

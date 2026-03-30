@@ -77,7 +77,7 @@ void TitleScene::Update() {
 	isPadConnected_ = Input::GetInstance()->GetJoystickState(0, state_);
 	Input::GetInstance()->GetJoystickStatePrevious(0, preState_);
 
-	isAButtonPressed_ = (state_.Gamepad.wButtons & XINPUT_GAMEPAD_A) && !(preState_.Gamepad.wButtons & XINPUT_GAMEPAD_A);
+	isBButtonPressed_ = (state_.Gamepad.wButtons & XINPUT_GAMEPAD_B) && !(preState_.Gamepad.wButtons & XINPUT_GAMEPAD_B);
 
 	for (int32_t i = 0; i < 2; i++) {
 		bgPosX_[i] -= bgScrollSpeed_;
@@ -211,7 +211,7 @@ void TitleScene::TitleAnimation() {
 void TitleScene::SpriteFlashUpdate() {
 	if (titleAnimeFinished_) {
 		if (!titleBlinking_ && !titleBlinkFinished_) {
-			if (input_->TriggerKey(DIK_E) || isAButtonPressed_) {
+			if (input_->TriggerKey(DIK_E) || isBButtonPressed_) {
 				audio_->StopWave(titleBGMVoiceHandle_);
 				doubleHitSEVoiceHandle_ = audio_->PlayWave(doubleHitSEDataHandle_, false, seVolume_);
 				titleBlinking_ = true;
