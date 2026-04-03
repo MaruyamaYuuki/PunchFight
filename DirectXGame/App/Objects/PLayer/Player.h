@@ -201,6 +201,12 @@ public:
 	void SetRotateX(float rotX) { worldTransform_.rotation_.x = rotX; }
 
 	/// <summary>
+	/// プレイヤーの移動制限をするかどうかを設定する
+	/// </summary>
+	/// <param name="flag">移動制限許可フラグ</param>
+	void SetMoveLimitEnabled(bool flag) { enableMoveLimit_ = flag; }
+
+	/// <summary>
 	/// クリアシーン用の演出アニメーション制御
 	/// </summary>
 	void ClearAnimation();
@@ -374,6 +380,7 @@ private:
 	// ---クリア演出用 ---
 	bool isGoal_ = false;
 	bool isVictory_ = false;
+	bool enableMoveLimit_ = true;
 	float poseWaitTimer_;
 
 	// --- パーティクル用 ---

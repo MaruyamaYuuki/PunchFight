@@ -41,6 +41,7 @@ void ClearScene::Initialize() {
 	player_->Initialize(modelPlayer_.get(), modelBoxFrame_.get(), modelBoxFrame_.get());
 	player_->SetTranslation(cfg_->getVector3("Player.kClearInitialPos"));
 	player_->SetRotateX(cfg_->getFloat("Player.kClearSceneRotateX"));
+	player_->SetMoveLimitEnabled(false);
 
 	fade_ = std::make_unique<Fade>();
 	fade_->Initialize();

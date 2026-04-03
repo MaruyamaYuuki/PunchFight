@@ -198,6 +198,8 @@ void Player::ClearAnimation() {
 	// ===== 共通関数を呼ぶ =====
 	Move(autoCmd);
 
+	smokeManager_->Update(deltaTime_);
+
 	TextureUpdate();
 	worldTransform_.UpdateMatrix();
 }
@@ -237,11 +239,14 @@ void Player::ApplyStepMovement() {
 }
 
 void Player::ApplyNormalMovement() {
+
 	worldTransform_.translation_.x += move_.x * moveSpeed_;
 	worldTransform_.translation_.z += move_.z * moveSpeed_;
 }
 
 void Player::ConstrainPosition() {
+	if (!enableMoveLimit_)
+		return;
 	worldTransform_.translation_.x = std::clamp(worldTransform_.translation_.x, -startMoveLimitX, endMoveLimitX_);
 	worldTransform_.translation_.z = std::clamp(worldTransform_.translation_.z, -moveLimitZ, minMoveLimitZ);
 }
