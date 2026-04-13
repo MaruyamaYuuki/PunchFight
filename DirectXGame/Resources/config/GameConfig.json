@@ -53,7 +53,7 @@
           },
           {"triggerX": 30.0,
            "enemies": [
-            {"type": "Fast", "pos": [40,1,0]}
+            {"type": "Power", "pos": [40,1,0]}
            ]
           },
           {"triggerX": 45.0,
@@ -188,7 +188,7 @@
 
   "Enemy": {
     "Default": {
-      "kWalkFrameInterval": 15,
+      "kWalkFrameInterval": 6,
       "kGravityAcceleration": 30.0,
       "kKnockbackDuration": 0.5,
       "kKnockbackBasePower": 25.0,
@@ -214,7 +214,7 @@
       },
       "Power": {
         "kTackleProbability": 0.3,
-        "kTackleChargeTime": 3.0,
+        "kTackleChargeTime": 1.0,
         "kTackleMoveTime": 0.4,
         "kTackleSpeed": 0.15,
 

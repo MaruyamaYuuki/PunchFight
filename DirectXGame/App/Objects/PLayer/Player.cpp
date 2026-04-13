@@ -81,6 +81,7 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 	RRunTexture_[0] = TextureManager::Load("playerTextures/RRun1.png");
 	RRunTexture_[1] = TextureManager::Load("playerTextures/RRun2.png");
 	RRunTexture_[2] = TextureManager::Load("playerTextures/RRun3.png");
+	RStunTexture_ = TextureManager::Load("playerTextures/RStun.png");
 	// 左向きテクスチャ
 	LPlayerTexture_ = TextureManager::Load("playerTextures/LPlayer.png");
 	LLeftPunchTexture_ = TextureManager::Load("playerTextures/LLeftPunch.png");
@@ -91,6 +92,7 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 	LRunTexture_[0] = TextureManager::Load("playerTextures/LRun1.png");
 	LRunTexture_[1] = TextureManager::Load("playerTextures/LRun2.png");
 	LRunTexture_[2] = TextureManager::Load("playerTextures/LRun3.png");
+	LStunTexture_ = TextureManager::Load("playerTextures/RStun.png");
 	// 気弾テクスチャ
 	SPTextureHandle_ = TextureManager::Load("playerTextures/RSpecial.png");
 	RSpecialTexture_ = TextureManager::Load("playerTextures/RSpecial.png");
@@ -104,18 +106,27 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 }
 
 void Player::Update() {
-	PlayerCommand cmd = inputController_->GetCommand();
+	bool isStunned = (stunTimer_ > 0);
 
-	if (HP_ > 0){
-    	Move(cmd);
-
-    	// 攻撃入力チェック
-    	if (cmd.doAttack) { // Jキーでパンチ
-    		Attack();
-		} else if (cmd.doSpecialAttack) {
-			SpecialAttack();
-		}
+	if (isStunned) {
+		stunTimer_--;
 	}
+
+	if (!isStunned) {
+    	PlayerCommand cmd = inputController_->GetCommand();
+
+    	if (HP_ > 0){
+        	Move(cmd);
+
+        	// 攻撃入力チェック
+        	if (cmd.doAttack) { // Jキーでパンチ
+        		Attack();
+    		} else if (cmd.doSpecialAttack) {
+    			SpecialAttack();
+    		}
+    	}
+	}
+
 
 	justSpecialAttacked_ = false;
 
@@ -397,6 +408,10 @@ void Player::SpecialAttackUpdate() {
 
 void Player::TextureUpdate() {
 	// 優先順位が高い順に判定し、確定したら return する
+	if (stunTimer_ > 0) {
+		ApplyStunTexture();
+		return;
+	}
 	if (isVictory_) {
 		ApplyVictoryTexture();
 		return;
@@ -458,6 +473,10 @@ void Player::ApplyVictoryTexture() {
 	textureHandle_ = RUppercutTexture_; 
 }
 
+void Player::ApplyStunTexture() { 
+	textureHandle_ = (facingDir_ > 0) ? RStunTexture_ : LStunTexture_; 
+}
+
 void Player::ApplyCommand(const PlayerCommand& cmd) {
 	// 1. 移動方向ベクトルのセット
 	move_ = cmd.moveDirection;
@@ -510,6 +529,9 @@ void Player::OnHit(int32_t damage) {
 	if (!isStepping_) {
     	HP_ -= damage;
 	}
+
+	stunTimer_ = 10; // 例：10フレーム
+
 	if (HP_ < 0) {
 		HP_ = 0;
 	} else {
