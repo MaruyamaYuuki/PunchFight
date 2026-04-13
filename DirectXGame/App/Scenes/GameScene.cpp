@@ -36,6 +36,7 @@ void GameScene::Initialize() {
 	cameraLimitZMin_ = cfg_->getFloat("Scene.Game.Area.kCameraLimitZMin");
 	cameraLimitZMax_ = cfg_->getFloat("Scene.Game.Area.kCameraLimitZMax");
 	stageNumber_ = cfg_->getInt("Scene.Game.StageDate.Stage1.kStageNumber");
+	maxStageNumber_ = cfg_->getInt("Scene.Game.MaxStageNumber");
 	stageRepeatCount_ = cfg_->getInt("Scene.Game.StageDate.Stage1.kRepeatCount");
 	fightTextPos_ = cfg_->getVector2("Scene.Game.FightTextAnime.kFightTextCenterPos");
 	fightTextSize_ = cfg_->getVector2("Scene.Game.FightTextAnime.kFightTextBaseSize");
@@ -47,7 +48,7 @@ void GameScene::Initialize() {
 	guideDuration_ = cfg_->getFloat("Scene.Game.Guide.kGuideDisplayDuration");
 	blinkInterval_ = cfg_->getFloat("Scene.Game.Guide.kGuideBlinkInterval");
 	maxBlinkCount_ = cfg_->getInt("Scene.Game.Guide.kGuideMaxBlinkCount");
-	enemySpawnData_ = cfg_->getJsonArray("Scene.Game.EnemySpawn.Areas");
+	enemySpawnData_ = cfg_->getJsonArray("Scene.Game.EnemySpawn.Stage" + std::to_string(stageNumber_) + ".Areas");
 
 	startTime_ = kInitialStartTime_;
 
@@ -263,7 +264,7 @@ void GameScene::ChangePhase() {
 		}
 		break;
 	case GameScene::Phase::kPlay:
-		if (!moveLimit_.empty() && player_->GetWorldTransform().translation_.x >= moveLimit_.back()) {
+		if (IsAllAreaCleared() && player_->GetWorldTransform().translation_.x >= moveLimit_.back()) {
 			audio_->StopWave(bgmVoiceHandle_);
 			phase_ = Phase::kFadeOut;
 			fade_->Start(MyEngine::Fade::Status::FadeOut, fadeTime_);
@@ -278,7 +279,12 @@ void GameScene::ChangePhase() {
     			phase_ = Phase::kFadeIn;
     			fade_->Start(Fade::Status::FadeIn, fadeTime_);
 			} else {
-				isFinished_ = true;
+				GoToNextStage();
+				ResetForNextStage();
+				if (!isFinished_) {
+					phase_ = Phase::kFadeIn;
+					fade_->Start(Fade::Status::FadeIn, fadeTime_);
+				}
 			}
 		}
 		break;
@@ -538,7 +544,6 @@ void GameScene::EnemyUpdate() {
 	// プレイヤー情報取得
 	KamataEngine::Vector3 playerPos = player_->GetWorldTransform().translation_;
 
-
 	// ----- 敵管理の更新 -----
 	enemyManager_->Update(playerPos);
 
@@ -660,4 +665,46 @@ void GameScene::CheckPlayerAttackToEnemies(const HitBox& attackHitBox, std::vect
 			e->OnHit(attackPower, dir);
 		}
 	}
+}
+
+bool GameScene::IsAllAreaCleared() const { 
+	for (bool cleared : areaClearedFlag_) {
+		if (!cleared) {
+			return false;
+		}
+	}
+	return true; 
+}
+
+void GameScene::GoToNextStage() { 
+	stageNumber_++; 
+
+	if (stageNumber_ > maxStageNumber_) {
+		isFinished_ = true;
+		return;
+	}
+
+	enemySpawnData_ = cfg_->getJsonArray("Scene.Game.EnemySpawn.Stage" + std::to_string(stageNumber_) + ".Areas");
+
+	// ステージの再初期化
+	stage_->Initialize(stageNumber_, stageRepeatCount_);
+}
+
+void GameScene::ResetForNextStage() {
+	// プレイヤー位置
+	player_->Reset();
+
+	// 敵・エリア
+	EnemyGenerate();
+	areaClearedFlag_.assign(areaClearedFlag_.size(), false);
+	guideOn_ = false;
+	guideTimer_ = 0.0f;
+	blinkCount_ = 0;
+
+	// カメラ
+	cameraController_->Reset();
+	cameraController_->SetMovableArea({0.0f, scrollArea_[0], cameraLimitZMin_, cameraLimitZMax_});
+
+	// UI
+	ui_->Reset();
 }

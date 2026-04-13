@@ -156,6 +156,12 @@ private:
 	/// <param name="attackDir">攻撃の向き（1.0f または -1.0f。ノックバック方向に使用）</param>
 	void CheckPlayerAttackToEnemies(const HitBox& attackHitBox, std::vector<EnemyBase*>& hitList, int attackPower, float attackDir);
 
+	bool IsAllAreaCleared() const;
+
+	void GoToNextStage();
+
+	void ResetForNextStage();
+
 private:
 	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
 	KamataEngine::Input* input_ = nullptr;
@@ -202,6 +208,7 @@ private:
 
 	uint32_t stageNumber_;
 	uint32_t stageRepeatCount_;
+	uint32_t maxStageNumber_;
 
 	float fadeTime_;
 
