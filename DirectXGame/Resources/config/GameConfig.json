@@ -12,6 +12,7 @@
     "Game": {
       "kReadyTime": 3.0,
       "kDebugPlayerDamage": 5,
+      "MaxStageNumber": 2,
 
       "Area": {
         "kMoveLimitX_Area": [20.0, 35.0, 50.0, 65.0, 80.0, 83.0],
@@ -43,49 +44,97 @@
       },
 
       "EnemySpawn": {
-        "Areas": [
-          {"triggerX": 15.0,
-           "enemies": [
-             {"type": "Normal", "pos": [26,1,-1]},
-             {"type": "Normal", "pos": [25,1,0]},
-             {"type": "Normal", "pos": [26,1,1]}
-           ]
-          },
-          {"triggerX": 30.0,
-           "enemies": [
-            {"type": "Power", "pos": [40,1,0]}
-           ]
-          },
-          {"triggerX": 45.0,
-           "enemies": [
-            {"type": "Normal", "pos": [53,1,-1]},
-            {"type": "Power", "pos": [54,1,0]},
-            {"type": "Normal", "pos": [53,1,1]}
-           ]
-          },
-          {"triggerX": 60.0,
-           "enemies":[
-            {"type": "Normal", "pos": [69,1,-1]},
-            {"type": "Normal", "pos": [68,1,0]},
-            {"type": "Normal", "pos": [69,1,1]},
+        "Stage1": {
 
-            {"type": "Normal", "pos": [44,1,-1]},
-            {"type": "Normal", "pos": [43,1,0]},
-            {"type": "Normal", "pos": [47,1,1]}
-           ]
-          },
-          {"triggerX": 75.0,
-           "enemies":[
-            {"type": "Normal", "pos": [86,1,-3]},
-            {"type": "Normal", "pos": [85,1,-2]},
-            {"type": "Power", "pos": [88,1,-0]},
-            {"type": "Normal", "pos": [85,1,-1]},
-            {"type": "Normal", "pos": [89,1,1]},
-            {"type": "Power", "pos": [84,1,3]},
-            {"type": "Normal", "pos": [83,1,2]}
-           ]
-          }
-        ]
+          "Areas": [
+            {"triggerX": 15.0,
+             "enemies": [
+              {"type": "Normal", "pos": [25,1,0]}
+             ]
+            },
+            {"triggerX": 30.0,
+             "enemies": [
+              {"type": "Power", "pos": [40,1,0]}
+             ]
+            },
+            {"triggerX": 45.0,
+             "enemies": [
+              {"type": "Normal", "pos": [53,1,-1]},
+              {"type": "Power", "pos": [54,1,0]},
+              {"type": "Normal", "pos": [53,1,1]}
+             ]
+            },
+            {"triggerX": 60.0,
+             "enemies":[
+              {"type": "Normal", "pos": [69,1,-1]},
+              {"type": "Normal", "pos": [68,1,0]},
+              {"type": "Normal", "pos": [69,1,1]},
+
+              {"type": "Normal", "pos": [44,1,-1]},
+              {"type": "Normal", "pos": [43,1,0]},
+              {"type": "Normal", "pos": [47,1,1]}
+             ]
+            },
+            {"triggerX": 75.0,
+             "enemies":[
+              {"type": "Normal", "pos": [86,1,-3]},
+              {"type": "Normal", "pos": [85,1,-2]},
+              {"type": "Power", "pos": [88,1,-0]},
+              {"type": "Normal", "pos": [85,1,-1]},
+              {"type": "Normal", "pos": [89,1,1]},
+              {"type": "Power", "pos": [84,1,3]},
+              {"type": "Normal", "pos": [83,1,2]}
+             ]
+            }
+          ]
+        },
+
+        "Stage2": {
+
+          "Areas": [
+            {"triggerX": 15.0,
+             "enemies": [
+              {"type": "Normal", "pos": [26,1,-1]},
+              {"type": "Normal", "pos": [25,1,0]},
+              {"type": "Normal", "pos": [26,1,1]}
+             ]
+            },
+            {"triggerX": 30.0,
+             "enemies": [
+              {"type": "Power", "pos": [40,1,0]}
+             ]
+            },
+            {"triggerX": 45.0,
+             "enemies": [
+              {"type": "Normal", "pos": [53,1,-1]},
+              {"type": "Power", "pos": [54,1,0]},
+              {"type": "Normal", "pos": [53,1,1]}
+             ]
+            },
+            {"triggerX": 60.0,
+             "enemies":[
+              {"type": "Normal", "pos": [69,1,-1]},
+              {"type": "Normal", "pos": [68,1,0]},
+              {"type": "Normal", "pos": [69,1,1]},
+
+              {"type": "Normal", "pos": [44,1,-1]},
+              {"type": "Normal", "pos": [43,1,0]},
+              {"type": "Normal", "pos": [47,1,1]}
+             ]
+            },
+            {"triggerX": 75.0,
+             "enemies":[
+              {"type": "Normal", "pos": [86,1,-3]},
+              {"type": "Normal", "pos": [85,1,-2]},
+              {"type": "Power", "pos": [88,1,-0]},
+              {"type": "Normal", "pos": [85,1,-1]},
+              {"type": "Normal", "pos": [89,1,1]},
+              {"type": "Power", "pos": [84,1,3]},
+              {"type": "Normal", "pos": [83,1,2]}
+             ]
+            }
+          ]
+        }
       },
 
       "StageDate": {
@@ -164,9 +213,9 @@
       "kNormalAttackCoolDown": 5,
       "kNormalAttackHitBoxSize": [0.2, 0.5, 1.5],
 
-      "kSPAttackPower": 30,
+      "kSPAttackPower": 99,
       "kSPAttackDuration": 3.0,
-      "kSPAttackCoolDown": 5.0,
+      "kSPAttackCoolDown": 30.0,
       "kSPAttackMoveSpeed": 0.05,
       "kSPAttackHitBoxSize": [0.5, 0.5, 1.5]
     },
@@ -247,9 +296,9 @@
       },
 
       "Stage2": {
-        "startModelPath": "load",
-        "midModelPath": "load",
-        "endModelPath": "load"
+        "startModelPath": "brickWall",
+        "midModelPath": "brickWall",
+        "endModelPath": "brickWall"
       }
     }
   },
