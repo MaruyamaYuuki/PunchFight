@@ -262,6 +262,8 @@ private:
 
 	void ApplyVictoryTexture();
 
+	void ApplyStunTexture();
+
 	void ApplyCommand(const PlayerCommand& cmd);
 
 private:
@@ -290,6 +292,7 @@ private:
 	uint32_t RUppercutTexture_ = 0;
 	uint32_t RKnockDownTexture_[2];
 	uint32_t RRunTexture_[3];
+	uint32_t RStunTexture_ = 0;
 
 	uint32_t LPlayerTexture_ = 0;
 	uint32_t LLeftPunchTexture_ = 0;
@@ -297,6 +300,7 @@ private:
 	uint32_t LUppercutTexture_ = 0;
 	uint32_t LKnockDownTexture_[2];
 	uint32_t LRunTexture_[3];
+	uint32_t LStunTexture_ = 0;
 
 	// --- 強攻撃のテクスチャ ---
 	uint32_t SPTextureHandle_ = 0;
@@ -376,6 +380,9 @@ private:
 	float knockDownDuration_;
 
 	float endMoveLimitX_ = 0;
+
+	// --- スタン処理用 ---
+	int stunTimer_;
 
 	// ---クリア演出用 ---
 	bool isGoal_ = false;
