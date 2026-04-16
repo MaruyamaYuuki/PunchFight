@@ -122,7 +122,7 @@ void GameScene::Update() {
 		player_->UpdateWorldTransform();
 		break;
 	case GameScene::Phase::kPlay:
-		if (cmd.pause) {
+		if (cmd.pause && !player_->IsDead()) {
 			if (isPaused_) {
 				ExitPause();
 			} else {
@@ -134,6 +134,9 @@ void GameScene::Update() {
 			UpdatePauseInput();
 			ui_->Update();
 			return;
+		}
+		if (input_->TriggerKey(DIK_L)) {
+			player_->SetHP(0);
 		}
 
 		DebugText::GetInstance()->ConsolePrintf("Camera.Translate.x : %f\n\n", cameraController_->GetCamera().translation_.x);

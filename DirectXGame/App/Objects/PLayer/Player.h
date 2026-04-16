@@ -2,6 +2,8 @@
 
 #include "KamataEngine.h"
 #include "PlayerInputController.h"
+#include "PlayerTextureController.h"
+#include "PlayerCombat.h"
 #include "../../../Engine/Math/WorldTransformEx.h"
 #include "../../../Engine//Math/Collider.h"
 #include "../../../Engine/Particle/SmokeParticleManager.h"
@@ -90,25 +92,25 @@ public:
 	/// 攻撃のヒットボックスを取得する
 	/// </summary>
 	/// <returns>攻撃判定の情報（位置・サイズ・有効状態など）</returns>
-	HitBox GetAttackHitBox() const { return nAttackHitBox_; }
+	const HitBox& GetAttackHitBox() const { return combat_->GetNormalHitBox(); }
 
 	/// <summary>
 	/// 強攻撃のヒットボックスを取得する
 	/// </summary>
 	/// <returns>強攻撃判定の情報（位置・サイズ・有効状態など）</returns>
-	HitBox GetSPAttackHitBox() const { return spAttackHitBox_; }
+	const HitBox& GetSPAttackHitBox() const { return combat_->GetSpecialHitBox(); }
 
 	/// <summary>
 	/// 攻撃力を取得する
 	/// </summary>
 	/// <returns>プレイヤーの攻撃力</returns>
-	int32_t GetAttackPower() const { return nAttackPower_; }
+	int32_t GetAttackPower() const { return combat_->GetNormalPower(); }
 
 	/// <summary>
 	/// 強攻撃の攻撃力を取得する
 	/// </summary>
 	/// <returns>強攻撃の攻撃力</returns>
-	int32_t GetSPAttackPower() const { return spAttackPower_; }
+	int32_t GetSPAttackPower() const { return combat_->GetSpecialPower(); }
 
 	/// <summary>
 	/// プレイヤーの向いてる方向を取得する
@@ -120,7 +122,7 @@ public:
 	/// 強攻撃の発射方向を取得
 	/// </summary>
 	/// <returns>右方向なら 1.0f、左方向なら -1.0f を返す</returns>
-	float GetSPAttackDir() const { return spAttackDirection_; }
+	float GetSPAttackDir() const { return combat_->GetSpecialDir(); }
 
 	/// <summary>
 	/// 目標座標に着いたか
@@ -156,25 +158,25 @@ public:
 	/// 強攻撃を使ったかを取得
 	/// </summary>
 	/// <returns>使っていれば true、いなければ false</returns>
-	bool CanSpecialAttack() const { return canSpecialAttack_; }
+	bool CanSpecialAttack() const { return combat_->CanSpecial(); }
 
 	/// <summary>
 	/// 強攻撃のクールタイムを取得
 	/// </summary>
 	/// <returns>強攻撃のクールタイム</returns>
-	float GetSPAttackCooldownTimer() const { return spAttackCooldownTimer_; }
+	float GetSPAttackCooldownTimer() const { return combat_->GetSpecialCooldownTimer(); }
 
 	/// <summary>
 	/// 強攻撃のクールタイムの最大値を取得
 	/// </summary>
 	/// <returns>強攻撃のクールタイムの最大値</returns>
-	float GetSPAttackCooldownMax() const { return spAttackCoolDown_; }
+	float GetSPAttackCooldownMax() const { return combat_->GetSpecialCooldown(); }
 
 	/// <summary>
 	/// 強攻撃（スペシャル）が実行された瞬間の判定
 	/// </summary>
 	/// <returns>このフレームで強攻撃を発動した直後なら true</returns>
-	bool DidSpecialAttack() const { return justSpecialAttacked_; }
+	bool DidSpecialAttack() const { return combat_->DidStartSpecialAttack(); }
 
 	/// <summary>
 	/// プレイヤーの体力を設定する
@@ -217,42 +219,7 @@ private:
 	/// </summary>
 	void Move(const PlayerCommand& cmd);
 
-	void ApplyStepMovement();
-
-	void ApplyNormalMovement();
-
-	void ConstrainPosition();
-
-	void UpdateMoveEffects();
-
-	void UpdateAnimationFrames();
-
-	/// <summary>
-	/// 通常攻撃（コンボパンチ）の入力受付とステート遷移
-	/// </summary>
-	void Attack();
-
-	/// <summary>
-	/// 通常攻撃のタイマー更新とヒットボックスの有効化制御
-	/// </summary>
-	void AttackUpdate();
-
-	/// <summary>
-	/// 強攻撃（遠距離/突進攻撃）の発動制御
-	/// </summary>
-	void SpecialAttack();
-
-	/// <summary>
-	/// 強攻撃のアニメーション進行と移動、エフェクト発生の更新
-	/// </summary>
-	void SpecialAttackUpdate();
-
-	/// <summary>
-	/// 現在の状態（移動・攻撃・ダメージ）に応じた描画テクスチャの切り替え
-	/// </summary>
-	void TextureUpdate();
-
-/// <summary>
+    /// <summary>
 	/// ステップ（回避・ダッシュ）実行中の座標移動を適用する。
 	/// ステップ用ベクトルの減衰処理や、経過時間による移動量の制御を行う。
 	/// </summary>
@@ -282,35 +249,9 @@ private:
 	void UpdateAnimationFrames();
 
 	/// <summary>
-	/// 通常移動時（歩行・走行）のテクスチャを現在の向きとフレームに基づき反映する。
+	/// 現在の状態（移動・攻撃・ダメージ）に応じた描画テクスチャの切り替え
 	/// </summary>
-	void ApplyMovementTexture();
-
-	/// <summary>
-	/// ステップ動作中の専用テクスチャを反映する。
-	/// </summary>
-	void ApplyStepTexture();
-
-	/// <summary>
-	/// 各種攻撃アクション（弱・強・コンボ）に応じたテクスチャを反映する。
-	/// </summary>
-	void ApplyAttackTexture();
-
-	/// <summary>
-	/// ノックアウト（HPゼロ）時、および吹っ飛び中のテクスチャを反映する。
-	/// </summary>
-	void ApplyDeathTexture();
-
-	/// <summary>
-	/// ステージクリア時の勝利ポーズテクスチャを反映する。
-	/// </summary>
-	void ApplyVictoryTexture();
-
-	/// <summary>
-	/// スタン（怯み）状態のテクスチャを反映する。
-	/// ダメージ時の揺れ演出等と同期させる。
-	/// </summary>
-	void ApplyStunTexture();
+	void TextureUpdate();
 
 	/// <summary>
 	/// 外部から受け取った PlayerCommand オブジェクトを解析し、
@@ -324,6 +265,8 @@ private:
 	KamataEngine::Audio* audio_ = nullptr;
 	MyEngine::GameConfigManager* cfg_ = nullptr;
 	std::unique_ptr<PlayerInputController> inputController_;
+	std::unique_ptr<PlayerTextureController> textureController_;
+	std::unique_ptr<PlayerCombat> combat_;
 
 	MyEngine::WorldTransformEx worldTransform_;
 	MyEngine::WorldTransformEx worldTransformSP_;
@@ -339,27 +282,13 @@ private:
 
 	// --- プレイヤーのテクスチャ ---
 	uint32_t textureHandle_ = 0;
-	uint32_t RPlayerTexture_ = 0;
-	uint32_t RLeftPunchTexture_ = 0;
-	uint32_t RRightPunchTexture_ = 0;
-	uint32_t RUppercutTexture_ = 0;
-	uint32_t RKnockDownTexture_[2];
-	uint32_t RRunTexture_[3];
-	uint32_t RStunTexture_ = 0;
-
-	uint32_t LPlayerTexture_ = 0;
-	uint32_t LLeftPunchTexture_ = 0;
-	uint32_t LRightPunchTexture_ = 0;
-	uint32_t LUppercutTexture_ = 0;
-	uint32_t LKnockDownTexture_[2];
-	uint32_t LRunTexture_[3];
-	uint32_t LStunTexture_ = 0;
 
 	// --- 強攻撃のテクスチャ ---
 	uint32_t SPTextureHandle_ = 0;
 	uint32_t RSpecialTexture_ = 0;
 	uint32_t LSpecialTexture_ = 0;
 
+	// --- 足元のパーティクルのテクスチャ ---
 	uint32_t smokeTexture_ = 0;
 
 	// --- SE ---
@@ -396,37 +325,12 @@ private:
 	float stepPower_ ; // 通常移動の3倍速
 
     // --- 攻撃管理 ---
-	bool isNormalAttacking_ = false;    // 攻撃中か
-	bool canNormalAttack_ = true;       // 攻撃可能か
-	int32_t nAttackTimer_ = 0;         // 攻撃残り時間
-	int32_t nAttackCooldownTimer_ = 0; // クールタイム残り時間
-	int32_t nAttackPower_;
-
-	int32_t nAttackDuration_; // 攻撃の長さ
-	int32_t nAttackCooldown_; // クールタイムの長さ
-
-	bool nAttackFromRight_ = true; // 右 or 左パンチ切り替え
 	float facingDir_ = 1.0f;      // 向き（1.0f：右, -1.0f：左）
-
-	// --- 強攻撃管理 ---
-	bool isSpecialAttacking_ = false;
-	bool canSpecialAttack_ = false;
-	float spAttackTimer_ = 0.0f;
-	float spAttackCooldownTimer_ = 0.0f;
-	float spAttackMoveSpeed_;
-	int32_t spAttackPower_;
-
-	float spAttackDuration_;
-	float spAttackCoolDown_;
 	const float deltaTime_ = 1.0f / 60.0f;
 
-	float spAttackDirection_ = 1.0f; // 気弾の発射方向を記録
-	bool justSpecialAttacked_ = false;
 
 	// --- ヒットボックス ---
 	HitBox playerHitBox_;
-	HitBox nAttackHitBox_; // 現在のパンチのヒットボックス
-	HitBox spAttackHitBox_;
 
 	// --- ノックダウン処理用 ---
 	float knockDownTimer_;
