@@ -252,18 +252,71 @@ private:
 	/// </summary>
 	void TextureUpdate();
 
+/// <summary>
+	/// ステップ（回避・ダッシュ）実行中の座標移動を適用する。
+	/// ステップ用ベクトルの減衰処理や、経過時間による移動量の制御を行う。
+	/// </summary>
+	void ApplyStepMovement();
+
+	/// <summary>
+	/// スティックやキー入力に基づいた通常移動の座標加算を行う。
+	/// 斜め移動時の速度正規化や、基本移動スピードの適用が含まれる。
+	/// </summary>
+	void ApplyNormalMovement();
+
+	/// <summary>
+	/// プレイヤーの座標を画面外や進行制限エリア内に収まるよう補正する。
+	/// 壁際での座標クランプ処理。
+	/// </summary>
+	void ConstrainPosition();
+
+	/// <summary>
+	/// 移動に伴う視覚演出（足元の土煙パーティクル等）の発生と更新を行う。
+	/// </summary>
+	void UpdateMoveEffects();
+
+	/// <summary>
+	/// アニメーション用のフレームカウンタを更新する。
+	/// 経過時間に応じてテクスチャの切り替えインデックスを進める。
+	/// </summary>
+	void UpdateAnimationFrames();
+
+	/// <summary>
+	/// 通常移動時（歩行・走行）のテクスチャを現在の向きとフレームに基づき反映する。
+	/// </summary>
 	void ApplyMovementTexture();
 
+	/// <summary>
+	/// ステップ動作中の専用テクスチャを反映する。
+	/// </summary>
 	void ApplyStepTexture();
 
+	/// <summary>
+	/// 各種攻撃アクション（弱・強・コンボ）に応じたテクスチャを反映する。
+	/// </summary>
 	void ApplyAttackTexture();
 
+	/// <summary>
+	/// ノックアウト（HPゼロ）時、および吹っ飛び中のテクスチャを反映する。
+	/// </summary>
 	void ApplyDeathTexture();
 
+	/// <summary>
+	/// ステージクリア時の勝利ポーズテクスチャを反映する。
+	/// </summary>
 	void ApplyVictoryTexture();
 
+	/// <summary>
+	/// スタン（怯み）状態のテクスチャを反映する。
+	/// ダメージ時の揺れ演出等と同期させる。
+	/// </summary>
 	void ApplyStunTexture();
 
+	/// <summary>
+	/// 外部から受け取った PlayerCommand オブジェクトを解析し、
+	/// プレイヤーの各ステート（移動、攻撃、回避）へ命令を分配する。
+	/// </summary>
+	/// <param name="cmd">解析対象の入力コマンド構造体</param>
 	void ApplyCommand(const PlayerCommand& cmd);
 
 private:
