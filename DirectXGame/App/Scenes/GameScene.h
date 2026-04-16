@@ -156,10 +156,22 @@ private:
 	/// <param name="attackDir">攻撃の向き（1.0f または -1.0f。ノックバック方向に使用）</param>
 	void CheckPlayerAttackToEnemies(const HitBox& attackHitBox, std::vector<EnemyBase*>& hitList, int attackPower, float attackDir);
 
+    /// <summary>
+	/// 現在のステージ内の全エリア（全エネミーの撃破等）がクリアされたかを判定する。
+	/// </summary>
+	/// <returns>全ての条件を満たしていれば true、未完了なら false</returns>
 	bool IsAllAreaCleared() const;
 
+	/// <summary>
+	/// 次のステージへの遷移処理を実行する。
+	/// ステージカウントの加算や、ステージ間を繋ぐフェード演出等のトリガーを行う。
+	/// </summary>
 	void GoToNextStage();
 
+	/// <summary>
+	/// 次のステージ開始に向けたリセット処理。
+	/// 旧ステージの敵リストの破棄、エリアフラグの初期化、プレイヤーの初期配置設定等を行う。
+	/// </summary>
 	void ResetForNextStage();
 
 private:
