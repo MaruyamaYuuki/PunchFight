@@ -178,6 +178,8 @@
     <ClCompile Include="Engine\Particle\ParticleManager.cpp" />
     <ClCompile Include="App\Scenes\SceneManager.cpp" />
     <ClCompile Include="App\Objects\Enemy\FastEnemy.cpp" />
+    <ClCompile Include="App\Objects\PLayer\PlayerTextureController.cpp" />
+    <ClCompile Include="App\Objects\PLayer\PlayerCombat.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
@@ -311,6 +313,8 @@
     <ClInclude Include="App\Objects\Enemy\FastEnemy.h" />
     <ClInclude Include="Engine\Rendering\UICommand.h" />
     <ClInclude Include="Engine\Rendering\UIInputController.h" />
+    <ClInclude Include="App\Objects\PLayer\PlayerTextureController.h" />
+    <ClInclude Include="App\Objects\PLayer\PlayerCombat.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Engine\Core\IconResource.rc" />

@@ -49,16 +49,7 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 
 	stepCooldown_ = cfg_->getInt("Player.Step.kStepCoolDown");
 	stepPower_ = cfg_->getFloat("Player.Step.kStepPower");
-	nAttackPower_ = cfg_->getInt("Player.Attack.kNormalAttackPower");
-	nAttackDuration_ = cfg_->getInt("Player.Attack.kNormalAttackDuration");
-	nAttackCooldown_ = cfg_->getInt("Player.Attack.kNormalAttackCoolDown");
-	nAttackHitBox_.size = cfg_->getVector3("Player.Attack.kNormalAttackHitBoxSize");
 	worldTransformSP_.rotation_.x = cfg_->getFloat("Global.kPlaneModelRotateX");
-	spAttackPower_ = cfg_->getInt("Player.Attack.kSPAttackPower");
-	spAttackDuration_ = cfg_->getFloat("Player.Attack.kSPAttackDuration");
-	spAttackCoolDown_ = cfg_->getFloat("Player.Attack.kSPAttackCoolDown");
-	spAttackMoveSpeed_ = cfg_->getFloat("Player.Attack.kSPAttackMoveSpeed");
-	spAttackHitBox_.size = cfg_->getVector3("Player.Attack.kSPAttackHitBoxSize");
 	
 	poseWaitTimer_ = cfg_->getFloat("Player.Clear.kPoseWaitTimer");
 	knockDownDuration_ = cfg_->getFloat("Player.KnockDown.kKnockDownTimer");
@@ -69,30 +60,14 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 	worldTransform_.translation_ = kInitialPos_;
 	knockDownTimer_ = knockDownDuration_;
 
+	textureController_ = std::make_unique<PlayerTextureController>();
+	textureController_->Initialize();
+
+	combat_ = std::make_unique<PlayerCombat>();
+	combat_->Initialize();
+
 	textureHandle_ = TextureManager::Load("playerTextures/RPlayer.png");
 
-	// 右向きテクスチャ
-	RPlayerTexture_ = TextureManager::Load("playerTextures/RPlayer.png");
-	RLeftPunchTexture_ = TextureManager::Load("playerTextures/RLeftPunch.png");
-	RRightPunchTexture_ = TextureManager::Load("playerTextures/RRightPunch.png");
-	RUppercutTexture_ = TextureManager::Load("playerTextures/RUppercut.png");
-	RKnockDownTexture_[0] = TextureManager::Load("playerTextures/RKnockDown.png");
-	RKnockDownTexture_[1] = TextureManager::Load("playerTextures/RKnockDown2.png");
-	RRunTexture_[0] = TextureManager::Load("playerTextures/RRun1.png");
-	RRunTexture_[1] = TextureManager::Load("playerTextures/RRun2.png");
-	RRunTexture_[2] = TextureManager::Load("playerTextures/RRun3.png");
-	RStunTexture_ = TextureManager::Load("playerTextures/RStun.png");
-	// 左向きテクスチャ
-	LPlayerTexture_ = TextureManager::Load("playerTextures/LPlayer.png");
-	LLeftPunchTexture_ = TextureManager::Load("playerTextures/LLeftPunch.png");
-	LRightPunchTexture_ = TextureManager::Load("playerTextures/LRightPunch.png");
-	LUppercutTexture_ = TextureManager::Load("playerTextures/LUppercut.png");
-	LKnockDownTexture_[0] = TextureManager::Load("playerTextures/LKnockDown.png");
-	LKnockDownTexture_[1] = TextureManager::Load("playerTextures/LKnockDown2.png");
-	LRunTexture_[0] = TextureManager::Load("playerTextures/LRun1.png");
-	LRunTexture_[1] = TextureManager::Load("playerTextures/LRun2.png");
-	LRunTexture_[2] = TextureManager::Load("playerTextures/LRun3.png");
-	LStunTexture_ = TextureManager::Load("playerTextures/RStun.png");
 	// 気弾テクスチャ
 	SPTextureHandle_ = TextureManager::Load("playerTextures/RSpecial.png");
 	RSpecialTexture_ = TextureManager::Load("playerTextures/RSpecial.png");
@@ -106,43 +81,65 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 }
 
 void Player::Update() {
-	bool isStunned = (stunTimer_ > 0);
 
+	// ===== スタン処理 =====
+	bool isStunned = (stunTimer_ > 0);
 	if (isStunned) {
 		stunTimer_--;
 	}
 
+	// ===== 入力取得 =====
+	PlayerCommand cmd{};
 	if (!isStunned) {
-    	PlayerCommand cmd = inputController_->GetCommand();
-
-    	if (HP_ > 0){
-        	Move(cmd);
-
-        	// 攻撃入力チェック
-        	if (cmd.doAttack) { // Jキーでパンチ
-        		Attack();
-    		} else if (cmd.doSpecialAttack) {
-    			SpecialAttack();
-    		}
-    	}
+		cmd = inputController_->GetCommand();
 	}
 
+	// ===== 移動処理 =====
+	if (!isStunned && HP_ > 0) {
+		Move(cmd);
+	}
 
-	justSpecialAttacked_ = false;
+	// ===== 攻撃入力（Combatへ委譲） =====
+	if (!isStunned && HP_ > 0) {
 
-	AttackUpdate();
-	SpecialAttackUpdate();
+		if (cmd.doAttack) {
+			combat_->StartNormalAttack(worldTransform_.translation_, facingDir_);
+		}
 
+		if (cmd.doSpecialAttack) {
+			combat_->StartSpecialAttack(worldTransform_.translation_, facingDir_);
+		}
+	}
+	if (combat_->DidStartNormalAttack()) {
+		normalAttackSEVoiceHandle_ = audio_->PlayWave(normalAttackSEDataHandle_, false, 0.5f);
+		
+	}
+	if (combat_->DidStartSpecialAttack()) {
+		spAttackSEVoiceHandle_ = audio_->PlayWave(spAttackSEDataHandle_, false, 0.5f);
+        worldTransformSP_.translation_ = combat_->GetSpecialPos();
+	}
+	if (combat_->IsSpecialAttacking()) {
+		SPTextureHandle_ = (combat_->GetSpecialDir() > 0) ? RSpecialTexture_ : LSpecialTexture_;
+		worldTransformSP_.translation_ = combat_->GetSpecialPos();
+	}
+
+	// ===== Combat更新 =====
+	combat_->Update(worldTransform_.translation_, facingDir_);
+
+	// ===== エフェクト =====
 	smokeManager_->Update(deltaTime_);
 
+	// ===== テクスチャ更新 =====
 	TextureUpdate();
+
+	// ===== 行列更新 =====
 	worldTransform_.UpdateMatrix();
 	worldTransformSP_.UpdateMatrix();
 	worldTransformNormalAttackHitBox_.UpdateMatrix();
 	worldTransformPHitBox_.UpdateMatrix();
 	worldTransformSPHitBox_.UpdateMatrix();
 
-	// ヒットボックスをプレイヤーの位置に追従
+	// ===== ヒットボックス追従 =====
 	playerHitBox_.pos = worldTransform_.translation_;
 }
 
@@ -150,9 +147,9 @@ void Player::Draw(Camera& camera) {
 	model_->Draw(worldTransform_, camera, textureHandle_); 
 	smokeManager_->Draw(camera);
 	#ifdef _DEBUG
-	if (nAttackHitBox_.active) {
-		worldTransformNormalAttackHitBox_.translation_ = nAttackHitBox_.pos;
-		worldTransformNormalAttackHitBox_.scale_ = nAttackHitBox_.size;
+	if (combat_->GetNormalHitBox().active) {
+		worldTransformNormalAttackHitBox_.translation_ = combat_->GetNormalHitBox().pos;
+		worldTransformNormalAttackHitBox_.scale_ = combat_->GetNormalHitBox().size;
 		modelDebugHitBox_->Draw(worldTransformNormalAttackHitBox_, camera);
 	}
 	if (playerHitBox_.active) {
@@ -162,7 +159,7 @@ void Player::Draw(Camera& camera) {
 	}
 	#endif
 	// --- 気弾の描画 ---
-	if (isSpecialAttacking_) {
+	if (combat_->IsSpecialAttacking()) {
 
 		// 気弾本体
 		modelSpecial_->Draw(worldTransformSP_, camera, SPTextureHandle_);
@@ -171,8 +168,8 @@ void Player::Draw(Camera& camera) {
 		// デバッグ用ヒットボックスモデル
 		// （必要なら）
 		if (modelSPHitBox_) {
-			worldTransformSPHitBox_.translation_ = spAttackHitBox_.pos;
-			worldTransformSPHitBox_.scale_ = spAttackHitBox_.size;
+			worldTransformSPHitBox_.translation_ = combat_->GetSpecialHitBox().pos;
+			worldTransformSPHitBox_.scale_ = combat_->GetSpecialHitBox().size;
 			worldTransformSPHitBox_.UpdateMatrix();
 
 			modelSPHitBox_->Draw(worldTransformSPHitBox_, camera);
@@ -219,7 +216,7 @@ void Player::ClearAnimation() {
 
 void Player::Move(const PlayerCommand& cmd) {
 	// 移動不可フラグのチェック
-	if (!isGoal_ && (isNormalAttacking_ || HP_ <= 0))
+	if (!isGoal_ && (combat_->IsNormalAttacking() || HP_ <= 0))
 		return;
 
 	// 入力コマンドを反映
@@ -283,7 +280,7 @@ void Player::UpdateMoveEffects() {
 void Player::UpdateAnimationFrames() {
 	bool isMoving = (move_.x != 0.0f || move_.z != 0.0f);
 
-	if (isMoving && !isStepping_ && !isNormalAttacking_ && HP_ > 0) {
+	if (isMoving && !isStepping_ && !combat_->IsNormalAttacking() && HP_ > 0) {
 		walkFrameTimer_++;
 		if (walkFrameTimer_ >= walkFrameInterval_) {
 			walkFrameTimer_ = 0;
@@ -295,186 +292,31 @@ void Player::UpdateAnimationFrames() {
 	}
 }
 
-void Player::Attack() {
-	if (!canNormalAttack_ || isNormalAttacking_)
-		return;
-
-	isNormalAttacking_ = true;
-	canNormalAttack_ = false;
-	nAttackTimer_ = nAttackDuration_;
-
-	normalAttackSEVoiceHandle_ = audio_->PlayWave(normalAttackSEDataHandle_, false, 0.5f);
-
-	// パンチテクスチャ切り替え（右左交互）
-	nAttackFromRight_ = !nAttackFromRight_;
-
-	// ヒットボックスはプレイヤーの向きに依存
-	float hitboxOffsetX = 0.5f * facingDir_; // プレイヤーが右向きなら+0.8、左向きなら-0.8
-	nAttackHitBox_.active = true;
-	nAttackHitBox_.pos = worldTransform_.translation_ + Vector3{hitboxOffsetX, 0.1f, 0.0f};
-	nAttackHitBox_.size = cfg_->getVector3("Player.Attack.kNormalAttackHitBoxSize");
-}
-
-
-void Player::AttackUpdate() {
-	if (isNormalAttacking_) {
-		nAttackTimer_--;
-		if (nAttackTimer_ <= 0) {
-			isNormalAttacking_ = false;
-			nAttackHitBox_.active = false;
-			nAttackCooldownTimer_ = nAttackCooldown_;
-		} else {
-			float hitboxOffsetX = 0.5f * facingDir_; // プレイヤーが右向きなら+0.8、左向きなら-0.8
-			nAttackHitBox_.pos = worldTransform_.translation_ + Vector3{hitboxOffsetX, 0.1f, 0.0f};
-		}
-	}
-
-	// クールタイム中
-	else if (!canNormalAttack_) {
-		nAttackCooldownTimer_--;
-		if (nAttackCooldownTimer_ <= 0) {
-			canNormalAttack_ = true;
-		}
-	}
-}
-
-void Player::SpecialAttack() {
-
-	if (!canSpecialAttack_ || isSpecialAttacking_)
-		return;
-
-	isSpecialAttacking_ = true;
-	canSpecialAttack_ = false;
-
-	// --- クールタイムを即スタート ---
-	spAttackCooldownTimer_ = spAttackCoolDown_;
-
-	spAttackTimer_ = spAttackDuration_;
-
-	spAttackSEVoiceHandle_ = audio_->PlayWave(spAttackSEDataHandle_, false, 0.5f);
-
-	// 発射時の向きを固定
-	spAttackDirection_ = static_cast<float>(facingDir_);
-
-	// --- 気弾モデルの初期位置 ---
-	worldTransformSP_.translation_ = worldTransform_.translation_ + Vector3{spAttackDirection_ * 0.5f, 0.2f, 0.0f};
-	worldTransformSP_.UpdateMatrix();
-
-	// --- ヒットボックス初期化 ---
-	spAttackHitBox_.active = true;
-	spAttackHitBox_.pos = worldTransformSP_.translation_ + Vector3{spAttackDirection_ * 0.3f, 0.0f, 0.0f};
-	spAttackHitBox_.size = cfg_->getVector3("Player.Attack.kSPAttackHitBoxSize");
-
-	// --- テクスチャ切替 ---
-	SPTextureHandle_ = (spAttackDirection_ > 0) ? RSpecialTexture_ : LSpecialTexture_;
-}
-
-void Player::SpecialAttackUpdate() {
-
-	// ---------------------
-	// 気弾の更新
-	// ---------------------
-	if (isSpecialAttacking_) {
-
-		spAttackTimer_ -= deltaTime_;
-
-		// 発射時の向きで移動
-		worldTransformSP_.translation_.x += spAttackMoveSpeed_ * spAttackDirection_;
-		worldTransformSP_.UpdateMatrix();
-
-		// ヒットボックス追従
-		spAttackHitBox_.pos = worldTransformSP_.translation_ + Vector3{spAttackDirection_ * 0.3f, 0.0f, 0.0f};
-
-		// 気弾が消える
-		if (spAttackTimer_ <= 0.0f) {
-			isSpecialAttacking_ = false;
-			spAttackHitBox_.active = false;
-		}
-	}
-
-	// ---------------------
-	// クールタイム進行（気弾が生きていても進む）
-	// ---------------------
-	if (!canSpecialAttack_) {
-		spAttackCooldownTimer_ -= deltaTime_;
-
-		if (spAttackCooldownTimer_ <= 0.0f) {
-			canSpecialAttack_ = true;
-			spAttackCooldownTimer_ = 0.0f;
-		}
-	}
-}
-
-
 void Player::TextureUpdate() {
-	// 優先順位が高い順に判定し、確定したら return する
+
+	PlayerState state;
+
 	if (stunTimer_ > 0) {
-		ApplyStunTexture();
-		return;
-	}
-	if (isVictory_) {
-		ApplyVictoryTexture();
-		return;
-	}
-	if (HP_ <= 0) {
-		ApplyDeathTexture();
-		return;
-	}
-	if (isNormalAttacking_) {
-		ApplyAttackTexture();
-		return;
-	}
-	if (isStepping_) {
-		ApplyStepTexture();
-		return;
-	}
-
-	// それ以外（移動中か待機中）
-	ApplyMovementTexture();
-}
-
-void Player::ApplyMovementTexture() { 
-	bool isMoving = (move_.x != 0.0f || move_.z != 0.0f); 
-	if (isMoving) {
-		// 0,1,2,1 のループを配列で
-		static const int walkPattern[4] = {0, 1, 2, 1};
-
-		int texIndex = walkPattern[walkFrame_];
-		textureHandle_ = (facingDir_ > 0) ? RRunTexture_[texIndex] : LRunTexture_[texIndex];
+		state = PlayerState::Stun;
+	} else if (isVictory_) {
+		state = PlayerState::Victory;
+	} else if (HP_ <= 0) {
+		knockDownTimer_ -= deltaTime_;
+		if (knockDownTimer_ <= 0) {
+			isDead_ = true;
+		} 
+		state = PlayerState::Dead;
+	} else if (combat_->IsNormalAttacking()) {
+		state = PlayerState::Attack;
+	} else if (isStepping_) {
+		state = PlayerState::Step;
+	} else if (move_.x != 0.0f || move_.z != 0.0f) {
+		state = PlayerState::Move;
 	} else {
-		textureHandle_ = (facingDir_ > 0) ? RPlayerTexture_ : LPlayerTexture_;
+		state = PlayerState::Idle;
 	}
-}
 
-void Player::ApplyStepTexture() {
-	textureHandle_ = (facingDir_ > 0) ? RRunTexture_[0] : LRunTexture_[0];
-}
-
-void Player::ApplyAttackTexture() {
-	if (nAttackFromRight_) {
-		textureHandle_ = (facingDir_ > 0) ? RRightPunchTexture_ : LRightPunchTexture_;
-	} else {
-		textureHandle_ = (facingDir_ > 0) ? RLeftPunchTexture_ : LLeftPunchTexture_;
-	}
-}
-
-void Player::ApplyDeathTexture() {
-	knockDownTimer_ -= deltaTime_;
-	if (knockDownTimer_ <= 0) {
-		isDead_ = true;
-	} else if (knockDownTimer_ <= 1.0f) {
-		textureHandle_ = (facingDir_ > 0) ? RKnockDownTexture_[1] : LKnockDownTexture_[1];
-	} else {
-		textureHandle_ = (facingDir_ > 0) ? RKnockDownTexture_[0] : LKnockDownTexture_[0];
-	}
-}
-
-void Player::ApplyVictoryTexture() { 
-	textureHandle_ = RUppercutTexture_; 
-}
-
-void Player::ApplyStunTexture() { 
-	textureHandle_ = (facingDir_ > 0) ? RStunTexture_ : LStunTexture_; 
+	textureHandle_ = textureController_->GetTexture(facingDir_ > 0, state, walkFrame_, combat_->GetAttackForRight(), knockDownTimer_);
 }
 
 void Player::ApplyCommand(const PlayerCommand& cmd) {
@@ -530,11 +372,12 @@ void Player::OnHit(int32_t damage) {
     	HP_ -= damage;
 	}
 
-	stunTimer_ = 10; // 例：10フレーム
+
 
 	if (HP_ < 0) {
 		HP_ = 0;
 	} else {
+		stunTimer_ = 10; // 例：10フレーム
 		hitSEVoiceHandle_ = audio_->PlayWave(hitSEDataHandle_, false, 0.5f);
 	}
 }
