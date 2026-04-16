@@ -56,8 +56,6 @@ void GameScene::Initialize() {
 	modelSPAttack_.reset(Model::CreateFromOBJ("specialAttack", true));
 	modelBoxFrame_.reset(Model::CreateFromOBJ("boxFrame", true));
 
-	textureHandle_ = TextureManager::Load("gameSelect.png");
-	backTextSprite_.reset(Sprite::Create(textureHandle_, {640.0f, 360.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
 	textureHandle_ = TextureManager::Load("readyText.png");
 	readyTextSprite_.reset( Sprite::Create(textureHandle_, {640.0f, 300.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
 	textureHandle_ = TextureManager::Load("fightText.png");
@@ -66,12 +64,14 @@ void GameScene::Initialize() {
 	gameOverTextSprite_.reset(Sprite::Create(textureHandle_, {640.0f, 300.0f}, {1, 1, 1, 0}, {0.5f, 0.5f}));
 	textureHandle_ = TextureManager::Load("black.png");
 	blackSprite_.reset(Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1, 1, 1, 0}));
-	textureHandle_ = TextureManager::Load("resetText.png");
-	resetTextSprite_.reset(Sprite::Create(textureHandle_, {640.0f, 500.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
 	textureHandle_ = TextureManager::Load("scrollGuide.png");
 	guideTexture_.reset(Sprite::Create(textureHandle_, {1100.0f, 450.0f},{1, 1, 1, 1}, {0.5f, 0.5f}));
 	textureHandle_ = TextureManager::Load("gameOverGuide.png");
 	gameOverTextGuideSprite_.reset(Sprite::Create(textureHandle_, {640.0f, 400.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
+	textureHandle_ = TextureManager::Load("UI/gameOverSelectToRestart.png");
+	gameOverSelectSprite_[0].reset(Sprite::Create(textureHandle_, {640.0f, 500.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
+	textureHandle_ = TextureManager::Load("UI/gameOverSelectToBackTitle.png");
+	gameOverSelectSprite_[1].reset(Sprite::Create(textureHandle_, {640.0f, 500.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
 
 	startGongSEDataHandle_ = audio_->LoadWave("audio/SE/startGong.wav");
 	bgmDataHandle_ = audio_->LoadWave("audio/BGM/gameBGM.wav");
@@ -216,7 +216,13 @@ void GameScene::Draw() {
 			gameOverTextSprite_->Draw();
 		} 
 		if (isGameOverFallFinished_) {
-			resetTextSprite_->Draw();
+			if (gameOverSelectIndex_ == 0) {
+				// リトライ強調
+				gameOverSelectSprite_[0]->Draw();
+			} else {
+				// タイトル強調
+				gameOverSelectSprite_[1]->Draw();
+			}
 		}
 		break;
 	case GameScene::Phase::kFadeOut:
@@ -278,9 +284,14 @@ void GameScene::ChangePhase() {
 		if (fade_->IsFinished()) {
 			fade_->Stop();
 			if (player_->IsDead()) {
-    			ResetGame();
-    			phase_ = Phase::kFadeIn;
-    			fade_->Start(Fade::Status::FadeIn, fadeTime_);
+				if (backToTitle_) {
+					isFinished_ = true;
+				} else {
+        			ResetGame();
+        			phase_ = Phase::kFadeIn;
+        			fade_->Start(Fade::Status::FadeIn, fadeTime_);
+				}
+
 			} else {
 				GoToNextStage();
 				ResetForNextStage();
@@ -458,6 +469,7 @@ void GameScene::GameOver() {
 
 			if (fallT >= 1.0f && !isGameOverFallFinished_) {
 				isGameOverFallFinished_ = true;
+				isGameOverSelect_ = true;
 			}
 		} else {
 			// 落下前は画面外に置いておく
@@ -467,10 +479,29 @@ void GameScene::GameOver() {
 			isGameOverFallFinished_ = false;
 		}
 
-		// リトライ入力
-		if (cmd.decide) {
-			phase_ = Phase::kFadeOut;
-			fade_->Start(MyEngine::Fade::Status::FadeOut, fadeTime_);
+		// --- 選択入力 ---
+		if (isGameOverSelect_) {
+
+			// 上下で選択変更
+			if (cmd.move != 0) {
+				gameOverSelectIndex_ += cmd.move;
+				gameOverSelectIndex_ = std::clamp(gameOverSelectIndex_, 0, 1);
+			}
+
+			// 決定
+			if (cmd.decide) {
+
+				if (gameOverSelectIndex_ == 0) {
+					// リトライ
+					backToTitle_ = false;
+				} else {
+					// タイトルへ
+					backToTitle_ = true;
+				}
+
+				phase_ = Phase::kFadeOut;
+				fade_->Start(Fade::Status::FadeOut, fadeTime_);
+			}
 		}
 	}
 }
@@ -505,6 +536,8 @@ void GameScene::ResetGame() {
 
 	// UI
 	ui_->Reset();
+	isGameOverSelect_ = false;
+	gameOverSelectIndex_ = 0;
 
 	// スプライト
 	blackSprite_->SetColor({1, 1, 1, 0});

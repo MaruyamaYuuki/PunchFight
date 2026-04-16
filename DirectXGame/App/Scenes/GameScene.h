@@ -191,14 +191,15 @@ private:
 
 	uint32_t textureHandle_ = 0;
 
-	std::unique_ptr<KamataEngine::Sprite> backTextSprite_;
 	std::unique_ptr<KamataEngine::Sprite> readyTextSprite_;
 	std::unique_ptr<KamataEngine::Sprite> fightTextSprite_;
 	std::unique_ptr<KamataEngine::Sprite> gameOverTextSprite_;
 	std::unique_ptr<KamataEngine::Sprite> blackSprite_;
-	std::unique_ptr<KamataEngine::Sprite> resetTextSprite_;
 	std::unique_ptr<KamataEngine::Sprite> guideTexture_;
 	std::unique_ptr<KamataEngine::Sprite> gameOverTextGuideSprite_;
+	std::unique_ptr<KamataEngine::Sprite> gameOverSelectSprite_[2];
+	std::unique_ptr<KamataEngine::Sprite> gameOverSelectToRestartSprite_;
+	std::unique_ptr<KamataEngine::Sprite> gameOverSelectToTitleSprite_;
 
 	uint32_t startGongSEDataHandle_ = 0;
 	uint32_t bgmDataHandle_ = 0;
@@ -254,6 +255,8 @@ private:
 	float gameOverFallTimer_ = 0.0f;    // テキスト落下の経過時間
 	float gameOverFallDuration_; // 落下にかける時間（秒）
 	bool isGameOverFallFinished_ = false; // 落下完了フラグ
+	bool isGameOverSelect_ = false;
+	int32_t gameOverSelectIndex_ = 0;
 
 	std::vector<bool> areaClearedFlag_;
 

@@ -124,4 +124,3 @@ private:
 	XINPUT_STATE state_{};
 };
 }
-
