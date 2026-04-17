@@ -107,6 +107,8 @@ void GameScene::Initialize() {
 	waitTimer_ = 0.0f;
 
 	uiInput_ = std::make_unique<MyEngine::UIInputController>();
+
+	isStartGongPlayed_ = true;
 }
 
 void GameScene::Update() {
@@ -250,7 +252,11 @@ void GameScene::ChangePhase() {
 		fade_->Update();
 		if (fade_->IsFinished()) {
 			fade_->Stop();
-			phase_ = Phase::kReady;
+			if (isStartGongPlayed_) {
+    			phase_ = Phase::kReady;
+			} else {
+				phase_ = Phase::kPlay;
+			}
 		}
 		break;
 	case GameScene::Phase::kReady:
@@ -494,6 +500,7 @@ void GameScene::GameOver() {
 				if (gameOverSelectIndex_ == 0) {
 					// リトライ
 					backToTitle_ = false;
+					isStartGongPlayed_ = true;
 				} else {
 					// タイトルへ
 					backToTitle_ = true;
@@ -727,6 +734,8 @@ void GameScene::GoToNextStage() {
 }
 
 void GameScene::ResetForNextStage() {
+	isStartGongPlayed_ = false;
+
 	// プレイヤー位置
 	player_->Reset();
 

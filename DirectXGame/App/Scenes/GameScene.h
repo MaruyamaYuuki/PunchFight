@@ -242,6 +242,7 @@ private:
 	float waitDuration_;  // 0.5秒待つ
 	std::chrono::high_resolution_clock::time_point prevTime_;
 
+	bool isStartGongPlayed_ = false;
 	bool fightTextVisible_ = false;
 	bool fightTextAnimeFinished_ = false;
 	float fadeInTimer_ = 0.0f;
