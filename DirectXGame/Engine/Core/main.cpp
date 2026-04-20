@@ -9,7 +9,7 @@ using namespace KamataEngine;
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	
 	// エンジンの初期化
-	KamataEngine::Initialize(L"LE3C_16_マルヤマ_ユウキ_PunchFight");
+	KamataEngine::Initialize(L"PunchFight");
 	// DirectXCommonインスタンス
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
 

@@ -73,11 +73,11 @@ void GameScene::Initialize() {
 	textureHandle_ = TextureManager::Load("UI/gameOverSelectToBackTitle.png");
 	gameOverSelectSprite_[1].reset(Sprite::Create(textureHandle_, {640.0f, 500.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
 	textureHandle_ = TextureManager::Load("stageNum/stage1-1.png");
-	stageNumSprite_[0].reset(Sprite::Create(textureHandle_, {1400.0f, 400.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
+	stageNumSprite_[0].reset(Sprite::Create(textureHandle_, {1400.0f, 20.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
 	textureHandle_ = TextureManager::Load("stageNum/stage1-2.png");
-	stageNumSprite_[1].reset(Sprite::Create(textureHandle_, {1400.0f, 400.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
+	stageNumSprite_[1].reset(Sprite::Create(textureHandle_, {1400.0f, 200.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
 	textureHandle_ = TextureManager::Load("stageNum/stage1-3.png");
-	stageNumSprite_[2].reset(Sprite::Create(textureHandle_, {1400.0f, 400.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
+	stageNumSprite_[2].reset(Sprite::Create(textureHandle_, {1400.0f, 200.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
 
 	startGongSEDataHandle_ = audio_->LoadWave("audio/SE/startGong.wav");
 	bgmDataHandle_ = audio_->LoadWave("audio/BGM/gameBGM.wav");
@@ -143,18 +143,17 @@ void GameScene::Update() {
 			ui_->Update();
 			return;
 		}
+		#ifdef _DEBUG
 		if (input_->TriggerKey(DIK_L)) {
 			player_->SetHP(0);
 		}
-
+		if (input_->TriggerKey(DIK_B)) {
+			isFinished_ = true;
+		}
+		#endif
 		DebugText::GetInstance()->ConsolePrintf("Camera.Translate.x : %f\n\n", cameraController_->GetCamera().translation_.x);
 		stage_->Update(cameraController_->GetCamera().translation_.x);
 		player_->Update();
-		if (input_->TriggerKey(DIK_B)) {
-
-			isFinished_ = true;
-
-		}
 
 		ui_->Update();
 		EnemyUpdate();
@@ -803,7 +802,7 @@ void GameScene::StartStageUI() {
 	isStartUIFinished_ = false;
 
 	// 初期位置：画面右外
-	stageNumSprite_[stageNumber_ - 1]->SetPosition({1400.0f, 360.0f});
+	stageNumSprite_[stageNumber_ - 1]->SetPosition({1400.0f, 200.0f});
 }
 
 void GameScene::UpdateStageUI() {
@@ -819,7 +818,7 @@ void GameScene::UpdateStageUI() {
 		float eased = Easing::EaseOutCubic(t);
 
 		float x = 1400.0f + (640.0f - 1400.0f) * eased;
-		stageNumSprite_[stageNumber_ - 1]->SetPosition({x, 360.0f});
+		stageNumSprite_[stageNumber_ - 1]->SetPosition({x, 200.0f});
 
 		if (t >= 1.0f) {
 			stageUIState_ = StageUIState::kStay;
@@ -839,7 +838,7 @@ void GameScene::UpdateStageUI() {
 		float eased = Easing::EaseInCubic(t);
 
 		float x = 640.0f + (-200.0f - 640.0f) * eased;
-		stageNumSprite_[stageNumber_ - 1]->SetPosition({x, 360.0f});
+		stageNumSprite_[stageNumber_ - 1]->SetPosition({x, 200.0f});
 
 		if (t >= 1.0f) {
 			stageUIState_ = StageUIState::kEnd;
