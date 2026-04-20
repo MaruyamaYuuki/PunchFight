@@ -36,6 +36,17 @@ public:
 		kFadeOut
 	};
 
+	/// <summary>
+	/// ステージ表示演出の状態
+	/// </summary>
+	enum class StageUIState { 
+		kNone,
+		kEnter,
+		kStay,
+		kExit,
+		kEnd
+	};
+
 public:
 	/// <summary>
 	/// コンストラクタ
@@ -174,6 +185,26 @@ private:
 	/// </summary>
 	void ResetForNextStage();
 
+	/// <summary>
+	/// スタート演出のフラグ管理
+	/// </summary>
+	void StartGameFlow();
+
+	/// <summary>
+	/// スタート演出のスキップ処理
+	/// </summary>
+	void SkipStartDirection();
+
+	/// <summary>
+	/// ステージ表示UIの管理
+	/// </summary>
+	void StartStageUI();
+
+	/// <summary>
+	/// ステージ表示UIの更新
+	/// </summary>
+	void UpdateStageUI();
+
 private:
 	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
 	KamataEngine::Input* input_ = nullptr;
@@ -200,6 +231,7 @@ private:
 	std::unique_ptr<KamataEngine::Sprite> gameOverSelectSprite_[2];
 	std::unique_ptr<KamataEngine::Sprite> gameOverSelectToRestartSprite_;
 	std::unique_ptr<KamataEngine::Sprite> gameOverSelectToTitleSprite_;
+	std::unique_ptr<KamataEngine::Sprite> stageNumSprite_[3];
 
 	uint32_t startGongSEDataHandle_ = 0;
 	uint32_t bgmDataHandle_ = 0;
@@ -242,9 +274,10 @@ private:
 	float waitDuration_;  // 0.5秒待つ
 	std::chrono::high_resolution_clock::time_point prevTime_;
 
-	bool isStartGongPlayed_ = false;
+	bool isStartDirectionEnabled_ = false;
 	bool fightTextVisible_ = false;
 	bool fightTextAnimeFinished_ = false;
+	bool isSkip_ = false;
 	float fadeInTimer_ = 0.0f;
 
 	KamataEngine::Vector2 fightTextPos_;
@@ -263,6 +296,12 @@ private:
 
 	std::vector<EnemyBase*> hitEnemiesThisAttack_;
 	std::vector<EnemyBase*> hitEnemiesThisSPAttack_;
+
+	/// --- ステージ表示関連 ---
+	StageUIState stageUIState_ = StageUIState::kNone;
+	float stageUITimer_ = 0.0f;
+	bool isStageUIActive_ = false;
+	bool isStartUIFinished_ = false;
 
 	/// --- エリア解放時のガイド関連 ---
 	float guideTimer_ = 0.0f;

@@ -72,6 +72,12 @@ void GameScene::Initialize() {
 	gameOverSelectSprite_[0].reset(Sprite::Create(textureHandle_, {640.0f, 500.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
 	textureHandle_ = TextureManager::Load("UI/gameOverSelectToBackTitle.png");
 	gameOverSelectSprite_[1].reset(Sprite::Create(textureHandle_, {640.0f, 500.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
+	textureHandle_ = TextureManager::Load("stageNum/stage1-1.png");
+	stageNumSprite_[0].reset(Sprite::Create(textureHandle_, {1400.0f, 400.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
+	textureHandle_ = TextureManager::Load("stageNum/stage1-2.png");
+	stageNumSprite_[1].reset(Sprite::Create(textureHandle_, {1400.0f, 400.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
+	textureHandle_ = TextureManager::Load("stageNum/stage1-3.png");
+	stageNumSprite_[2].reset(Sprite::Create(textureHandle_, {1400.0f, 400.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
 
 	startGongSEDataHandle_ = audio_->LoadWave("audio/SE/startGong.wav");
 	bgmDataHandle_ = audio_->LoadWave("audio/BGM/gameBGM.wav");
@@ -108,7 +114,7 @@ void GameScene::Initialize() {
 
 	uiInput_ = std::make_unique<MyEngine::UIInputController>();
 
-	isStartGongPlayed_ = true;
+	isStartDirectionEnabled_ = true;
 }
 
 void GameScene::Update() {
@@ -160,6 +166,8 @@ void GameScene::Update() {
 		break;
 	}
 
+	UpdateStageUI();
+
 	cameraController_->Update();
 
 	const Camera& cameraViewProjection = cameraController_->GetCamera();
@@ -191,6 +199,9 @@ void GameScene::Draw() {
 	Sprite::PreDraw(dxCommon_->GetCommandList());
 
 	ui_->Draw();
+	if (isStageUIActive_) {
+		stageNumSprite_[stageNumber_ - 1]->Draw();
+	}
 
 	switch (phase_) {
 	case GameScene::Phase::kFadeIn:
@@ -252,14 +263,20 @@ void GameScene::ChangePhase() {
 		fade_->Update();
 		if (fade_->IsFinished()) {
 			fade_->Stop();
-			if (isStartGongPlayed_) {
+			StartStageUI();
+			if (isStartDirectionEnabled_) {
     			phase_ = Phase::kReady;
 			} else {
 				phase_ = Phase::kPlay;
+			    bgmVoiceHandle_ = audio_->PlayWave(bgmDataHandle_, true, 0.5f);
 			}
 		}
 		break;
 	case GameScene::Phase::kReady:
+		if (!isStartUIFinished_) {
+			return;
+		}
+
 		startTime_ -= deltaTime_;
 		if (startTime_ <= 0.0f) {
 			startTime_ = 1.5f;
@@ -333,7 +350,9 @@ void GameScene::FightAnimation() {
 		fightTextVisible_ = true;
 		fightTextAnimeTimer_ = 0.0f;
 		fightTextSprite_->SetSize({fightTextSize_.x * startScale_, fightTextSize_.y * startScale_});
-		startGongSEVoiceHandle_ = audio_->PlayWave(startGongSEDataHandle_, false, 1.0f);
+		if (!isSkip_ && isStartDirectionEnabled_) {		
+			startGongSEVoiceHandle_ = audio_->PlayWave(startGongSEDataHandle_, false, 1.0f);
+		}
 	}
 
 	if (fightTextVisible_) {
@@ -500,7 +519,7 @@ void GameScene::GameOver() {
 				if (gameOverSelectIndex_ == 0) {
 					// リトライ
 					backToTitle_ = false;
-					isStartGongPlayed_ = true;
+					isStartDirectionEnabled_ = true;
 				} else {
 					// タイトルへ
 					backToTitle_ = true;
@@ -522,10 +541,7 @@ void GameScene::ResetGame() {
 	alphaCounter_ = 0.0f;
 	gameOverFallTimer_ = 0.0f;
 	isGameOverFallFinished_ = false;
-	fightTextVisible_ = false;
-	fightTextAnimeFinished_ = false;
-	waitTimer_ = 0.0f;
-	startTime_ = kInitialStartTime_;
+	StartGameFlow();
 
 	// プレイヤー
 	player_->Reset();
@@ -553,6 +569,9 @@ void GameScene::ResetGame() {
 
 	// BGM
 	audio_->StopWave(bgmVoiceHandle_);
+
+	isSkip_ = false;
+	StartStageUI();
 }
 
 
@@ -734,7 +753,8 @@ void GameScene::GoToNextStage() {
 }
 
 void GameScene::ResetForNextStage() {
-	isStartGongPlayed_ = false;
+	isStartDirectionEnabled_ = false;
+	SkipStartDirection();
 
 	// プレイヤー位置
 	player_->Reset();
@@ -752,4 +772,80 @@ void GameScene::ResetForNextStage() {
 
 	// UI
 	ui_->Reset();
+	StartStageUI();
+}
+
+void GameScene::StartGameFlow() {
+	startTime_ = kInitialStartTime_;
+	fightTextVisible_ = false;
+	fightTextAnimeFinished_ = false;
+	waitTimer_ = 0.0f;
+}
+
+void GameScene::SkipStartDirection() {
+	isSkip_ = true;
+
+	// 演出を全部終わった状態にする
+	fightTextVisible_ = false;
+	fightTextAnimeFinished_ = true;
+	waitTimer_ = waitDuration_;
+	startTime_ = 0.0f;
+
+
+	// SE止める
+	audio_->StopWave(startGongSEVoiceHandle_);
+}
+
+void GameScene::StartStageUI() {
+	stageUIState_ = StageUIState::kEnter;
+	stageUITimer_ = 0.0f;
+	isStageUIActive_ = true;
+	isStartUIFinished_ = false;
+
+	// 初期位置：画面右外
+	stageNumSprite_[stageNumber_ - 1]->SetPosition({1400.0f, 360.0f});
+}
+
+void GameScene::UpdateStageUI() {
+	if (!isStageUIActive_)
+		return;
+
+	stageUITimer_ += deltaTime_;
+
+	switch (stageUIState_) {
+
+	case StageUIState::kEnter: {
+		float t = std::min(stageUITimer_ / 0.5f, 1.0f);
+		float eased = Easing::EaseOutCubic(t);
+
+		float x = 1400.0f + (640.0f - 1400.0f) * eased;
+		stageNumSprite_[stageNumber_ - 1]->SetPosition({x, 360.0f});
+
+		if (t >= 1.0f) {
+			stageUIState_ = StageUIState::kStay;
+			stageUITimer_ = 0.0f;
+		}
+	} break;
+
+	case StageUIState::kStay:
+		if (stageUITimer_ >= 1.5f) {
+			stageUIState_ = StageUIState::kExit;
+			stageUITimer_ = 0.0f;
+		}
+		break;
+
+	case StageUIState::kExit: {
+		float t = std::min(stageUITimer_ / 0.5f, 1.0f);
+		float eased = Easing::EaseInCubic(t);
+
+		float x = 640.0f + (-200.0f - 640.0f) * eased;
+		stageNumSprite_[stageNumber_ - 1]->SetPosition({x, 360.0f});
+
+		if (t >= 1.0f) {
+			stageUIState_ = StageUIState::kEnd;
+			isStageUIActive_ = false;
+			isStartUIFinished_ = true;
+		}
+	} break;
+	}
 }

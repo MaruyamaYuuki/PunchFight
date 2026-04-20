@@ -62,4 +62,11 @@ inline float EaseOutBounce(float t) {
 	}
 }
 
+inline float EaseInCubic(float t) { return t * t * t; }
+
+inline float EaseOutCubic(float t) {
+	t = 1.0f - t;
+	return 1.0f - (t * t * t);
+}
+
 } // namespace Easing
