@@ -31,7 +31,7 @@ public:
 			cmd.moveLR = 1;
 		}
 
-		if (input->TriggerKey(DIK_RETURN)) {
+		if (input->TriggerKey(DIK_SPACE)) {
 			cmd.decide = true;
 		}
 

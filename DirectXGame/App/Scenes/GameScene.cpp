@@ -305,6 +305,11 @@ void GameScene::ChangePhase() {
 		fade_->Update();
 		if (fade_->IsFinished()) {
 			fade_->Stop();
+
+			if (backToTitle_ && isBackTitleChecked_) {
+				isFinished_ = true;
+				return;
+			}
 			if (player_->IsDead()) {
 				if (backToTitle_) {
 					isFinished_ = true;
