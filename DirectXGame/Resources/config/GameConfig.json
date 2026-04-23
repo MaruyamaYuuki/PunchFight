@@ -49,7 +49,7 @@
           "Areas": [
             {"triggerX": 15.0,
              "enemies": [
-              {"type": "Fast", "pos": [25,1,0]}
+              {"type": "Normal", "pos": [25,1,0]}
              ]
             },
             {"triggerX": 30.0,
