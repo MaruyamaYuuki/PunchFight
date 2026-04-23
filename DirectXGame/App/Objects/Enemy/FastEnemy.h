@@ -10,6 +10,7 @@ struct GhostEffect {
 };
 
 class FastEnemy : public EnemyBase {
+public:
 	/// <summary>
 	/// デフォルトコンストラクタ
 	/// </summary>
@@ -27,8 +28,14 @@ class FastEnemy : public EnemyBase {
 	/// <param name="allEnemies">全エネミーのリスト（他の敵との重なり回避計算に使用）</param>
 	virtual void Update(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies);
 
+	void UpdateRetreat(float deltaTime);
+
+	bool IsRetreatFinished() const;
+
 private:
 	void StartRetreat();
+
+	void AttackProcess(const KamataEngine::Vector3& playerPos) override;
 
 private:
 	MyEngine::GameConfigManager* cfg_ = nullptr;

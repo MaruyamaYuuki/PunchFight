@@ -34,16 +34,13 @@ void FastEnemy::Initialize(const EnemyData& data) {
 }
 
 void FastEnemy::Update(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) {
-	// 1. 中断状態のチェック
+	// 中断状態のチェック
 	if (IsMovementInterrupted()) {
 		EnemyBase::Update(playerPos, allEnemies);
 		return;
 	}
 
-	// 2. 攻撃終了の検知用
-	bool wasAttacking = IsAttacking();
-
-	// 3. 通常の追従・攻撃ロジック
+	// 通常の追従・攻撃ロジック
 	if (GetState() == EnemyState::Idle || GetState() == EnemyState::Walking) {
 		Vector3 toPlayer = playerPos - GetPosition();
 		float dist = Length(toPlayer);
@@ -62,15 +59,29 @@ void FastEnemy::Update(const KamataEngine::Vector3& playerPos, const std::vector
 		}
 	}
 
-	// ★重要：攻撃が終わった瞬間に「離脱ステート」へ切り替える
-	if (wasAttacking && !IsAttacking()) {
-		ChangeState<EnemyStateRetreat>();
-	}
-
 	// 親クラスの更新
 	EnemyBase::Update(playerPos, allEnemies);
 }
+
+void FastEnemy::UpdateRetreat(float deltaTime) { retreatTimer_ -= deltaTime; }
+
+bool FastEnemy::IsRetreatFinished() const { return retreatTimer_ <= 0.0f; }
+
 void FastEnemy::StartRetreat() {
 	isRetreating_ = true;
 	retreatTimer_ = retreatDuration_;
+}
+
+void FastEnemy::AttackProcess(const KamataEngine::Vector3& playerPos) {
+	// 攻撃前の状態を保存
+	bool wasAttacking = IsAttacking();
+
+	// 通常攻撃処理
+	DoNormalAttack(playerPos);
+
+	// 攻撃終了を検知
+	if (wasAttacking && !IsAttacking()) {
+		StartRetreat();
+		ChangeState<EnemyStateRetreat>();
+	}
 }

@@ -1,5 +1,6 @@
 #include "EnemyState.h"
 #include "EnemyBase.h"
+#include "FastEnemy.h"
 
 // 共通の「被弾・死亡」チェック用ヘルパー
 bool CheckCommonTransitions(EnemyBase* enemy) {
@@ -140,12 +141,18 @@ void EnemyStateRetreat::Update(EnemyBase* enemy) {
 	if (CheckCommonTransitions(enemy))
 		return;
 
-	// プレイヤーから離れる方向に移動するロジック
-	float retreatSpeed = enemy->GetSpeed() * 1.5f;
-	enemy->AddPositionX(-enemy->GetFacingDir() * retreatSpeed * enemy->GetDeltaTime());
+	float speed = enemy->GetSpeed() * 1.5f;
+	enemy->AddPositionX(-enemy->GetFacingDir() * speed * enemy->GetDeltaTime());
 
-	// 一定時間や距離でIdleに戻る処理（ここでは簡易的に）
-	// if (timer <= 0) enemy->ChangeState<EnemyStateIdle>();
+	// FastEnemy専用処理
+	if (auto fast = dynamic_cast<FastEnemy*>(enemy)) {
+
+		fast->UpdateRetreat(enemy->GetDeltaTime());
+
+		if (fast->IsRetreatFinished()) {
+			enemy->ChangeState<EnemyStateIdle>();
+		}
+	}
 }
 
 uint32_t EnemyStateRetreat::GetTexture(EnemyBase* enemy) {

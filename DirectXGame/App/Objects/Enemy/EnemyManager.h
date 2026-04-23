@@ -3,6 +3,7 @@
 #include "EnemyBase.h"
 #include "NormalEnemy.h"
 #include "PowerEnemy.h"
+#include "FastEnemy.h"
 #include "../../../Engine/Particle/SmokeParticleManager.h"
 #include <memory> // unique_ptr
 #include <vector>
