@@ -97,7 +97,6 @@ void EnemyManager::Update(const Vector3& playerPos) {
 		e->Update(playerPos, enemies_);
 	}
 
-
 	// ======== 死んだ敵を削除 ========
 	enemies_.erase(
 	    std::remove_if(enemies_.begin(), enemies_.end(), [](auto& e) { return e->IsDead(); }), // knockback終了後に消す
