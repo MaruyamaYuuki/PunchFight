@@ -43,6 +43,12 @@ public:
 	void Draw(KamataEngine::Camera& camera);
 
 	/// <summary>
+	/// 強攻撃の気弾単体の描画関数
+	/// </summary>
+	/// <param name="camera">カメラ</param>
+	void DrawSpecial(KamataEngine::Camera& camera);
+
+	/// <summary>
 	/// プレイヤーの状態のリセット
 	/// </summary>
 	void Reset();
@@ -154,6 +160,8 @@ public:
 	/// <returns>ステップのクールタイムの最大値</returns>
 	int32_t GetStepCooldownMax() const { return stepCooldown_; }
 
+	bool IsSpecial() const { return combat_->IsSpecialAttacking(); }
+
 	/// <summary>
 	/// 強攻撃を使ったかを取得
 	/// </summary>
@@ -177,6 +185,8 @@ public:
 	/// </summary>
 	/// <returns>このフレームで強攻撃を発動した直後なら true</returns>
 	bool DidSpecialAttack() const { return combat_->DidStartSpecialAttack(); }
+
+	KamataEngine::Vector3 GetSpecialPos() const { return worldTransformSP_.translation_; } 
 
 	/// <summary>
 	/// プレイヤーの体力を設定する

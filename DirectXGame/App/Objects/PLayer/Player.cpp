@@ -158,13 +158,16 @@ void Player::Draw(Camera& camera) {
 		modelHitBox_->Draw(worldTransformPHitBox_, camera);
 	}
 	#endif
+}
+
+void Player::DrawSpecial(KamataEngine::Camera& camera) {
 	// --- 気弾の描画 ---
 	if (combat_->IsSpecialAttacking()) {
 
 		// 気弾本体
 		modelSpecial_->Draw(worldTransformSP_, camera, SPTextureHandle_);
 
-		#ifdef _DEBUG
+#ifdef _DEBUG
 		// デバッグ用ヒットボックスモデル
 		// （必要なら）
 		if (modelSPHitBox_) {
@@ -174,7 +177,7 @@ void Player::Draw(Camera& camera) {
 
 			modelSPHitBox_->Draw(worldTransformSPHitBox_, camera);
 		}
-		#endif
+#endif
 	}
 }
 
