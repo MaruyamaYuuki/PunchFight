@@ -187,9 +187,29 @@ void GameScene::Draw() {
 	Model::PreDraw();
 
 	stage_->Draw(camera_);
+	// プレイヤーと敵の「背面側」
 	enemyManager_->BackDraw(camera_, player_->GetWorldTransform().translation_);
+
+	// プレイヤー本体
 	player_->Draw(camera_);
-	enemyManager_->FrontDraw(camera_, player_->GetWorldTransform().translation_);
+
+	// ===== 気弾のZ座標を基準にした敵描画 =====
+	// 気弾が存在している場合のみ、気弾より手前/奥の敵を分けて描画
+	if (player_->IsSpecial()) {
+		KamataEngine::Vector3 specialPos = player_->GetSpecialPos();
+
+		// 気弾より奥側の敵
+		enemyManager_->BackDraw(camera_, specialPos);
+
+		// 気弾本体
+		player_->DrawSpecial(camera_); // 気弾だけ描画する関数を用意する
+
+		// 気弾より手前側の敵
+		enemyManager_->FrontDraw(camera_, specialPos);
+	} else {
+		// 気弾が無い場合は通常通り
+		enemyManager_->FrontDraw(camera_, player_->GetWorldTransform().translation_);
+	}
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
