@@ -34,14 +34,22 @@ void FastEnemy::Initialize(const EnemyData& data) {
 }
 
 void FastEnemy::Update(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) {
-	// 中断状態のチェック
+
+	// 中断状態（スタン・ノックバックなど）
 	if (IsMovementInterrupted()) {
+		EnemyBase::Update(playerPos, allEnemies);
+		return;
+	}
+
+	// Retreat中は通常の追尾処理をしない
+	if (GetState() == EnemyState::Retreat) {
 		EnemyBase::Update(playerPos, allEnemies);
 		return;
 	}
 
 	// 通常の追従・攻撃ロジック
 	if (GetState() == EnemyState::Idle || GetState() == EnemyState::Walking) {
+
 		Vector3 toPlayer = playerPos - GetPosition();
 		float dist = Length(toPlayer);
 
@@ -53,13 +61,14 @@ void FastEnemy::Update(const KamataEngine::Vector3& playerPos, const std::vector
 			AttackProcess(playerPos);
 		} else {
 			MoveTowardPlayer(playerPos, allEnemies);
-			// 状態が変わったことをステートクラスに伝える
-			if (GetState() != EnemyState::Walking)
+
+			if (GetState() != EnemyState::Walking) {
 				ChangeState<EnemyStateWalking>();
+			}
 		}
 	}
 
-	// 親クラスの更新
+	// 状態クラスの更新
 	EnemyBase::Update(playerPos, allEnemies);
 }
 

@@ -28,7 +28,8 @@ enum class EnemyState {
 	Attacking, 
 	Stunned, 
 	Knockback, 
-	Dead 
+	Dead , 
+	Retreat 
 };
 
 /// <summary>
