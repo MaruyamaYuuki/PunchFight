@@ -49,7 +49,7 @@
           "Areas": [
             {"triggerX": 15.0,
              "enemies": [
-              {"type": "Fast", "pos": [25,1,0]}
+              {"type": "Normal", "pos": [25,1,0]}
              ]
             },
             {"triggerX": 30.0,
@@ -94,29 +94,19 @@
           "Areas": [
             {"triggerX": 15.0,
              "enemies": [
-              {"type": "Normal", "pos": [26,1,-1]},
-              {"type": "Normal", "pos": [25,1,0]},
-              {"type": "Normal", "pos": [26,1,1]}
+              {"type": "Normal", "pos": [25,1,0]}
              ]
             },
             {"triggerX": 30.0,
              "enemies": [
-              {"type": "Normal", "pos": [69,1,-1]},
-              {"type": "Power", "pos": [68,1,0]},
-              {"type": "Normal", "pos": [69,1,1]},
-
-              {"type": "Normal", "pos": [44,1,-1]},
-              {"type": "Power", "pos": [43,1,0]},
-              {"type": "Normal", "pos": [47,1,1]}
+              {"type": "Power", "pos": [40,1,0]}
              ]
             },
             {"triggerX": 45.0,
              "enemies": [
-              {"type": "Normal", "pos": [53,2,-1]},
               {"type": "Normal", "pos": [53,1,-1]},
               {"type": "Power", "pos": [54,1,0]},
-              {"type": "Normal", "pos": [53,1,1]},
-              {"type": "Normal", "pos": [53,2,1]}
+              {"type": "Normal", "pos": [53,1,1]}
              ]
             },
             {"triggerX": 60.0,
