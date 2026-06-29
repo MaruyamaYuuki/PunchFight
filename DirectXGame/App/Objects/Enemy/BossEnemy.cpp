@@ -180,3 +180,22 @@ void BossEnemy::TripleTackleAttack() {
 		}
 	}
 }
+
+void BossEnemy::EnterAttackMode(const KamataEngine::Vector3& playerPos) {
+	// 攻撃モードをオンにする
+	SetAttackMode(true);
+
+	// プレイヤーの方向を計算して振り向く
+	KamataEngine::Vector3 toPlayer = playerPos - GetPosition();
+	if (fabs(toPlayer.x) > 0.01f) {
+		SetFacingDir((toPlayer.x > 0.0f) ? 1.0f : -1.0f);
+	}
+	SetAttackDirX(GetFacingDir());
+
+	// ボス特有の攻撃パターンのリセットと決定
+	// （ここでは例として、常に3連タックルを行うように設定しています）
+	useTripleTackle_ = true;
+	tackleCount_ = 0;
+	isTackleCharging_ = false;
+	isTackling_ = false;
+}
