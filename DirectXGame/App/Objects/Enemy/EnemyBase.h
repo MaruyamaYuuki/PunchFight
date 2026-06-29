@@ -234,6 +234,8 @@ public:
 	/// <returns>ダメージ済みなら true</returns>
 	bool HasDealtDamage() const { return hasDealtDamage_; }
 
+	void SetStunMultiplier(float multiplier) { stunMultiplier_ = multiplier; }
+
 	// --- Setter ---
 
 	/// <summary>
@@ -509,6 +511,8 @@ public:
 	/// <returns>基本ルール：ノックバック中、スタン中、死亡時は0を返す</returns>
 	virtual bool IsMovementInterrupted() const;
 
+	void Launch(float power);
+
 protected:
 
 	/// <summary>
@@ -600,7 +604,17 @@ private:
 	float stunShakeTime_ = 0.0f;
 	float stunShakeAmplitude_;
 	float stunShakeSpeed_;
+	float stunGauge_ = 0.0f;
+	float stunGaugeMax_ = 120.0f;
+	float stunMultiplier_ = 1.0f;
+	float stunBackVelocity_ = 0.0f;
 	KamataEngine::Vector3 originalPosition_ = {0.0f, 0.0f, 0.0f};
+
+	// 打ち上げ
+	bool isAirborne_ = false;
+	bool stunOnLanding_ = false;
+	float airVelocityY_ = 0.0f;
+	float groundY_ = 1.0f;
 
 	// --- パーティクル用 ---
 	std::unique_ptr<MyEngine::SmokeParticleManager> smokeManager_;
@@ -632,7 +646,4 @@ private:
 	uint32_t attackSEVoiceHandle_ = 0;
 	uint32_t hitSEVoiceHandle_ = 0;
 	uint32_t blownSEVoiceHandle_ = 0;
-
-protected:
-
 };

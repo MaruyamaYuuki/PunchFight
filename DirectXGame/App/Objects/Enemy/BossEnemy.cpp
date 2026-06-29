@@ -37,7 +37,7 @@ void BossEnemy::Initialize(const EnemyData& data) {
 	ResetAttackCooldown();
 }
 
-void BossEnemy::Update(const Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) {
+void BossEnemy::Update(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) {
 	// ノックバック・スタン・死亡時
 	if (IsMovementInterrupted()) {
 		EnemyBase::Update(playerPos, allEnemies);
@@ -45,7 +45,7 @@ void BossEnemy::Update(const Vector3& playerPos, const std::vector<std::unique_p
 	}
 
 	// プレイヤーとの距離
-	Vector3 toPlayer = playerPos - GetPosition();
+	KamataEngine::Vector3 toPlayer = playerPos - GetPosition();
 	float dist = Length(toPlayer);
 
 	// 攻撃中でないときはプレイヤーの方向を向く
@@ -86,10 +86,10 @@ void BossEnemy::Update(const Vector3& playerPos, const std::vector<std::unique_p
 }
 
 
-void BossEnemy::AttackProcess(const Vector3& playerPos) {
+void BossEnemy::AttackProcess(const KamataEngine::Vector3& playerPos) {
 	// 攻撃モードに入っていないなら距離チェック
 	if (!IsAttackMode()) {
-		Vector3 toPlayer = playerPos - GetPosition();
+		KamataEngine::Vector3 toPlayer = playerPos - GetPosition();
 		float dist = Length(toPlayer);
 
 		if (dist <= GetAttackRange()) {
