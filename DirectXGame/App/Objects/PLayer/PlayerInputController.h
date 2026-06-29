@@ -1,8 +1,20 @@
 #pragma once
 #include "PlayerStructs.h"
 
+/// <summary>
+/// プレイヤーの入力処理を抽象化・管理するコントローラークラス。
+/// キーボードおよびゲームパッド（XInput）の入力状態を毎フレーム監視し、
+/// キャラクター制御用の統一コマンド（PlayerCommand構造体）に変換して出力します。
+/// デバイス依存の入力処理をこのクラスに集約することで、キャラクター側の移動・アクション処理と入力を分離します。
+/// </summary>
 class PlayerInputController {
 public:
+
+	/// <summary>
+	/// 現在のフレームにおけるデバイスの入力状態を取得し、プレイヤーコマンドとして生成します。
+	/// キーボードとゲームパッド両方の入力に対応し、両方の入力があった場合は加算・マージされます。
+	/// </summary>
+	/// <returns>正規化前（加算状態）の移動方向ベクトルと、各アクションのトリガー状態を格納した PlayerCommand</returns>
 	PlayerCommand GetCommand() {
 
 		PlayerCommand cmd;

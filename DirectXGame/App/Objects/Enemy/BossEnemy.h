@@ -9,16 +9,36 @@
 /// </summary>
 class BossEnemy : public EnemyBase {
 public:
+
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	/// <param name="data">エネミーデータ</param>
 	void Initialize(const EnemyData& data) override;
+
+	/// 更新処理
+	/// </summary>
+	/// <param name="playerPos">プレイヤーの座標（追従対象）</param>
+	/// <param name="allEnemies">全エネミーのリスト（他の敵との重なり回避計算に使用）</param>
 	void Update(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) override;
 
 private:
+
+	/// <summary>
+	/// BossEnemy固有の攻撃処理
+	/// </summary>
+	/// <param name="playerPos">プレイヤーの座標（攻撃ベクトル計算などに使用）</param>
 	void AttackProcess(const KamataEngine::Vector3& playerPos) override;
 
-	// 3連続タックル
+	/// <summary>
+	/// 三回連続タックル攻撃を行う処理
+	/// </summary>
 	void TripleTackleAttack();
 
-	// 攻撃開始時の初期化
+	/// <summary>
+	/// 攻撃開始時の初期化
+	/// </summary>
+	/// <param name="playerPos">プレイヤーの座標（攻撃ベクトル計算などに使用）</param>
 	void EnterAttackMode(const KamataEngine::Vector3& playerPos);
 
 private:

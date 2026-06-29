@@ -87,7 +87,19 @@ void EnemyBase::Update(const Vector3&, const std::vector<std::unique_ptr<EnemyBa
 	}
 
 	// ===== スタン処理 =====
+	if (!isStun_) {
+		stunGauge_ -= 20.0f * deltaTime_;
+
+		if (stunGauge_ < 0.0f) {
+			stunGauge_ = 0.0f;
+		}
+	}
+
 	if (isStun_ && hp_ > 0) {
+		worldTransform_.translation_.x += stunBackVelocity_ * deltaTime_;
+
+		stunBackVelocity_ *= 0.9f;
+
 		stunTimer_ -= deltaTime_;
 		stunShakeTime_ += deltaTime_;
 
@@ -100,6 +112,29 @@ void EnemyBase::Update(const Vector3&, const std::vector<std::unique_ptr<EnemyBa
 		if (stunTimer_ <= 0.0f) {
 			isStun_ = false;
 			worldTransform_.translation_ = originalPosition_;
+		}
+	}
+
+	if (isAirborne_) {
+		airVelocityY_ -= gravity_ * deltaTime_;
+
+		worldTransform_.translation_.y += airVelocityY_ * deltaTime_;
+
+		// 着地
+		if (worldTransform_.translation_.y <= groundY_) {
+			worldTransform_.translation_.y = groundY_;
+
+			isAirborne_ = false;
+			airVelocityY_ = 0.0f;
+
+			// 着地スタン
+			isStun_ = true;
+			stunTimer_ = stunDuration_;
+			stunShakeTime_ = 0.0f;
+
+			originalPosition_ = worldTransform_.translation_;
+
+			ChangeState<EnemyStateStunned>();
 		}
 	}
 
@@ -160,11 +195,24 @@ void EnemyBase::OnHit(int32_t damage, const Vector3& attackDir) {
 	} else {
 		hitSEVoiceHandle_ = audio_->PlayWave(hitSEDataHandle_, false, 0.5f);
 
-    	isStun_ = true;
-		ChangeState<EnemyStateStunned>();
-     	stunTimer_ = stunDuration_;
-    	stunShakeTime_ = 0.0f;
-    	originalPosition_ = worldTransform_.translation_;
+		if (!isStun_) {
+			float stunDamage = 25.0f;
+
+			stunGauge_ += stunDamage * stunMultiplier_;
+		}
+
+
+		if (stunGauge_ >= stunGaugeMax_) {
+			stunGauge_ = 0.0f;
+
+			isStun_ = true;
+
+			ChangeState<EnemyStateStunned>();
+			stunTimer_ = stunDuration_;
+			stunShakeTime_ = 0.0f;
+			originalPosition_ = worldTransform_.translation_;
+			stunBackVelocity_ = -facingDir_ * 3.0f;
+		}
 	}
 }
 
@@ -335,4 +383,13 @@ void EnemyBase::UpdateTextures() {
 bool EnemyBase::IsMovementInterrupted() const {
 	// 基本ルール：ノックバック中、スタン中、死亡時は動きを止める
 	return isKnockBack_ || isStun_ || hp_ <= 0;
+}
+
+void EnemyBase::Launch(float power) {
+	isAirborne_ = true;
+	airVelocityY_ = power;
+
+	stunOnLanding_ = true;
+
+	ChangeState<EnemyStateKnockback>();
 }
