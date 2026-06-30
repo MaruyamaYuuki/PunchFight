@@ -135,6 +135,8 @@ void EnemyBase::Update(const Vector3&, const std::vector<std::unique_ptr<EnemyBa
 			originalPosition_ = worldTransform_.translation_;
 
 			ChangeState<EnemyStateStunned>();
+		} else {
+			ChangeState<EnemyStateIdle>();
 		}
 	}
 
