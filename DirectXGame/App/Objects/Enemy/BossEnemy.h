@@ -41,6 +41,16 @@ private:
 	/// <param name="playerPos">プレイヤーの座標（攻撃ベクトル計算などに使用）</param>
 	void EnterAttackMode(const KamataEngine::Vector3& playerPos);
 
+	/// <summary>
+	/// ジャンプ攻撃を行う処理
+	/// </summary>
+	void JumpAttack();
+
+	/// <summary>
+	/// 衝撃波攻撃を行う処理
+	/// </summary>
+	void ShockWaveAttack();
+
 private:
 	MyEngine::GameConfigManager* cfg_ = nullptr;
 
@@ -61,4 +71,23 @@ private:
 	// ===== 3連続タックル用 =====
 	int tackleCount_ = 0; // 現在何回目か
 	const int maxTackleCount_ = 3;
+
+	// ==== ジャンプ攻撃 ====
+	bool useJumpAttack_ = false;
+
+	bool isJumpCharging_ = false;
+	bool isJumping_ = false;
+	bool isLanding_ = false;
+
+	float jumpChargeTimer_ = 0.0f;
+	float jumpChargeTime_ = 0.5f;
+
+	float jumpVelocityY_ = 0.0f;
+	float jumpPower_ = 10.0f;
+	float jumpGravity_ = 20.0f;
+
+	float groundY_ = 0.0f;
+	bool shockWaveActive_ = false;
+	float shockWaveTime_ = 0.15f;
+	float shockWaveTimer_ = 0.0f;
 };

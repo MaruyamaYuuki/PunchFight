@@ -55,9 +55,9 @@ private:
 
 	std::unordered_map<int32_t, std::unique_ptr<Stage>> activeStages_;
 
-	KamataEngine::Model* startModel_ = nullptr;
-	KamataEngine::Model* midModel_ = nullptr;
-	KamataEngine::Model* endModel_ = nullptr;
+std::unique_ptr<KamataEngine::Model> startModel_;
+	std::unique_ptr<KamataEngine::Model> midModel_;
+	std::unique_ptr<KamataEngine::Model> endModel_;
 
 	float stageWidth_; // 区間の幅
 	int32_t currentIndex_ = 0;    // 現在位置の区間インデックス

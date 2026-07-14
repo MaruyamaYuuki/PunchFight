@@ -136,6 +136,12 @@ public:
 	/// <param name="x">加算するX量（正の数で右、負の数で左）</param>
 	void AddPositionX(float x) { worldTransform_.translation_.x += x; }
 
+	/// <summary>
+	/// Y座標に値を加算する（移動用ヘルパー）
+	/// </summary>
+	/// <param name="y">加算するX量（正の数で右、負の数で左）</param>
+	void AddPositionY(float y) { worldTransform_.translation_.y += y; }
+
 	///
 	/// ステータス・状態管理関連
 	/// 
@@ -550,9 +556,9 @@ private:
 	MyEngine::WorldTransformEx worldTransformEHitBox_;
 	MyEngine::WorldTransformEx worldTransformAHitBox_;
 
-	KamataEngine::Model* model_ = nullptr;
-	KamataEngine::Model* modelEHitBox_ = nullptr;
-	KamataEngine::Model* modelAHitBox_ = nullptr;
+    std::unique_ptr<KamataEngine::Model> model_;
+	std::unique_ptr<KamataEngine::Model> modelEHitBox_;
+	std::unique_ptr<KamataEngine::Model> modelAHitBox_;
 	uint32_t textureHandle_ = 0;
 
 	// 現在の状態を保持するスマートポインタ

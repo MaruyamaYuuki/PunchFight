@@ -88,20 +88,20 @@ private:
 	uint32_t keyCtrlTexture_ = 0;
 	uint32_t padCtrlTexture_ = 0;
 
-	KamataEngine::Sprite* hpBarSprite_ = nullptr;
-	KamataEngine::Sprite* hpSprite_ = nullptr;
-	KamataEngine::Sprite* hpBackSprite_ = nullptr;
-	KamataEngine::Sprite* dashShadowSprite_ = nullptr;
-	KamataEngine::Sprite* spShadowSprite_ = nullptr;
-	KamataEngine::Sprite* ctrlSprite_ = nullptr;
-	KamataEngine::Sprite* baseCtrlSprite_ = nullptr;
-	KamataEngine::Sprite* pauseSprite_ = nullptr;
-	KamataEngine::Sprite* selectSprite_[2];
-	KamataEngine::Sprite* selectCursorSprite_[2];
-	KamataEngine::Sprite* checkFrameSprite_ = nullptr;
-	KamataEngine::Sprite* checkSelectSprite_[2];
-	KamataEngine::Sprite* checkCursorSprite_[2];
-	KamataEngine::Sprite* selectKeySprite_[2];
+	std::unique_ptr<KamataEngine::Sprite> hpBarSprite_ = nullptr;
+	std::unique_ptr<KamataEngine::Sprite> hpSprite_ = nullptr;
+	std::unique_ptr<KamataEngine::Sprite> hpBackSprite_ = nullptr;
+	std::unique_ptr<KamataEngine::Sprite> dashShadowSprite_ = nullptr;
+	std::unique_ptr<KamataEngine::Sprite> spShadowSprite_ = nullptr;
+	std::unique_ptr<KamataEngine::Sprite> ctrlSprite_ = nullptr;
+	std::unique_ptr<KamataEngine::Sprite> baseCtrlSprite_ = nullptr;
+	std::unique_ptr<KamataEngine::Sprite> pauseSprite_ = nullptr;
+	std::unique_ptr<KamataEngine::Sprite> selectSprite_[2];
+	std::unique_ptr<KamataEngine::Sprite> selectCursorSprite_[2];
+	std::unique_ptr<KamataEngine::Sprite> checkFrameSprite_ = nullptr;
+	std::unique_ptr<KamataEngine::Sprite> checkSelectSprite_[2];
+	std::unique_ptr<KamataEngine::Sprite> checkCursorSprite_[2];
+	std::unique_ptr<KamataEngine::Sprite> selectKeySprite_[2];
 
 	KamataEngine::Vector2 dashIconSize_ = {64.0f, 64.0f};
 	KamataEngine::Vector2 spIconSize = {64.0f, 64.0f};

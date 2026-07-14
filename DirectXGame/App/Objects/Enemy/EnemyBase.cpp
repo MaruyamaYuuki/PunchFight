@@ -11,13 +11,14 @@ void EnemyBase::Initialize(const EnemyData& data) {
 	cfg_ = GameConfigManager::GetInstance();
 	audio_ = Audio::GetInstance();
 
-	model_ = Model::CreateFromOBJ(data.modelPath, true);
+    model_.reset(Model::CreateFromOBJ(data.modelPath, true));
 	speed_ = data.speed;
 	hp_ = data.hp;
 	attackPower_ = data.attackPower;
 
-	modelEHitBox_ = Model::CreateFromOBJ("boxFrame", true);
-	modelAHitBox_ = Model::CreateFromOBJ("boxFrame", true);
+
+	modelEHitBox_.reset(Model::CreateFromOBJ("boxFrame", true));
+	modelAHitBox_.reset(Model::CreateFromOBJ("boxFrame", true));
 
 	worldTransform_.Initialize();
 	worldTransform_.rotation_.x = 0.75f;

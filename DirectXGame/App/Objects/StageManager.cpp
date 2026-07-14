@@ -14,15 +14,15 @@ void StageManager::Initialize(int32_t stageNumber, int32_t repeatCount) {
 	// モデルパス設定
 	switch (stageNumber) {
 	case 1:
-		startModel_ = Model::CreateFromOBJ(cfg_->getString("Stage.Models.Stage1.startModelPath"), true);
-		midModel_ = Model::CreateFromOBJ(cfg_->getString("Stage.Models.Stage1.midModelPath"), true);
-		endModel_ = Model::CreateFromOBJ(cfg_->getString("Stage.Models.Stage1.endModelPath"), true);
+		startModel_.reset(Model::CreateFromOBJ(cfg_->getString("Stage.Models.Stage1.startModelPath"), true));
+		midModel_.reset(Model::CreateFromOBJ(cfg_->getString("Stage.Models.Stage1.midModelPath"), true));
+		endModel_.reset(Model::CreateFromOBJ(cfg_->getString("Stage.Models.Stage1.endModelPath"), true));
 		break;
 
 	case 2:
-		startModel_ = Model::CreateFromOBJ(cfg_->getString("Stage.Models.Stage2.startModelPath"), true);
-		midModel_ = Model::CreateFromOBJ(cfg_->getString("Stage.Models.Stage2.midModelPath"), true);
-		endModel_ = Model::CreateFromOBJ(cfg_->getString("Stage.Models.Stage2.endModelPath"), true);
+		startModel_.reset(Model::CreateFromOBJ(cfg_->getString("Stage.Models.Stage1.startModelPath"), true));
+		midModel_.reset(Model::CreateFromOBJ(cfg_->getString("Stage.Models.Stage1.midModelPath"), true));
+		endModel_.reset(Model::CreateFromOBJ(cfg_->getString("Stage.Models.Stage1.endModelPath"), true));
 		break;
 	}
 
@@ -74,11 +74,11 @@ void StageManager::UpdateLoadedStages() {
 			// モデル切り替え
 			KamataEngine::Model* modelToUse = nullptr;
 			if (index == 0) {
-				modelToUse = startModel_;
+				modelToUse = startModel_.get();
 			} else if (index == stageCount_ - 1) {
-				modelToUse = endModel_;
+				modelToUse = endModel_.get();
 			} else {
-				modelToUse = midModel_;
+				modelToUse = midModel_.get();
 			}
 
 			stage->Initialize(modelToUse);

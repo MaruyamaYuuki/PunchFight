@@ -10,7 +10,7 @@ Fade::~Fade() = default;
 void Fade::Initialize() {
 	textureHandle_ = TextureManager::Load("black.png");
 	// 中心基準で拡大縮小するためアンカーを(0.5, 0.5)に設定
-	sprite_ = Sprite::Create(textureHandle_, {640.0f, 360.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
+	sprite_.reset(Sprite::Create(textureHandle_, {640.0f, 360.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
 	sprite_->SetColor({0, 0, 0, 1});
 	sprite_->SetSize({1280.0f, 720.0f});
 	scale_ = 0.0f;

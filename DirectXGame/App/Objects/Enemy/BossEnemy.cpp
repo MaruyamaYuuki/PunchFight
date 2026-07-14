@@ -63,6 +63,22 @@ void BossEnemy::Update(const KamataEngine::Vector3& playerPos, const std::vector
 		MoveTowardPlayer(playerPos, allEnemies);
 	}
 
+	// 衝撃波攻撃の終了処理
+	if (shockWaveActive_) {
+		shockWaveTimer_ -= GetDeltaTime();
+
+		if (shockWaveTimer_ <= 0) {
+			shockWaveActive_ = false;
+
+			SetAttackHitBoxActive(false);
+
+			SetAttackMode(false);
+			SetAttacking(false);
+
+			ResetAttackCooldown();
+		}
+	}
+
 	// 状態遷移
 	if (IsAttacking()) {
 		if (GetState() != EnemyState::Attacking) {
@@ -99,10 +115,16 @@ void BossEnemy::AttackProcess(const KamataEngine::Vector3& playerPos) {
 		}
 	}
 
-	// 3連続タックル
-	if (useTripleTackle_) {
+if (useJumpAttack_) {
+
+		JumpAttack();
+
+	} else if (useTripleTackle_) {
+
 		TripleTackleAttack();
+
 	} else {
+
 		DoNormalAttack(playerPos);
 	}
 }
@@ -198,4 +220,57 @@ void BossEnemy::EnterAttackMode(const KamataEngine::Vector3& playerPos) {
 	tackleCount_ = 0;
 	isTackleCharging_ = false;
 	isTackling_ = false;
+}
+
+void BossEnemy::JumpAttack() {
+	// 溜め
+	if (!isJumpCharging_ && !isJumping_) {
+		isJumpCharging_ = true;
+		jumpChargeTimer_ = jumpChargeTime_;
+		return;
+	}
+
+	if (isJumpCharging_) {
+		jumpChargeTimer_ -= GetDeltaTime();
+
+		if (jumpChargeTimer_ <= 0.0f) {
+			isJumpCharging_ = false;
+
+			isJumping_ = true;
+
+			jumpVelocityY_ = jumpPower_;
+		}
+
+		return;
+	}
+
+	// 空中
+	if (isJumping_) {
+		jumpVelocityY_ -= jumpGravity_ * GetDeltaTime();
+
+		AddPositionY(jumpVelocityY_ * GetDeltaTime());
+
+		// 着地
+		if (GetPosition().y <= groundY_) {
+			Vector3 pos = GetPosition();
+			pos.y = groundY_;
+			SetPosition(pos.x, pos.y, pos.z);
+
+			isJumping_ = false;
+
+			ShockWaveAttack();
+		}
+	}
+}
+
+void BossEnemy::ShockWaveAttack() {
+	shockWaveActive_ = true;
+
+	shockWaveTimer_ = shockWaveTime_;
+
+	SetAttackHitBoxActive(true);
+
+	SetAttackHitBoxPos(GetPosition());
+
+	SetAttackHitBoxSize({2.5f, 0.6f, 2.5f});
 }

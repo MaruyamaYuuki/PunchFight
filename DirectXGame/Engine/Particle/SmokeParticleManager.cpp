@@ -5,7 +5,7 @@ using namespace KamataEngine::MathUtility;
 
 namespace MyEngine {
 void SmokeParticleManager::Initialize() {
-	model_ = Model::CreateFromOBJ("quad", true);
+	model_.reset(Model::CreateFromOBJ("quad", true));
 	textureHandle_ = TextureManager::Load("effects/smoke.png");
 }
 

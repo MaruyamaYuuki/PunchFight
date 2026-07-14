@@ -37,7 +37,7 @@ private:
 	/// <returns>生成されたランダム値</returns>
 	float RandomRange(float min, float max);
 
-	KamataEngine::Model* model_ = nullptr;
+    std::unique_ptr<KamataEngine::Model> model_;
 	uint32_t textureHandle_ = 0;
 };
 } // namespace MyEngine
