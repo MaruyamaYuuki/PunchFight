@@ -28,14 +28,14 @@ void ClearScene::Initialize() {
 	modelBoxFrame_.reset(Model::CreateFromOBJ("boxFrame", true));
 
 	textureHandle_ = TextureManager::Load("clearScene/clearBack.png");
-	backSprite_ = Sprite::Create(textureHandle_, {0.0f, 0.0f});
+	backSprite_.reset(Sprite::Create(textureHandle_, {0.0f, 0.0f}));
 	textureHandle_ = TextureManager::Load("clearScene/clearText.png");
-	clearSprite_ = Sprite::Create(textureHandle_, {640.0f, 200.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
+	clearSprite_.reset(Sprite::Create(textureHandle_, {640.0f, 200.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
 	clearScale_ = 0.2f;
 	clearSprite_->SetSize({0.0f, 0.0f}); // テクスチャサイズは拡大で調整するので0でOK
 	keyPushTexture_ = TextureManager::Load("clearScene/keyGuide.png");
 	padPushTexture_ = TextureManager::Load("clearScene/padGuide.png");
-	pushGuideSprite_ = Sprite::Create(keyPushTexture_, {640.0f, 360.0f}, {1, 1, 1, 1}, {0.5f, 0.5f});
+	pushGuideSprite_.reset(Sprite::Create(keyPushTexture_, {640.0f, 360.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
 
 	player_ = std::make_unique<Player>();
 	player_->Initialize(modelPlayer_.get(), modelBoxFrame_.get(), modelBoxFrame_.get());
