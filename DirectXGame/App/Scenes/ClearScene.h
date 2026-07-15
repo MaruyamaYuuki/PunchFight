@@ -107,9 +107,9 @@ private:
 	uint32_t keyPushTexture_ = 0;
 	uint32_t padPushTexture_ = 0;
 
-	KamataEngine::Sprite* backSprite_ = 0;
-	KamataEngine::Sprite* clearSprite_ = 0;
-	KamataEngine::Sprite* pushGuideSprite_ = 0;
+	std::unique_ptr<KamataEngine::Sprite> backSprite_ = 0;
+	std::unique_ptr<KamataEngine::Sprite> clearSprite_ = 0;
+	std::unique_ptr<KamataEngine::Sprite> pushGuideSprite_ = 0;
 
 	std::unique_ptr<Player> player_;
 
