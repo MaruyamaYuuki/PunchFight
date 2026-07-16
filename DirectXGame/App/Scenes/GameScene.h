@@ -206,7 +206,6 @@ private:
 	void UpdateStageUI();
 
 private:
-	KamataEngine::Audio* audio_ = nullptr;
 	std::unique_ptr<MyEngine::UIInputController> uiInput_;
 	UICommand cmd;
 

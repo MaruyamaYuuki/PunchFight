@@ -8,7 +8,6 @@ using MyEngine::SmokeParticleManager;
 using MyEngine::DustParticleManager;
 
 void EnemyBase::Initialize(const EnemyData& data) {
-	audio_ = Audio::GetInstance();
 
     model_.reset(Model::CreateFromOBJ(data.modelPath, true));
 	speed_ = data.speed;
@@ -43,9 +42,9 @@ void EnemyBase::Initialize(const EnemyData& data) {
 	smokeSpawnInterval_ = GameConfigManager::GetInstance()->getFloat("Enemy.Default.kSmokeSpawnInterval");
 	smokeSize_ = GameConfigManager::GetInstance()->getVector3("Enemy.Default.kSmokeSize");
 
-	attackSEDataHandle_ = audio_->LoadWave("audio/SE/punchSE.wav");
-	hitSEDataHandle_ = audio_->LoadWave("audio/SE/hitSE.wav");
-	blownSEDataHandle_ = audio_->LoadWave("audio/SE/blownSE.wav");
+	attackSEDataHandle_ = Audio::GetInstance()->LoadWave("audio/SE/punchSE.wav");
+	hitSEDataHandle_ = Audio::GetInstance()->LoadWave("audio/SE/hitSE.wav");
+	blownSEDataHandle_ = Audio::GetInstance()->LoadWave("audio/SE/blownSE.wav");
 
 	ChangeState<EnemyStateIdle>();
 }
@@ -182,7 +181,7 @@ void EnemyBase::OnHit(int32_t damage, const Vector3& attackDir) {
 
 
 	if (hp_ <= 0 && !isKnockBack_) {
-		blownSEVoiceHandle_ = audio_->PlayWave(blownSEDataHandle_, false, 0.5f);
+		blownSEVoiceHandle_ = Audio::GetInstance()->PlayWave(blownSEDataHandle_, false, 0.5f);
 
 		hp_ = 0;
 		isKnockBack_ = true;
@@ -195,7 +194,7 @@ void EnemyBase::OnHit(int32_t damage, const Vector3& attackDir) {
 
 		knockbackVelocity_ = {attackDir.x * basePower, upwardBoost, 0.0f};
 	} else {
-		hitSEVoiceHandle_ = audio_->PlayWave(hitSEDataHandle_, false, 0.5f);
+		hitSEVoiceHandle_ = Audio::GetInstance()->PlayWave(hitSEDataHandle_, false, 0.5f);
 
 		if (!isStun_) {
 			float stunDamage = 25.0f;
@@ -369,7 +368,7 @@ void EnemyBase::DoNormalAttack(const Vector3& playerPos) {
 	attackTimer_ = attackDuration_;
 	hasDealtDamage_ = false;
 
-    attackSEVoiceHandle_ = audio_->PlayWave(attackSEDataHandle_, false, 0.5f);
+    attackSEVoiceHandle_ = Audio::GetInstance()->PlayWave(attackSEDataHandle_, false, 0.5f);
 
 	float offsetX = 0.5f * facingDir_;
 	SetAttackHitBox(worldTransform_.translation_ + Vector3{offsetX, 0.1f, 0});

@@ -333,7 +333,7 @@ public:
 	/// オーディオマネージャーへのポインタを取得する
 	/// </summary>
 	/// <returns>Audioポインタ</returns>
-	KamataEngine::Audio* GetAudio() const { return audio_; }
+	KamataEngine::Audio* GetAudio() const { return KamataEngine::Audio::GetInstance(); }
 
 	/// <summary>
 	/// テクスチャハンドルを取得する
@@ -549,8 +549,6 @@ protected:
 
 
 private:
-	KamataEngine::Audio* audio_ = nullptr;
-
 	MyEngine::WorldTransformEx worldTransform_;
 	MyEngine::WorldTransformEx worldTransformEHitBox_;
 	MyEngine::WorldTransformEx worldTransformAHitBox_;

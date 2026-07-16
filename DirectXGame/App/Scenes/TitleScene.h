@@ -67,8 +67,6 @@ public:
 private:
 	XINPUT_STATE state_, preState_;
 
-	KamataEngine::Audio* audio_ = nullptr;
-
 	KamataEngine::Camera camera_;
 	MyEngine::WorldTransformEx worldTransform_;
 

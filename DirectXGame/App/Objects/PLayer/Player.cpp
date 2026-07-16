@@ -10,7 +10,6 @@ using MyEngine::GameConfigManager;
 using MyEngine::SmokeParticleManager;
 
 void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine::Model* modelBox) { 
-	audio_ = Audio::GetInstance();
 
 	assert(model);
 	model_ = model;
@@ -72,9 +71,9 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 
 	smokeTexture_ = TextureManager::Load("effects/dust2.png");
 
-	normalAttackSEDataHandle_ = audio_->LoadWave("audio/SE/punchSE.wav");
-	spAttackSEDataHandle_ = audio_->LoadWave("audio/SE/spAttackSE.wav");
-	hitSEDataHandle_ = audio_->LoadWave("audio/SE/hitSE.wav");
+	normalAttackSEDataHandle_ = Audio::GetInstance()->LoadWave("audio/SE/punchSE.wav");
+	spAttackSEDataHandle_ = Audio::GetInstance()->LoadWave("audio/SE/spAttackSE.wav");
+	hitSEDataHandle_ = Audio::GetInstance()->LoadWave("audio/SE/hitSE.wav");
 }
 
 void Player::Update() {
@@ -108,11 +107,11 @@ void Player::Update() {
 		}
 	}
 	if (combat_->DidStartNormalAttack()) {
-		normalAttackSEVoiceHandle_ = audio_->PlayWave(normalAttackSEDataHandle_, false, 0.5f);
+		normalAttackSEVoiceHandle_ = Audio::GetInstance()->PlayWave(normalAttackSEDataHandle_, false, 0.5f);
 		
 	}
 	if (combat_->DidStartSpecialAttack()) {
-		spAttackSEVoiceHandle_ = audio_->PlayWave(spAttackSEDataHandle_, false, 0.5f);
+		spAttackSEVoiceHandle_ = Audio::GetInstance()->PlayWave(spAttackSEDataHandle_, false, 0.5f);
         worldTransformSP_.translation_ = combat_->GetSpecialPos();
 	}
 	if (combat_->IsSpecialAttacking()) {
@@ -378,6 +377,6 @@ void Player::OnHit(int32_t damage) {
 		HP_ = 0;
 	} else {
 		stunTimer_ = 10; // 例：10フレーム
-		hitSEVoiceHandle_ = audio_->PlayWave(hitSEDataHandle_, false, 0.5f);
+		hitSEVoiceHandle_ = Audio::GetInstance()->PlayWave(hitSEDataHandle_, false, 0.5f);
 	}
 }

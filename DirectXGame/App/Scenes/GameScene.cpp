@@ -19,7 +19,6 @@ GameScene::GameScene() {}
 GameScene::~GameScene() = default;
 
 void GameScene::Initialize() { 
-	audio_ = Audio::GetInstance();
 
 	camera_.Initialize();
 
@@ -76,8 +75,8 @@ void GameScene::Initialize() {
 	textureHandle_ = TextureManager::Load("stageNum/stage1-3.png");
 	stageNumSprite_[2].reset(Sprite::Create(textureHandle_, {1400.0f, 200.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
 
-	startGongSEDataHandle_ = audio_->LoadWave("audio/SE/startGong.wav");
-	bgmDataHandle_ = audio_->LoadWave("audio/BGM/gameBGM.wav");
+	startGongSEDataHandle_ = Audio::GetInstance()->LoadWave("audio/SE/startGong.wav");
+	bgmDataHandle_ = Audio::GetInstance()->LoadWave("audio/BGM/gameBGM.wav");
 
 	player_ = std::make_unique<Player>();
 	player_->Initialize(modelPlayer_.get(), modelSPAttack_.get(), modelBoxFrame_.get());
@@ -284,7 +283,7 @@ void GameScene::ChangePhase() {
     			phase_ = Phase::kReady;
 			} else {
 				phase_ = Phase::kPlay;
-			    bgmVoiceHandle_ = audio_->PlayWave(bgmDataHandle_, true, 0.5f);
+			    bgmVoiceHandle_ = Audio::GetInstance()->PlayWave(bgmDataHandle_, true, 0.5f);
 			}
 		}
 		break;
@@ -304,16 +303,16 @@ void GameScene::ChangePhase() {
 		if (fightTextAnimeFinished_) {
     		startTime_ -= deltaTime_;
     		if (startTime_ <= 0.0f) {
-				audio_->StopWave(startGongSEVoiceHandle_);
+				Audio::GetInstance()->StopWave(startGongSEVoiceHandle_);
     			startTime_ = 4.0f;
     			phase_ = Phase::kPlay;
-    			bgmVoiceHandle_ = audio_->PlayWave(bgmDataHandle_, true, 0.5f);
+    			bgmVoiceHandle_ = Audio::GetInstance()->PlayWave(bgmDataHandle_, true, 0.5f);
     		}
 		}
 		break;
 	case GameScene::Phase::kPlay:
 		if (IsAllAreaCleared() && player_->GetWorldTransform().translation_.x >= moveLimit_.back()) {
-			audio_->StopWave(bgmVoiceHandle_);
+			Audio::GetInstance()->StopWave(bgmVoiceHandle_);
 			phase_ = Phase::kFadeOut;
 			fade_->Start(MyEngine::Fade::Status::FadeOut, fadeTime_);
 		}
@@ -372,7 +371,7 @@ void GameScene::FightAnimation() {
 		fightTextAnimeTimer_ = 0.0f;
 		fightTextSprite_->SetSize({fightTextSize_.x * startScale_, fightTextSize_.y * startScale_});
 		if (!isSkip_ && isStartDirectionEnabled_) {		
-			startGongSEVoiceHandle_ = audio_->PlayWave(startGongSEDataHandle_, false, 1.0f);
+			startGongSEVoiceHandle_ = Audio::GetInstance()->PlayWave(startGongSEDataHandle_, false, 1.0f);
 		}
 	}
 
@@ -463,7 +462,7 @@ void GameScene::UpdateBackTitleCheckInput() {
 		if (checkBackTitleIndex_ == 0) {
 			// Yes → タイトルへ
 			backToTitle_ = true;
-			audio_->StopWave(bgmVoiceHandle_);
+			Audio::GetInstance()->StopWave(bgmVoiceHandle_);
 			phase_ = Phase::kFadeOut;
 			fade_->Start(MyEngine::Fade::Status::FadeOut, fadeTime_);
 		} else {
@@ -478,7 +477,7 @@ void GameScene::UpdateBackTitleCheckInput() {
 
 void GameScene::GameOver() {
 	if (player_->IsDead()) {
-		audio_->StopWave(bgmVoiceHandle_);
+		Audio::GetInstance()->StopWave(bgmVoiceHandle_);
 
 		// 経過時間を加算
 		alphaCounter_ += 1.0f / 60.0f;
@@ -589,7 +588,7 @@ void GameScene::ResetGame() {
 	gameOverTextSprite_->SetPosition({640.0f, -200.0f});
 
 	// BGM
-	audio_->StopWave(bgmVoiceHandle_);
+	Audio::GetInstance()->StopWave(bgmVoiceHandle_);
 
 	isSkip_ = false;
 	StartStageUI();
@@ -814,7 +813,7 @@ void GameScene::SkipStartDirection() {
 
 
 	// SE止める
-	audio_->StopWave(startGongSEVoiceHandle_);
+	Audio::GetInstance()->StopWave(startGongSEVoiceHandle_);
 }
 
 void GameScene::StartStageUI() {

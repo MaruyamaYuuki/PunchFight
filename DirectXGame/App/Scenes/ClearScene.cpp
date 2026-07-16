@@ -14,7 +14,6 @@ ClearScene::ClearScene() {}
 ClearScene::~ClearScene() = default;
 
 void ClearScene::Initialize() {
-	audio_ = Audio::GetInstance();
 
 	camera_.Initialize();
 
