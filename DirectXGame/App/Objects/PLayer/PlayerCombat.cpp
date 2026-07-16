@@ -6,18 +6,17 @@ using namespace KamataEngine::MathUtility;
 using MyEngine::GameConfigManager;
 
 void PlayerCombat::Initialize() {
-	cfg = GameConfigManager::GetInstance();
 
-	normalPower_ = cfg->getInt("Player.Attack.kNormalAttackPower");
-	normalDuration_ = cfg->getInt("Player.Attack.kNormalAttackDuration");
-	normalCooldown_ = cfg->getInt("Player.Attack.kNormalAttackCoolDown");
-	normalHitBox_.size = cfg->getVector3("Player.Attack.kNormalAttackHitBoxSize");
+	normalPower_ = GameConfigManager::GetInstance()->getInt("Player.Attack.kNormalAttackPower");
+	normalDuration_ = GameConfigManager::GetInstance()->getInt("Player.Attack.kNormalAttackDuration");
+	normalCooldown_ = GameConfigManager::GetInstance()->getInt("Player.Attack.kNormalAttackCoolDown");
+	normalHitBox_.size = GameConfigManager::GetInstance()->getVector3("Player.Attack.kNormalAttackHitBoxSize");
 
-	specialPower_ = cfg->getInt("Player.Attack.kSPAttackPower");
-	specialDuration_ = cfg->getFloat("Player.Attack.kSPAttackDuration");
-	specialCooldown_ = cfg->getFloat("Player.Attack.kSPAttackCoolDown");
-	specialSpeed_ = cfg->getFloat("Player.Attack.kSPAttackMoveSpeed");
-	specialHitBox_.size = cfg->getVector3("Player.Attack.kSPAttackHitBoxSize");
+	specialPower_ = GameConfigManager::GetInstance()->getInt("Player.Attack.kSPAttackPower");
+	specialDuration_ = GameConfigManager::GetInstance()->getFloat("Player.Attack.kSPAttackDuration");
+	specialCooldown_ = GameConfigManager::GetInstance()->getFloat("Player.Attack.kSPAttackCoolDown");
+	specialSpeed_ = GameConfigManager::GetInstance()->getFloat("Player.Attack.kSPAttackMoveSpeed");
+	specialHitBox_.size = GameConfigManager::GetInstance()->getVector3("Player.Attack.kSPAttackHitBoxSize");
 }
 
 void PlayerCombat::Update(const Vector3& playerPos, float facingDir) {
@@ -97,7 +96,7 @@ void PlayerCombat::StartNormalAttack(KamataEngine::Vector3 playerPos, float faci
 	float hitboxOffsetX = 0.5f * facingDir; // プレイヤーが右向きなら+0.8、左向きなら-0.8
 	normalHitBox_.active = true;
 	normalHitBox_.pos = playerPos+ Vector3{hitboxOffsetX, 0.1f, 0.0f};
-	normalHitBox_.size = cfg->getVector3("Player.Attack.kNormalAttackHitBoxSize");
+	normalHitBox_.size = GameConfigManager::GetInstance()->getVector3("Player.Attack.kNormalAttackHitBoxSize");
 }
 
 void PlayerCombat::StartSpecialAttack(KamataEngine::Vector3 playerPos, float facingDir) {
@@ -122,6 +121,6 @@ void PlayerCombat::StartSpecialAttack(KamataEngine::Vector3 playerPos, float fac
 	// --- ヒットボックス初期化 ---
 	specialHitBox_.active = true;
 	specialHitBox_.pos = specialPos_+ Vector3{specialDir_ * 0.3f, 0.0f, 0.0f};
-	specialHitBox_.size = cfg->getVector3("Player.Attack.kSPAttackHitBoxSize");
+	specialHitBox_.size = GameConfigManager::GetInstance()->getVector3("Player.Attack.kSPAttackHitBoxSize");
 
 }

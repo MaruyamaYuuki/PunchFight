@@ -93,15 +93,7 @@ private:
 private:
 	XINPUT_STATE state_, preState_;
 
-	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
-	KamataEngine::Input* input_ = nullptr;
-	KamataEngine::Audio* audio_ = nullptr;
-	MyEngine::GameConfigManager* cfg_ = nullptr;
-
 	KamataEngine::Camera camera_;
-
-	std::unique_ptr<KamataEngine::Model> modelPlayer_;
-	std::unique_ptr<KamataEngine::Model> modelBoxFrame_;
 
 	uint32_t textureHandle_ = 0;
 	uint32_t keyPushTexture_ = 0;

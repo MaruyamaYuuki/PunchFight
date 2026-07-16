@@ -6,7 +6,6 @@ using namespace KamataEngine;
 using MyEngine::GameConfigManager;
 
 void StageManager::Initialize(int32_t stageNumber, int32_t repeatCount) {
-	cfg_ = GameConfigManager::GetInstance();
 
 	stageCount_ = repeatCount;
 	currentIndex_ = INT32_MIN;
@@ -14,19 +13,19 @@ void StageManager::Initialize(int32_t stageNumber, int32_t repeatCount) {
 	// モデルパス設定
 	switch (stageNumber) {
 	case 1:
-		startModel_.reset(Model::CreateFromOBJ(cfg_->getString("Stage.Models.Stage1.startModelPath"), true));
-		midModel_.reset(Model::CreateFromOBJ(cfg_->getString("Stage.Models.Stage1.midModelPath"), true));
-		endModel_.reset(Model::CreateFromOBJ(cfg_->getString("Stage.Models.Stage1.endModelPath"), true));
+		startModel_.reset(Model::CreateFromOBJ(GameConfigManager::GetInstance()->getString("Stage.Models.Stage1.startModelPath"), true));
+		midModel_.reset(Model::CreateFromOBJ(GameConfigManager::GetInstance()->getString("Stage.Models.Stage1.midModelPath"), true));
+		endModel_.reset(Model::CreateFromOBJ(GameConfigManager::GetInstance()->getString("Stage.Models.Stage1.endModelPath"), true));
 		break;
 
 	case 2:
-		startModel_.reset(Model::CreateFromOBJ(cfg_->getString("Stage.Models.Stage1.startModelPath"), true));
-		midModel_.reset(Model::CreateFromOBJ(cfg_->getString("Stage.Models.Stage1.midModelPath"), true));
-		endModel_.reset(Model::CreateFromOBJ(cfg_->getString("Stage.Models.Stage1.endModelPath"), true));
+		startModel_.reset(Model::CreateFromOBJ(GameConfigManager::GetInstance()->getString("Stage.Models.Stage1.startModelPath"), true));
+		midModel_.reset(Model::CreateFromOBJ(GameConfigManager::GetInstance()->getString("Stage.Models.Stage1.midModelPath"), true));
+		endModel_.reset(Model::CreateFromOBJ(GameConfigManager::GetInstance()->getString("Stage.Models.Stage1.endModelPath"), true));
 		break;
 	}
 
-	stageWidth_ = cfg_->getFloat("Stage.kStageWidth");
+	stageWidth_ = GameConfigManager::GetInstance()->getFloat("Stage.kStageWidth");
 }
 
 
@@ -72,6 +71,7 @@ void StageManager::UpdateLoadedStages() {
 			auto stage = std::make_unique<Stage>();
 
 			// モデル切り替え
+			// Stageクラスには所有権を渡さず、参照（生ポインタ）のみを渡す
 			KamataEngine::Model* modelToUse = nullptr;
 			if (index == 0) {
 				modelToUse = startModel_.get();

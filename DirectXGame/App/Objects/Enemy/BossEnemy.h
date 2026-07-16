@@ -52,7 +52,6 @@ private:
 	void ShockWaveAttack();
 
 private:
-	MyEngine::GameConfigManager* cfg_ = nullptr;
 
 	// ===== タックル設定 =====
 	bool useTripleTackle_ = true; // 必要なら確率で切り替え可能

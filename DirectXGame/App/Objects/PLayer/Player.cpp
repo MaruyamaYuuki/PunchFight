@@ -9,18 +9,13 @@ using namespace KamataEngine::MathUtility;
 using MyEngine::GameConfigManager;
 using MyEngine::SmokeParticleManager;
 
-void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine::Model* modelBox) { 
-	input_ = Input::GetInstance(); 
-	audio_ = Audio::GetInstance();
-
-	assert(model);
-	model_ = model;
-	assert(modelSP);
-	modelSpecial_ = modelSP;
-	assert(modelBox);
-	modelDebugHitBox_ = modelBox;
-	modelHitBox_ = modelBox;
-	modelSPHitBox_ = modelBox;
+void Player::Initialize() { 
+	
+	model_.reset(KamataEngine::Model::CreateFromOBJ("quad", true));
+	modelSpecial_.reset(KamataEngine::Model::CreateFromOBJ("specialAttack", true));
+	modelDebugHitBox_.reset(KamataEngine::Model::CreateFromOBJ("boxFrame", true));
+	modelHitBox_.reset(KamataEngine::Model::CreateFromOBJ("boxFrame", true));
+	modelSPHitBox_.reset(KamataEngine::Model::CreateFromOBJ("boxFrame", true));
 
 	worldTransform_.Initialize();
 	worldTransformSP_.Initialize();
@@ -33,28 +28,26 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 	smokeManager_ = std::make_unique<SmokeParticleManager>();
 	smokeManager_->Initialize();
 
-	cfg_ = GameConfigManager::GetInstance();
-
 	// 基本設定
-	maxHP_ = cfg_->getInt("Player.kInitialHP");
-	kInitialPos_ = cfg_->getVector3("Player.kGameInitialPos");
-	worldTransform_.scale_ = cfg_->getVector3("Global.kPlaneModelScale");
-	worldTransform_.rotation_.x = cfg_->getFloat("Global.kPlaneModelRotateX");
-	moveSpeed_ = cfg_->getFloat("Player.kMoveSpeed");
-	walkFrameInterval_ = cfg_->getInt("Player.kWalkFrameInterval");
-	playerHitBox_.size = cfg_->getVector3("Player.kHitBoxSize");
-	startMoveLimitX = cfg_->getFloat("Player.kStartMoveLimitX");
-	moveLimitZ = cfg_->getFloat("Player.kMoveLimitZ");
-	minMoveLimitZ = cfg_->getFloat("Player.kMinMoveLimitZ");
+	maxHP_ = GameConfigManager::GetInstance()->getInt("Player.kInitialHP");
+	kInitialPos_ = GameConfigManager::GetInstance()->getVector3("Player.kGameInitialPos");
+	worldTransform_.scale_ = GameConfigManager::GetInstance()->getVector3("Global.kPlaneModelScale");
+	worldTransform_.rotation_.x = GameConfigManager::GetInstance()->getFloat("Global.kPlaneModelRotateX");
+	moveSpeed_ = GameConfigManager::GetInstance()->getFloat("Player.kMoveSpeed");
+	walkFrameInterval_ = GameConfigManager::GetInstance()->getInt("Player.kWalkFrameInterval");
+	playerHitBox_.size = GameConfigManager::GetInstance()->getVector3("Player.kHitBoxSize");
+	startMoveLimitX = GameConfigManager::GetInstance()->getFloat("Player.kStartMoveLimitX");
+	moveLimitZ = GameConfigManager::GetInstance()->getFloat("Player.kMoveLimitZ");
+	minMoveLimitZ = GameConfigManager::GetInstance()->getFloat("Player.kMinMoveLimitZ");
 
-	stepCooldown_ = cfg_->getInt("Player.Step.kStepCoolDown");
-	stepPower_ = cfg_->getFloat("Player.Step.kStepPower");
-	worldTransformSP_.rotation_.x = cfg_->getFloat("Global.kPlaneModelRotateX");
+	stepCooldown_ = GameConfigManager::GetInstance()->getInt("Player.Step.kStepCoolDown");
+	stepPower_ = GameConfigManager::GetInstance()->getFloat("Player.Step.kStepPower");
+	worldTransformSP_.rotation_.x = GameConfigManager::GetInstance()->getFloat("Global.kPlaneModelRotateX");
 	
-	poseWaitTimer_ = cfg_->getFloat("Player.Clear.kPoseWaitTimer");
-	knockDownDuration_ = cfg_->getFloat("Player.KnockDown.kKnockDownTimer");
-	trailSpawnInterval_ = cfg_->getFloat("Player.Particle.kTrailSpawnInterval");
-	smokeSize_ = cfg_->getVector3("Player.Particle.kSmokeSize");
+	poseWaitTimer_ = GameConfigManager::GetInstance()->getFloat("Player.Clear.kPoseWaitTimer");
+	knockDownDuration_ = GameConfigManager::GetInstance()->getFloat("Player.KnockDown.kKnockDownTimer");
+	trailSpawnInterval_ = GameConfigManager::GetInstance()->getFloat("Player.Particle.kTrailSpawnInterval");
+	smokeSize_ = GameConfigManager::GetInstance()->getVector3("Player.Particle.kSmokeSize");
 
 	HP_ = maxHP_;
 	worldTransform_.translation_ = kInitialPos_;
@@ -75,9 +68,9 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 
 	smokeTexture_ = TextureManager::Load("effects/dust2.png");
 
-	normalAttackSEDataHandle_ = audio_->LoadWave("audio/SE/punchSE.wav");
-	spAttackSEDataHandle_ = audio_->LoadWave("audio/SE/spAttackSE.wav");
-	hitSEDataHandle_ = audio_->LoadWave("audio/SE/hitSE.wav");
+	normalAttackSEDataHandle_ = Audio::GetInstance()->LoadWave("audio/SE/punchSE.wav");
+	spAttackSEDataHandle_ = Audio::GetInstance()->LoadWave("audio/SE/spAttackSE.wav");
+	hitSEDataHandle_ = Audio::GetInstance()->LoadWave("audio/SE/hitSE.wav");
 }
 
 void Player::Update() {
@@ -111,11 +104,11 @@ void Player::Update() {
 		}
 	}
 	if (combat_->DidStartNormalAttack()) {
-		normalAttackSEVoiceHandle_ = audio_->PlayWave(normalAttackSEDataHandle_, false, 0.5f);
+		normalAttackSEVoiceHandle_ = Audio::GetInstance()->PlayWave(normalAttackSEDataHandle_, false, 0.5f);
 		
 	}
 	if (combat_->DidStartSpecialAttack()) {
-		spAttackSEVoiceHandle_ = audio_->PlayWave(spAttackSEDataHandle_, false, 0.5f);
+		spAttackSEVoiceHandle_ = Audio::GetInstance()->PlayWave(spAttackSEDataHandle_, false, 0.5f);
         worldTransformSP_.translation_ = combat_->GetSpecialPos();
 	}
 	if (combat_->IsSpecialAttacking()) {
@@ -381,6 +374,6 @@ void Player::OnHit(int32_t damage) {
 		HP_ = 0;
 	} else {
 		stunTimer_ = 10; // 例：10フレーム
-		hitSEVoiceHandle_ = audio_->PlayWave(hitSEDataHandle_, false, 0.5f);
+		hitSEVoiceHandle_ = Audio::GetInstance()->PlayWave(hitSEDataHandle_, false, 0.5f);
 	}
 }

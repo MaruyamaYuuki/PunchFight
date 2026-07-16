@@ -206,19 +206,11 @@ private:
 	void UpdateStageUI();
 
 private:
-	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
-	KamataEngine::Input* input_ = nullptr;
-	KamataEngine::Audio* audio_ = nullptr;
-	MyEngine::GameConfigManager* cfg_ = nullptr;
 	std::unique_ptr<MyEngine::UIInputController> uiInput_;
 	UICommand cmd;
 
 	KamataEngine::Camera camera_;
 	MyEngine::WorldTransformEx worldTransform_;
-
-	std::unique_ptr<KamataEngine::Model> modelPlayer_;
-	std::unique_ptr<KamataEngine::Model> modelSPAttack_;
-	std::unique_ptr<KamataEngine::Model> modelBoxFrame_;
 
 	uint32_t textureHandle_ = 0;
 

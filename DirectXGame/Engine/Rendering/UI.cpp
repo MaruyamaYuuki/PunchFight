@@ -7,13 +7,12 @@ using namespace KamataEngine;
 
 namespace MyEngine {
 void UI::Initialize(::Player* player) {
-	cfg_ = GameConfigManager::GetInstance();
 
 	assert(player);
 	player_ = player;
 
-	dashIconSize_ = cfg_->getVector2("UI.kDashIconSize");
-	spIconSize = cfg_->getVector2("UI.kSPIconSize");
+	dashIconSize_ = GameConfigManager::GetInstance()->getVector2("UI.kDashIconSize");
+	spIconSize = GameConfigManager::GetInstance()->getVector2("UI.kSPIconSize");
 
 	textureHandle_ = TextureManager::Load("UI/HPBar.png");
 	hpBarSprite_.reset(Sprite::Create(textureHandle_, {5.0f, 5.0f}));

@@ -14,10 +14,6 @@ TitleScene::TitleScene() {}
 TitleScene::~TitleScene() = default;
 
 void TitleScene::Initialize() {
-	dxCommon_ = DirectXCommon::GetInstance();
-	input_ = Input::GetInstance();
-	audio_ = Audio::GetInstance();
-	cfg_ = GameConfigManager::GetInstance();
 
 	camera_.Initialize();
 	worldTransform_.Initialize();
@@ -25,21 +21,21 @@ void TitleScene::Initialize() {
 	worldTransform_.translation_.y -= 5.0f;
 
 	
-	fadeTime_ = cfg_->getFloat("Global.kFadeTime");
+	fadeTime_ = GameConfigManager::GetInstance()->getFloat("Global.kFadeTime");
 
-	waitDuration_ = cfg_->getFloat("Scene.Title.kTitleWaitDuration");
-	animeDuration_ = cfg_->getFloat("Scene.Title.Anime.kTitleAnimeDuration");
-	startScale_ = cfg_->getFloat("Scene.Title.Anime.kTitleAnimeStartScale");
-	animeEndSize_ = cfg_->getFloat("Scene.Title.Anime.kTitleAnimeEndScale");
-	bgmVolume_ = cfg_->getFloat("Scene.Title.Anime.kTitleBGMVolume");
-	seVolume_ = cfg_->getFloat("Scene.Title.Anime.kTitleSEVolume");
-	maxBlinkCount_ = cfg_->getInt("Scene.Title.Anime.kMaxBlinkCount");
+	waitDuration_ = GameConfigManager::GetInstance()->getFloat("Scene.Title.kTitleWaitDuration");
+	animeDuration_ = GameConfigManager::GetInstance()->getFloat("Scene.Title.Anime.kTitleAnimeDuration");
+	startScale_ = GameConfigManager::GetInstance()->getFloat("Scene.Title.Anime.kTitleAnimeStartScale");
+	animeEndSize_ = GameConfigManager::GetInstance()->getFloat("Scene.Title.Anime.kTitleAnimeEndScale");
+	bgmVolume_ = GameConfigManager::GetInstance()->getFloat("Scene.Title.Anime.kTitleBGMVolume");
+	seVolume_ = GameConfigManager::GetInstance()->getFloat("Scene.Title.Anime.kTitleSEVolume");
+	maxBlinkCount_ = GameConfigManager::GetInstance()->getInt("Scene.Title.Anime.kMaxBlinkCount");
 	
-	bgScrollSpeed_ = cfg_->getFloat("Scene.Title.Background.kBGScrollSpeed");
-	bgResetPosX_ = cfg_->getFloat("Scene.Title.Background.kBGResetPosX");
+	bgScrollSpeed_ = GameConfigManager::GetInstance()->getFloat("Scene.Title.Background.kBGScrollSpeed");
+	bgResetPosX_ = GameConfigManager::GetInstance()->getFloat("Scene.Title.Background.kBGResetPosX");
 
-	titlePos_ = cfg_->getVector2("Scene.Title.Sprites.kTitleSpriteCenterPos");
-	titleSize_ = cfg_->getVector2("Scene.Title.Sprites.kTitleSpriteBaseSize");
+	titlePos_ = GameConfigManager::GetInstance()->getVector2("Scene.Title.Sprites.kTitleSpriteCenterPos");
+	titleSize_ = GameConfigManager::GetInstance()->getVector2("Scene.Title.Sprites.kTitleSpriteBaseSize");
 
 	
 
@@ -56,9 +52,9 @@ void TitleScene::Initialize() {
 	startSprite_.reset(Sprite::Create(keyTexture_, {0.0f, 0.0f}, {1, 1, 1, 0}, {0.5f, 0.5f}));
 	startSprite_->SetPosition({640.0f, 500.0f});
 
-	hitSEDataHandle_ = audio_->LoadWave("audio/SE/hitSE.wav");
-	doubleHitSEDataHandle_ = audio_->LoadWave("audio/SE/doubleHitSE.wav");
-	titleBGMDataHandle_ = audio_->LoadWave("audio/BGM/titleBGM.wav");
+	hitSEDataHandle_ = Audio::GetInstance()->LoadWave("audio/SE/hitSE.wav");
+	doubleHitSEDataHandle_ = Audio::GetInstance()->LoadWave("audio/SE/doubleHitSE.wav");
+	titleBGMDataHandle_ = Audio::GetInstance()->LoadWave("audio/BGM/titleBGM.wav");
 
 	prevTime_ = std::chrono::high_resolution_clock::now();
 	waitTimer_ = 0.0f;
@@ -113,14 +109,14 @@ void TitleScene::Update() {
 
 void TitleScene::Draw() {
 	// 背景スプライト描画前処理
-	Sprite::PreDraw(dxCommon_->GetCommandList());
+	Sprite::PreDraw(DirectXCommon::GetInstance()->GetCommandList());
 
 	titleBackSprite_[0]->Draw();
 	titleBackSprite_[1]->Draw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
-	dxCommon_->ClearDepthBuffer();
+	DirectXCommon::GetInstance()->ClearDepthBuffer();
 
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw();
@@ -129,7 +125,7 @@ void TitleScene::Draw() {
 	Model::PostDraw();
 
 	// 前景スプライト描画前処理
-	Sprite::PreDraw(dxCommon_->GetCommandList());
+	Sprite::PreDraw(DirectXCommon::GetInstance()->GetCommandList());
 
 	if (titleVisible_) {
     	titleSprite_->Draw();
@@ -169,7 +165,7 @@ void TitleScene::TitleAnimation() {
 		titleVisible_ = true;
 		titleAnimeTimer_ = 0.0f;
 		titleSprite_->SetSize({titleSize_.x * startScale_, titleSize_.y * startScale_});
-        hitSEVoiceHandle_ = audio_->PlayWave(hitSEDataHandle_, false, seVolume_);
+        hitSEVoiceHandle_ = Audio::GetInstance()->PlayWave(hitSEDataHandle_, false, seVolume_);
 	}
 
 	if (titleVisible_) {
@@ -192,7 +188,7 @@ void TitleScene::TitleAnimation() {
 		if (t >= 1.0f) {
 			// 完全にアニメ終了
 			titleAnimeFinished_ = true;
-			audio_->StopWave(hitSEVoiceHandle_);
+			Audio::GetInstance()->StopWave(hitSEVoiceHandle_);
 		}
 	}
 	// -------------------------------------
@@ -211,9 +207,9 @@ void TitleScene::TitleAnimation() {
 void TitleScene::SpriteFlashUpdate() {
 	if (titleAnimeFinished_) {
 		if (!titleBlinking_ && !titleBlinkFinished_) {
-			if (input_->TriggerKey(DIK_E) || isBButtonPressed_) {
-				audio_->StopWave(titleBGMVoiceHandle_);
-				doubleHitSEVoiceHandle_ = audio_->PlayWave(doubleHitSEDataHandle_, false, seVolume_);
+			if (Input::GetInstance()->TriggerKey(DIK_E) || isBButtonPressed_) {
+				Audio::GetInstance()->StopWave(titleBGMVoiceHandle_);
+				doubleHitSEVoiceHandle_ = Audio::GetInstance()->PlayWave(doubleHitSEDataHandle_, false, seVolume_);
 				titleBlinking_ = true;
 				blinkCount_ = 0;
 				blinkTimer_ = 0.0f;
@@ -222,7 +218,7 @@ void TitleScene::SpriteFlashUpdate() {
 
 		// BGM を一度だけ再生
 		if (!titleBGMStarted_) {
-			titleBGMVoiceHandle_ = audio_->PlayWave(titleBGMDataHandle_, true, bgmVolume_);
+			titleBGMVoiceHandle_ = Audio::GetInstance()->PlayWave(titleBGMDataHandle_, true, bgmVolume_);
 			titleBGMStarted_ = true;
 		}
 		// --- 点滅処理 ---
