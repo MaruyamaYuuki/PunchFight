@@ -337,10 +337,17 @@ void Player::ApplyCommand(const PlayerCommand& cmd) {
 	if (stepTimer_ > 0)
 		stepTimer_--;
 
-	// 開始条件：クールタイム終了 且つ ステップボタン 且つ 移動中
-	if (stepTimer_ <= 0 && cmd.doStep && (move_.x != 0.0f || move_.z != 0.0f)) {
+	// 開始条件：クールタイム終了 且つ ステップボタン（移動中かどうかの条件を削除）
+	if (stepTimer_ <= 0 && cmd.doStep) {
 		isStepping_ = true;
-		stepDirection_ = move_; // 現在の移動方向へステップ
+
+		// 方向の設定：移動入力があればその方向へ、立ち止まっていれば向いている方向へ
+		if (move_.x != 0.0f || move_.z != 0.0f) {
+			stepDirection_ = move_; // 入力方向へステップ
+		} else {
+			stepDirection_ = {facingDir_, 0.0f, 0.0f}; // 向いている方向（X軸）へステップ
+		}
+
 		stepTimer_ = stepCooldown_;
 		stepFrame_ = 10; // 10フレーム継続
 	}
