@@ -48,10 +48,6 @@ void GameScene::Initialize() {
 
 	startTime_ = kInitialStartTime_;
 
-	modelPlayer_.reset( Model::CreateFromOBJ("quad", true));
-	modelSPAttack_.reset(Model::CreateFromOBJ("specialAttack", true));
-	modelBoxFrame_.reset(Model::CreateFromOBJ("boxFrame", true));
-
 	textureHandle_ = TextureManager::Load("readyText.png");
 	readyTextSprite_.reset( Sprite::Create(textureHandle_, {640.0f, 300.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
 	textureHandle_ = TextureManager::Load("fightText.png");
@@ -79,7 +75,7 @@ void GameScene::Initialize() {
 	bgmDataHandle_ = Audio::GetInstance()->LoadWave("audio/BGM/gameBGM.wav");
 
 	player_ = std::make_unique<Player>();
-	player_->Initialize(modelPlayer_.get(), modelSPAttack_.get(), modelBoxFrame_.get());
+	player_->Initialize();
 	player_->SetEndMoveLimitX(moveLimit_[0]);
 
 	EnemyGenerate();

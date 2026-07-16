@@ -212,10 +212,6 @@ private:
 	KamataEngine::Camera camera_;
 	MyEngine::WorldTransformEx worldTransform_;
 
-	std::unique_ptr<KamataEngine::Model> modelPlayer_;
-	std::unique_ptr<KamataEngine::Model> modelSPAttack_;
-	std::unique_ptr<KamataEngine::Model> modelBoxFrame_;
-
 	uint32_t textureHandle_ = 0;
 
 	std::unique_ptr<KamataEngine::Sprite> readyTextSprite_;

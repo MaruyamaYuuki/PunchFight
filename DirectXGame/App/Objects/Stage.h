@@ -54,5 +54,9 @@ public:
 private:
 	MyEngine::WorldTransformEx worldTransform_;
 
+	/// <summary>
+	/// 描画用モデルのポインタ（弱参照）。
+	/// メモリの生成・破棄の所有権は StageManager 側にあるため、ここでは delete を行いません。
+	/// </summary>
 	KamataEngine::Model* model_ = nullptr;
 };

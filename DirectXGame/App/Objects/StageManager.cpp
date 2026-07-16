@@ -71,6 +71,7 @@ void StageManager::UpdateLoadedStages() {
 			auto stage = std::make_unique<Stage>();
 
 			// モデル切り替え
+			// Stageクラスには所有権を渡さず、参照（生ポインタ）のみを渡す
 			KamataEngine::Model* modelToUse = nullptr;
 			if (index == 0) {
 				modelToUse = startModel_.get();

@@ -29,7 +29,7 @@ public:
 	/// <param name="model">通常時（プレイヤー本体）のモデル</param>
 	/// <param name="modelSP">強攻撃演出用の特殊モデル</param>
 	/// <param name="modelBox">デバッグ用ヒットボックス表示モデル</param>
-	void Initialize(KamataEngine::Model* model, KamataEngine::Model* modelSP, KamataEngine::Model* modelBox);
+	void Initialize();
 
 	/// <summary>
 	/// 更新
@@ -281,11 +281,11 @@ private:
 	MyEngine::WorldTransformEx worldTransformSPHitBox_;
 	MyEngine::WorldTransformEx worldTransformPHitBox_;
 
-	KamataEngine::Model* model_ = nullptr;
-	KamataEngine::Model* modelSpecial_ = nullptr;
-	KamataEngine::Model* modelDebugHitBox_ = nullptr;
-	KamataEngine::Model* modelHitBox_ = nullptr;
-	KamataEngine::Model* modelSPHitBox_ = nullptr;
+	std::unique_ptr<KamataEngine::Model> model_;
+	std::unique_ptr<KamataEngine::Model> modelSpecial_;
+	std::unique_ptr<KamataEngine::Model> modelDebugHitBox_;
+	std::unique_ptr<KamataEngine::Model> modelHitBox_;
+	std::unique_ptr<KamataEngine::Model> modelSPHitBox_;
 
 	// --- プレイヤーのテクスチャ ---
 	uint32_t textureHandle_ = 0;

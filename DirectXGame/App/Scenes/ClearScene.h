@@ -95,9 +95,6 @@ private:
 
 	KamataEngine::Camera camera_;
 
-	std::unique_ptr<KamataEngine::Model> modelPlayer_;
-	std::unique_ptr<KamataEngine::Model> modelBoxFrame_;
-
 	uint32_t textureHandle_ = 0;
 	uint32_t keyPushTexture_ = 0;
 	uint32_t padPushTexture_ = 0;

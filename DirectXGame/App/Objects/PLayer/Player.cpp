@@ -9,16 +9,13 @@ using namespace KamataEngine::MathUtility;
 using MyEngine::GameConfigManager;
 using MyEngine::SmokeParticleManager;
 
-void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine::Model* modelBox) { 
-
-	assert(model);
-	model_ = model;
-	assert(modelSP);
-	modelSpecial_ = modelSP;
-	assert(modelBox);
-	modelDebugHitBox_ = modelBox;
-	modelHitBox_ = modelBox;
-	modelSPHitBox_ = modelBox;
+void Player::Initialize() { 
+	
+	model_.reset(KamataEngine::Model::CreateFromOBJ("quad", true));
+	modelSpecial_.reset(KamataEngine::Model::CreateFromOBJ("specialAttack", true));
+	modelDebugHitBox_.reset(KamataEngine::Model::CreateFromOBJ("boxFrame", true));
+	modelHitBox_.reset(KamataEngine::Model::CreateFromOBJ("boxFrame", true));
+	modelSPHitBox_.reset(KamataEngine::Model::CreateFromOBJ("boxFrame", true));
 
 	worldTransform_.Initialize();
 	worldTransformSP_.Initialize();

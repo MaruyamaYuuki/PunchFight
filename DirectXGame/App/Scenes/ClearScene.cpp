@@ -20,9 +20,6 @@ void ClearScene::Initialize() {
 	waitTimer_ = GameConfigManager::GetInstance()->getFloat("Scene.Clear.kInitialWaitTime");
 	clearScaleSpeed_ = GameConfigManager::GetInstance()->getFloat("Scene.Clear.ClearText.kClearScaleSpeed");
 
-	modelPlayer_.reset(Model::CreateFromOBJ("quad", true));
-	modelBoxFrame_.reset(Model::CreateFromOBJ("boxFrame", true));
-
 	textureHandle_ = TextureManager::Load("clearScene/clearBack.png");
 	backSprite_.reset(Sprite::Create(textureHandle_, {0.0f, 0.0f}));
 	textureHandle_ = TextureManager::Load("clearScene/clearText.png");
@@ -34,7 +31,7 @@ void ClearScene::Initialize() {
 	pushGuideSprite_.reset(Sprite::Create(keyPushTexture_, {640.0f, 360.0f}, {1, 1, 1, 1}, {0.5f, 0.5f}));
 
 	player_ = std::make_unique<Player>();
-	player_->Initialize(modelPlayer_.get(), modelBoxFrame_.get(), modelBoxFrame_.get());
+	player_->Initialize();
 	player_->SetTranslation(GameConfigManager::GetInstance()->getVector3("Player.kClearInitialPos"));
 	player_->SetRotateX(GameConfigManager::GetInstance()->getFloat("Player.kClearSceneRotateX"));
 	player_->SetMoveLimitEnabled(false);
