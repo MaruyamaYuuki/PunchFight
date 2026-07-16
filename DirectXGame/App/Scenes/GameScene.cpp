@@ -19,7 +19,6 @@ GameScene::GameScene() {}
 GameScene::~GameScene() = default;
 
 void GameScene::Initialize() { 
-	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
 	camera_.Initialize();
@@ -142,10 +141,10 @@ void GameScene::Update() {
 			return;
 		}
 		#ifdef _DEBUG
-		if (input_->TriggerKey(DIK_L)) {
+		if (Input::GetInstance()->TriggerKey(DIK_L)) {
 			player_->SetHP(0);
 		}
-		if (input_->TriggerKey(DIK_B)) {
+		if (Input::GetInstance()->TriggerKey(DIK_B)) {
 			isFinished_ = true;
 		}
 		#endif

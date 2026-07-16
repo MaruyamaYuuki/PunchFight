@@ -93,7 +93,6 @@ private:
 private:
 	XINPUT_STATE state_, preState_;
 
-	KamataEngine::Input* input_ = nullptr;
 	KamataEngine::Audio* audio_ = nullptr;
 
 	KamataEngine::Camera camera_;

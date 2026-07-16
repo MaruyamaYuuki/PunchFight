@@ -271,7 +271,6 @@ private:
 	void ApplyCommand(const PlayerCommand& cmd);
 
 private:
-	KamataEngine::Input* input_ = nullptr;
 	KamataEngine::Audio* audio_ = nullptr;
 	std::unique_ptr<PlayerInputController> inputController_;
 	std::unique_ptr<PlayerTextureController> textureController_;

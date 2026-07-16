@@ -14,7 +14,6 @@ TitleScene::TitleScene() {}
 TitleScene::~TitleScene() = default;
 
 void TitleScene::Initialize() {
-	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
 	camera_.Initialize();
@@ -209,7 +208,7 @@ void TitleScene::TitleAnimation() {
 void TitleScene::SpriteFlashUpdate() {
 	if (titleAnimeFinished_) {
 		if (!titleBlinking_ && !titleBlinkFinished_) {
-			if (input_->TriggerKey(DIK_E) || isBButtonPressed_) {
+			if (Input::GetInstance()->TriggerKey(DIK_E) || isBButtonPressed_) {
 				audio_->StopWave(titleBGMVoiceHandle_);
 				doubleHitSEVoiceHandle_ = audio_->PlayWave(doubleHitSEDataHandle_, false, seVolume_);
 				titleBlinking_ = true;

@@ -14,7 +14,6 @@ ClearScene::ClearScene() {}
 ClearScene::~ClearScene() = default;
 
 void ClearScene::Initialize() {
-	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
 	camera_.Initialize();
@@ -157,7 +156,7 @@ void ClearScene::UpdateInput() {
 	if (!pushSpaceShown_)
 		return;
 
-	if (input_->TriggerKey(DIK_E) || isAButtonPressed_) {
+	if (Input::GetInstance()->TriggerKey(DIK_E) || isAButtonPressed_) {
 		fade_->Start(MyEngine::Fade::Status::AlphaFadeOut, GameConfigManager::GetInstance()->getFloat("Scene.Clear.kFadeOutDuration"));
 		phase_ = Phase::kFadeOut;
 	}
