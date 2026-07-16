@@ -1,5 +1,6 @@
 #pragma once
 #include "KamataEngine.h"
+#include <memory>
 
 class Player;
 namespace MyEngine {
@@ -19,7 +20,7 @@ public:
 	/// UIの初期化
 	/// </summary>
 	/// <param name="player">HP等のステータスを参照するためのプレイヤーオブジェクト</param>
-	void Initialize(::Player* player);
+	void Initialize(std::weak_ptr<::Player>);
 
 	/// <summary>
 	/// UI全体の更新。入力デバイスの検知（キーボード/パッド）や、HP・アビリティのゲージ計算を行う。
@@ -117,7 +118,7 @@ private:
 	KamataEngine::Vector2 checkPos_ = {640.0f, 330.0f};
 	KamataEngine::Vector2 selectKeyPos_ = {115.0f, 683.0f};
 
-	Player* player_ = nullptr;
+	std::weak_ptr<::Player> player_;
 
 	bool isPadConnected_ = false;
 	XINPUT_STATE state_{};

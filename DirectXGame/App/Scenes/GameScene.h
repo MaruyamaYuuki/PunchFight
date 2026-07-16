@@ -231,8 +231,8 @@ private:
 	uint32_t startGongSEVoiceHandle_ = 0;
 	uint32_t bgmVoiceHandle_ = 0;
 
+	std::shared_ptr<Player> player_;
 	std::unique_ptr<StageManager> stage_;
-	std::unique_ptr<Player> player_;
 	std::unique_ptr<MyEngine::CameraController> cameraController_;
 	std::unique_ptr<MyEngine::Fade> fade_;
 	std::unique_ptr<EnemyManager> enemyManager_;

@@ -74,7 +74,7 @@ void GameScene::Initialize() {
 	startGongSEDataHandle_ = Audio::GetInstance()->LoadWave("audio/SE/startGong.wav");
 	bgmDataHandle_ = Audio::GetInstance()->LoadWave("audio/BGM/gameBGM.wav");
 
-	player_ = std::make_unique<Player>();
+	player_ = std::make_shared<Player>();
 	player_->Initialize();
 	player_->SetEndMoveLimitX(moveLimit_[0]);
 
@@ -85,7 +85,7 @@ void GameScene::Initialize() {
 
 	cameraController_ = std::make_unique<CameraController>();
 	cameraController_->Initialize();
-	cameraController_->SetTarget(player_.get());
+	cameraController_->SetTarget(player_);
 	cameraController_->Reset();                 // リセット(瞬間合わせ)
 	CameraController::Rect cameraArea = {0.0f, scrollArea_[0], cameraLimitZMin_, cameraLimitZMax_};
 	cameraController_->SetMovableArea(cameraArea);
@@ -95,7 +95,7 @@ void GameScene::Initialize() {
 	fade_->Start(Fade::Status::FadeIn, fadeTime_);
 
 	ui_ = std::make_unique<UI>();
-	ui_->Initialize(player_.get());
+	ui_->Initialize(player_);
 
 	const size_t areaCount = std::size(scrollArea_);
 	areaClearedFlag_.assign(areaCount, false);

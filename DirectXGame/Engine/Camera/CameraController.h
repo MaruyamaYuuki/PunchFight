@@ -36,7 +36,7 @@ public:
 	/// カメラのターゲットの設定
 	/// </summary>
 	/// <param name="target">ターゲット</param>
-	void SetTarget(::Player* target) { target_ = target; }
+	void SetTarget(std::weak_ptr<::Player> target) { target_ = target; }
 
 	/// <summary>
 	/// カメラオブジェクトを取得する
@@ -77,7 +77,7 @@ public:
 
 private:
 	KamataEngine::Camera camera_;
-	::Player* target_ = nullptr;
+	std::weak_ptr<::Player> target_;
 	// 追従対象のカメラ座標の差（オフセット）
 	KamataEngine::Vector3 targetOffset_ = {0, 1, -8.0f};
 	// カメラの移動範囲

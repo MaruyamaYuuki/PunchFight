@@ -6,9 +6,8 @@
 using namespace KamataEngine;
 
 namespace MyEngine {
-void UI::Initialize(::Player* player) {
+void UI::Initialize(std::weak_ptr<::Player> player) {
 
-	assert(player);
 	player_ = player;
 
 	dashIconSize_ = GameConfigManager::GetInstance()->getVector2("UI.kDashIconSize");
@@ -125,7 +124,8 @@ void UI::Reset() {
 void UI::UpdateHPBar() {
 
 	// プレイヤーの HP 取得
-	int hp = player_->GetHP(); // 0〜100など
+	auto p = player_.lock();
+	int hp = p->GetHP(); // 0〜100など
 	const int maxHP = 100;
 
 	float hpRate = static_cast<float>(hp) / maxHP; // 0.0〜1.0
@@ -155,9 +155,10 @@ void UI::UpdateAbilityCoolTime() {
 	// ============================
 	float dashRate = 0.0f;
 
-	if (!player_->CanStep()) {
+		auto p = player_.lock();
+	if (!p->CanStep()) {
 		// 残クールタイム / 最大値
-		dashRate = static_cast<float>(player_->GetStepCooldownTimer()) / player_->GetStepCooldownMax();
+		dashRate = static_cast<float>(p->GetStepCooldownTimer()) / p->GetStepCooldownMax();
 	} else {
 		// クールタイム終了 → 完全に0
 		dashRate = 0.0f;
@@ -171,9 +172,9 @@ void UI::UpdateAbilityCoolTime() {
 	// ============================
 	float spRate = 0.0f; // クールタイム 0 の時は 0%
 
-	if (!player_->CanSpecialAttack()) {
+	if (!p->CanSpecialAttack()) {
 		// クールタイム中 → 高さを割合に応じて戻していく
-		spRate = player_->GetSPAttackCooldownTimer() / player_->GetSPAttackCooldownMax();
+		spRate = p->GetSPAttackCooldownTimer() / p->GetSPAttackCooldownMax();
 	}
 
 	float newSPHeight = spIconSize.y * spRate;

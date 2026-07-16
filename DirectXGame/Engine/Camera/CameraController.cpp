@@ -14,11 +14,12 @@ void CameraController::Initialize() {
 }
 
 void CameraController::Update() {
-	if (!target_) {
+	auto target = target_.lock();
+	if (!target) {
 		return;
 	}
 
-	const WorldTransform& targetWT = target_->GetWorldTransform();
+	const WorldTransform& targetWT = target->GetWorldTransform();
 
     // ===== 基本追従位置 =====
 	Vector3 followPos;
@@ -57,8 +58,10 @@ void CameraController::Update() {
 }
 
 void CameraController::Reset() {
+	auto target = target_.lock();
+	if (!target)return;
 	// 追従対象のワールドトランスフォームを参照
-	const WorldTransform& targetWorldTransform = target_->GetWorldTransform();
+	const WorldTransform& targetWorldTransform = target->GetWorldTransform();
 	// 追従対象とオフセットからカメラの座標を計算
 	camera_.translation_ = targetWorldTransform.translation_ + targetOffset_;
 }
