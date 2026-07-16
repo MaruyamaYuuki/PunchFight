@@ -8,9 +8,8 @@ using MyEngine::GameConfigManager;
 void FastEnemy::Initialize(const EnemyData& data) {
 	EnemyBase::Initialize(data);
 
-	cfg_ = GameConfigManager::GetInstance();
-	retreatDuration_ = cfg_->getFloat("Enemy.Types.Fast.kRetreatDuration");
-	retreatSpeedMultiplier_ = cfg_->getFloat("Enemy.Types.Fast.kRetreatSpeedMultiplier");
+	retreatDuration_ = GameConfigManager::GetInstance()->getFloat("Enemy.Types.Fast.kRetreatDuration");
+	retreatSpeedMultiplier_ = GameConfigManager::GetInstance()->getFloat("Enemy.Types.Fast.kRetreatSpeedMultiplier");
 
 	SetRIdleTexture(TextureManager::Load("enemies/normalEnemy/RNormal.png"));
 	SetRAttackTexture(TextureManager::Load("enemies/normalEnemy/RPunch.png"));

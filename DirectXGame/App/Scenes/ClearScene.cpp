@@ -17,12 +17,11 @@ void ClearScene::Initialize() {
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
-	cfg_ = GameConfigManager::GetInstance();
 
 	camera_.Initialize();
 
-	waitTimer_ = cfg_->getFloat("Scene.Clear.kInitialWaitTime");
-	clearScaleSpeed_ = cfg_->getFloat("Scene.Clear.ClearText.kClearScaleSpeed");
+	waitTimer_ = GameConfigManager::GetInstance()->getFloat("Scene.Clear.kInitialWaitTime");
+	clearScaleSpeed_ = GameConfigManager::GetInstance()->getFloat("Scene.Clear.ClearText.kClearScaleSpeed");
 
 	modelPlayer_.reset(Model::CreateFromOBJ("quad", true));
 	modelBoxFrame_.reset(Model::CreateFromOBJ("boxFrame", true));
@@ -39,8 +38,8 @@ void ClearScene::Initialize() {
 
 	player_ = std::make_unique<Player>();
 	player_->Initialize(modelPlayer_.get(), modelBoxFrame_.get(), modelBoxFrame_.get());
-	player_->SetTranslation(cfg_->getVector3("Player.kClearInitialPos"));
-	player_->SetRotateX(cfg_->getFloat("Player.kClearSceneRotateX"));
+	player_->SetTranslation(GameConfigManager::GetInstance()->getVector3("Player.kClearInitialPos"));
+	player_->SetRotateX(GameConfigManager::GetInstance()->getFloat("Player.kClearSceneRotateX"));
 	player_->SetMoveLimitEnabled(false);
 
 	fade_ = std::make_unique<Fade>();
@@ -114,7 +113,7 @@ void ClearScene::UpdateWait() {
 	waitTimer_ -= deltaTime_;
 	player_->UpdateWorldTransform();
 	if (waitTimer_ <= 0) {
-		waitTimer_ = cfg_->getFloat("Scene.Clear.kPoseWaitTime");
+		waitTimer_ = GameConfigManager::GetInstance()->getFloat("Scene.Clear.kPoseWaitTime");
 		phase_ = Phase::kPlay;
 	}
 }
@@ -131,20 +130,20 @@ void ClearScene::UpdateClearText() {
 		waitTimer_ -= deltaTime_;
 		if (waitTimer_ <= 0.0f) {
 			clearStart_ = true;
-			clearScale_ = cfg_->getFloat("Scene.Clear.ClearText.kClearScaleStart");
-			clearWaitTimer_ = cfg_->getFloat("Scene.Clear.kPushSpaceDisplayWaitTime");
+			clearScale_ = GameConfigManager::GetInstance()->getFloat("Scene.Clear.ClearText.kClearScaleStart");
+			clearWaitTimer_ = GameConfigManager::GetInstance()->getFloat("Scene.Clear.kPushSpaceDisplayWaitTime");
 		}
 	}
 
 	if (!clearStart_)
 		return;
 
-	const float kScaleEnd = cfg_->getFloat("Scene.Clear.ClearText.kClearScaleEnd");
+	const float kScaleEnd = GameConfigManager::GetInstance()->getFloat("Scene.Clear.ClearText.kClearScaleEnd");
 
 	clearScale_ = std::min(clearScale_ + clearScaleSpeed_ * deltaTime_, kScaleEnd);
 
-	const float baseW = cfg_->getFloat("Scene.Clear.ClearText.kClearTextBaseWidth");
-	const float baseH = cfg_->getFloat("Scene.Clear.ClearText.kClearTextBaseHeight");
+	const float baseW = GameConfigManager::GetInstance()->getFloat("Scene.Clear.ClearText.kClearTextBaseWidth");
+	const float baseH = GameConfigManager::GetInstance()->getFloat("Scene.Clear.ClearText.kClearTextBaseHeight");
 	clearSprite_->SetSize({baseW * clearScale_, baseH * clearScale_});
 
 	if (clearScale_ >= kScaleEnd && clearWaitTimer_ > 0.0f) {
@@ -160,7 +159,7 @@ void ClearScene::UpdateInput() {
 		return;
 
 	if (input_->TriggerKey(DIK_E) || isAButtonPressed_) {
-		fade_->Start(MyEngine::Fade::Status::AlphaFadeOut, cfg_->getFloat("Scene.Clear.kFadeOutDuration"));
+		fade_->Start(MyEngine::Fade::Status::AlphaFadeOut, GameConfigManager::GetInstance()->getFloat("Scene.Clear.kFadeOutDuration"));
 		phase_ = Phase::kFadeOut;
 	}
 }

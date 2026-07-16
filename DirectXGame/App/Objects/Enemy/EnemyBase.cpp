@@ -8,7 +8,6 @@ using MyEngine::SmokeParticleManager;
 using MyEngine::DustParticleManager;
 
 void EnemyBase::Initialize(const EnemyData& data) {
-	cfg_ = GameConfigManager::GetInstance();
 	audio_ = Audio::GetInstance();
 
     model_.reset(Model::CreateFromOBJ(data.modelPath, true));
@@ -31,18 +30,18 @@ void EnemyBase::Initialize(const EnemyData& data) {
 	dustManager_ = std::make_unique<DustParticleManager>();
 	dustManager_->Initialize();
 
-	worldTransform_.rotation_.x = cfg_->getFloat("Global.kPlaneModelRotateX");
-	walkFrameInterval_ = cfg_->getInt("Enemy.Default.kWalkFrameInterval");
-	gravity_ = cfg_->getFloat("Enemy.Default.kGravityAcceleration");
-	knockbackDuration_ = cfg_->getFloat("Enemy.Default.kKnockbackDuration");
-	attackDuration_ = cfg_->getFloat("Enemy.Default.kAttackDuration");
-	attackCooldown_ = cfg_->getFloat("Enemy.Default.kAttackCooldown");
-	attackRange_ = cfg_->getFloat("Enemy.Default.kAttackRange");
-	stunDuration_ = cfg_->getFloat("Enemy.Default.kStunDuration");
-	stunShakeAmplitude_ = cfg_->getFloat("Enemy.Default.kStunShakeAmplitude");
-	stunShakeSpeed_ = cfg_->getFloat("Enemy.Default.kStunShakeSpeed");
-	smokeSpawnInterval_ = cfg_->getFloat("Enemy.Default.kSmokeSpawnInterval");
-	smokeSize_ = cfg_->getVector3("Enemy.Default.kSmokeSize");
+	worldTransform_.rotation_.x = GameConfigManager::GetInstance()->getFloat("Global.kPlaneModelRotateX");
+	walkFrameInterval_ = GameConfigManager::GetInstance()->getInt("Enemy.Default.kWalkFrameInterval");
+	gravity_ = GameConfigManager::GetInstance()->getFloat("Enemy.Default.kGravityAcceleration");
+	knockbackDuration_ = GameConfigManager::GetInstance()->getFloat("Enemy.Default.kKnockbackDuration");
+	attackDuration_ = GameConfigManager::GetInstance()->getFloat("Enemy.Default.kAttackDuration");
+	attackCooldown_ = GameConfigManager::GetInstance()->getFloat("Enemy.Default.kAttackCooldown");
+	attackRange_ = GameConfigManager::GetInstance()->getFloat("Enemy.Default.kAttackRange");
+	stunDuration_ = GameConfigManager::GetInstance()->getFloat("Enemy.Default.kStunDuration");
+	stunShakeAmplitude_ = GameConfigManager::GetInstance()->getFloat("Enemy.Default.kStunShakeAmplitude");
+	stunShakeSpeed_ = GameConfigManager::GetInstance()->getFloat("Enemy.Default.kStunShakeSpeed");
+	smokeSpawnInterval_ = GameConfigManager::GetInstance()->getFloat("Enemy.Default.kSmokeSpawnInterval");
+	smokeSize_ = GameConfigManager::GetInstance()->getVector3("Enemy.Default.kSmokeSize");
 
 	attackSEDataHandle_ = audio_->LoadWave("audio/SE/punchSE.wav");
 	hitSEDataHandle_ = audio_->LoadWave("audio/SE/hitSE.wav");
@@ -70,7 +69,7 @@ void EnemyBase::Update(const Vector3&, const std::vector<std::unique_ptr<EnemyBa
 
 		// ======== ノックバック物理処理 ========
 		// 減速用の係数
-		float drag = cfg_->getFloat("Enemy.Default.kKnockbackDragFactor");
+		float drag = GameConfigManager::GetInstance()->getFloat("Enemy.Default.kKnockbackDragFactor");
 
 		// X方向に加速して減速していく
 		knockbackVelocity_.x *= drag;
@@ -191,8 +190,8 @@ void EnemyBase::OnHit(int32_t damage, const Vector3& attackDir) {
 		knockbackTime_ = 0.0f;
 
 		// スマブラ風 初速
-		float basePower = cfg_->getFloat("Enemy.Default.kKnockbackBasePower"); // 吹っ飛び強さ
-		float upwardBoost = cfg_->getFloat("Enemy.Default.kKnockbackUpwardBoost"); // 上方向の初速
+		float basePower = GameConfigManager::GetInstance()->getFloat("Enemy.Default.kKnockbackBasePower"); // 吹っ飛び強さ
+		float upwardBoost = GameConfigManager::GetInstance()->getFloat("Enemy.Default.kKnockbackUpwardBoost"); // 上方向の初速
 
 		knockbackVelocity_ = {attackDir.x * basePower, upwardBoost, 0.0f};
 	} else {

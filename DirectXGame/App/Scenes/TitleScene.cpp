@@ -17,7 +17,6 @@ void TitleScene::Initialize() {
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
-	cfg_ = GameConfigManager::GetInstance();
 
 	camera_.Initialize();
 	worldTransform_.Initialize();
@@ -25,21 +24,21 @@ void TitleScene::Initialize() {
 	worldTransform_.translation_.y -= 5.0f;
 
 	
-	fadeTime_ = cfg_->getFloat("Global.kFadeTime");
+	fadeTime_ = GameConfigManager::GetInstance()->getFloat("Global.kFadeTime");
 
-	waitDuration_ = cfg_->getFloat("Scene.Title.kTitleWaitDuration");
-	animeDuration_ = cfg_->getFloat("Scene.Title.Anime.kTitleAnimeDuration");
-	startScale_ = cfg_->getFloat("Scene.Title.Anime.kTitleAnimeStartScale");
-	animeEndSize_ = cfg_->getFloat("Scene.Title.Anime.kTitleAnimeEndScale");
-	bgmVolume_ = cfg_->getFloat("Scene.Title.Anime.kTitleBGMVolume");
-	seVolume_ = cfg_->getFloat("Scene.Title.Anime.kTitleSEVolume");
-	maxBlinkCount_ = cfg_->getInt("Scene.Title.Anime.kMaxBlinkCount");
+	waitDuration_ = GameConfigManager::GetInstance()->getFloat("Scene.Title.kTitleWaitDuration");
+	animeDuration_ = GameConfigManager::GetInstance()->getFloat("Scene.Title.Anime.kTitleAnimeDuration");
+	startScale_ = GameConfigManager::GetInstance()->getFloat("Scene.Title.Anime.kTitleAnimeStartScale");
+	animeEndSize_ = GameConfigManager::GetInstance()->getFloat("Scene.Title.Anime.kTitleAnimeEndScale");
+	bgmVolume_ = GameConfigManager::GetInstance()->getFloat("Scene.Title.Anime.kTitleBGMVolume");
+	seVolume_ = GameConfigManager::GetInstance()->getFloat("Scene.Title.Anime.kTitleSEVolume");
+	maxBlinkCount_ = GameConfigManager::GetInstance()->getInt("Scene.Title.Anime.kMaxBlinkCount");
 	
-	bgScrollSpeed_ = cfg_->getFloat("Scene.Title.Background.kBGScrollSpeed");
-	bgResetPosX_ = cfg_->getFloat("Scene.Title.Background.kBGResetPosX");
+	bgScrollSpeed_ = GameConfigManager::GetInstance()->getFloat("Scene.Title.Background.kBGScrollSpeed");
+	bgResetPosX_ = GameConfigManager::GetInstance()->getFloat("Scene.Title.Background.kBGResetPosX");
 
-	titlePos_ = cfg_->getVector2("Scene.Title.Sprites.kTitleSpriteCenterPos");
-	titleSize_ = cfg_->getVector2("Scene.Title.Sprites.kTitleSpriteBaseSize");
+	titlePos_ = GameConfigManager::GetInstance()->getVector2("Scene.Title.Sprites.kTitleSpriteCenterPos");
+	titleSize_ = GameConfigManager::GetInstance()->getVector2("Scene.Title.Sprites.kTitleSpriteBaseSize");
 
 	
 

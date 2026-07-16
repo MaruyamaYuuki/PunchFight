@@ -60,7 +60,6 @@ private:
 	void AttackProcess(const KamataEngine::Vector3& playerPos) override;
 
 private:
-	MyEngine::GameConfigManager* cfg_ = nullptr;
 
 	// --- ヒット＆アラン用 ---
 	bool isRetreating_ = false;           // 離脱中フラグ

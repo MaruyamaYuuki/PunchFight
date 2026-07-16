@@ -123,7 +123,6 @@ private:
 	std::vector<std::unique_ptr<EnemyBase>> enemies_;
 	std::unique_ptr<MyEngine::SmokeParticleManager> smokeManager_;
 	std::vector<EnemyArea> areas_;
-	MyEngine::GameConfigManager* cfg_ = nullptr;
 
 	bool isHit_ = false;
 };

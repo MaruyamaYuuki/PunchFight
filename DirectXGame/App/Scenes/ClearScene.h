@@ -96,7 +96,6 @@ private:
 	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
 	KamataEngine::Input* input_ = nullptr;
 	KamataEngine::Audio* audio_ = nullptr;
-	MyEngine::GameConfigManager* cfg_ = nullptr;
 
 	KamataEngine::Camera camera_;
 

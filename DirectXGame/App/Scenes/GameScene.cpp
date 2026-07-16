@@ -22,33 +22,32 @@ void GameScene::Initialize() {
 	dxCommon_ = DirectXCommon::GetInstance(); 
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
-	cfg_ = GameConfigManager::GetInstance();
 
 	camera_.Initialize();
 
 	worldTransform_.Initialize();
 
 	// 基礎情報
-	fadeTime_ = cfg_->getFloat("Global.kFadeTime");
-	kInitialStartTime_ = cfg_->getFloat("Scene.Game.kReadyTime");
-	moveLimit_ = cfg_->getFloatArray("Scene.Game.Area.kMoveLimitX_Area");
-	scrollArea_ = cfg_->getFloatArray("Scene.Game.Area.kScrollAreaLimitX");
-	cameraLimitZMin_ = cfg_->getFloat("Scene.Game.Area.kCameraLimitZMin");
-	cameraLimitZMax_ = cfg_->getFloat("Scene.Game.Area.kCameraLimitZMax");
-	stageNumber_ = cfg_->getInt("Scene.Game.StageDate.Stage1.kStageNumber");
-	maxStageNumber_ = cfg_->getInt("Scene.Game.MaxStageNumber");
-	stageRepeatCount_ = cfg_->getInt("Scene.Game.StageDate.Stage1.kRepeatCount");
-	fightTextPos_ = cfg_->getVector2("Scene.Game.FightTextAnime.kFightTextCenterPos");
-	fightTextSize_ = cfg_->getVector2("Scene.Game.FightTextAnime.kFightTextBaseSize");
-	animeDuration_ = cfg_->getFloat("Scene.Game.FightTextAnime.kFightTextAnimeDuration");
-	startScale_ = cfg_->getFloat("Scene.Game.FightTextAnime.kFightTextStartScale");
-	waitDuration_ = cfg_->getFloat("Scene.Game.FightTextAnime.kFightTextWaitDuration");
-	alphaDuration_ = cfg_->getFloat("Scene.Game.GameOver.kBlackSpriteAlphaDuration");
-	gameOverFallDuration_ = cfg_->getFloat("Scene.Game.GameOver.kGameOverFallDuration");
-	guideDuration_ = cfg_->getFloat("Scene.Game.Guide.kGuideDisplayDuration");
-	blinkInterval_ = cfg_->getFloat("Scene.Game.Guide.kGuideBlinkInterval");
-	maxBlinkCount_ = cfg_->getInt("Scene.Game.Guide.kGuideMaxBlinkCount");
-	enemySpawnData_ = cfg_->getJsonArray("Scene.Game.EnemySpawn.Stage" + std::to_string(stageNumber_) + ".Areas");
+	fadeTime_ = GameConfigManager::GetInstance()->getFloat("Global.kFadeTime");
+	kInitialStartTime_ = GameConfigManager::GetInstance()->getFloat("Scene.Game.kReadyTime");
+	moveLimit_ = GameConfigManager::GetInstance()->getFloatArray("Scene.Game.Area.kMoveLimitX_Area");
+	scrollArea_ = GameConfigManager::GetInstance()->getFloatArray("Scene.Game.Area.kScrollAreaLimitX");
+	cameraLimitZMin_ = GameConfigManager::GetInstance()->getFloat("Scene.Game.Area.kCameraLimitZMin");
+	cameraLimitZMax_ = GameConfigManager::GetInstance()->getFloat("Scene.Game.Area.kCameraLimitZMax");
+	stageNumber_ = GameConfigManager::GetInstance()->getInt("Scene.Game.StageDate.Stage1.kStageNumber");
+	maxStageNumber_ = GameConfigManager::GetInstance()->getInt("Scene.Game.MaxStageNumber");
+	stageRepeatCount_ = GameConfigManager::GetInstance()->getInt("Scene.Game.StageDate.Stage1.kRepeatCount");
+	fightTextPos_ = GameConfigManager::GetInstance()->getVector2("Scene.Game.FightTextAnime.kFightTextCenterPos");
+	fightTextSize_ = GameConfigManager::GetInstance()->getVector2("Scene.Game.FightTextAnime.kFightTextBaseSize");
+	animeDuration_ = GameConfigManager::GetInstance()->getFloat("Scene.Game.FightTextAnime.kFightTextAnimeDuration");
+	startScale_ = GameConfigManager::GetInstance()->getFloat("Scene.Game.FightTextAnime.kFightTextStartScale");
+	waitDuration_ = GameConfigManager::GetInstance()->getFloat("Scene.Game.FightTextAnime.kFightTextWaitDuration");
+	alphaDuration_ = GameConfigManager::GetInstance()->getFloat("Scene.Game.GameOver.kBlackSpriteAlphaDuration");
+	gameOverFallDuration_ = GameConfigManager::GetInstance()->getFloat("Scene.Game.GameOver.kGameOverFallDuration");
+	guideDuration_ = GameConfigManager::GetInstance()->getFloat("Scene.Game.Guide.kGuideDisplayDuration");
+	blinkInterval_ = GameConfigManager::GetInstance()->getFloat("Scene.Game.Guide.kGuideBlinkInterval");
+	maxBlinkCount_ = GameConfigManager::GetInstance()->getInt("Scene.Game.Guide.kGuideMaxBlinkCount");
+	enemySpawnData_ = GameConfigManager::GetInstance()->getJsonArray("Scene.Game.EnemySpawn.Stage" + std::to_string(stageNumber_) + ".Areas");
 
 	startTime_ = kInitialStartTime_;
 
@@ -495,7 +494,7 @@ void GameScene::GameOver() {
 		// イージングで滑らかフェード
 		float easedT = Easing::EaseInQuad(t);
 
-		const float kMaxAlpha = cfg_->getFloat("Scene.Game.GameOver.kBlackSpriteMaxAlpha");
+		const float kMaxAlpha = GameConfigManager::GetInstance()->getFloat("Scene.Game.GameOver.kBlackSpriteMaxAlpha");
 
 		// ===== 背景の黒フェード =====
 		blackSprite_->SetColor({1, 1, 1, kMaxAlpha * easedT});
@@ -509,8 +508,8 @@ void GameScene::GameOver() {
 			float easedFall = Easing::EaseOutBounce(fallT); // ポンっと落ちる感じ
 
 			// Y位置を補間（上→中央）
-			const float kStartY = cfg_->getFloat("Scene.Game.GameOver.kGameOverTextStartY");
-			const float kEndY = cfg_->getFloat("Scene.Game.GameOver.kGameOverTextEndY");
+			const float kStartY = GameConfigManager::GetInstance()->getFloat("Scene.Game.GameOver.kGameOverTextStartY");
+			const float kEndY = GameConfigManager::GetInstance()->getFloat("Scene.Game.GameOver.kGameOverTextEndY");
 			float currentY = kStartY + (kEndY - kStartY) * easedFall;
 
 			gameOverTextSprite_->SetPosition({640.0f, currentY});
@@ -600,7 +599,7 @@ void GameScene::ResetGame() {
 
 
 void GameScene::EnemyGenerate() {
-	//auto areas = cfg_->getJsonArray("Scene.Game.EnemySpawn.Areas");
+	//auto areas = GameConfigManager::GetInstance()->getJsonArray("Scene.Game.EnemySpawn.Areas");
 
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->Initialize();
@@ -770,7 +769,7 @@ void GameScene::GoToNextStage() {
 		return;
 	}
 
-	enemySpawnData_ = cfg_->getJsonArray("Scene.Game.EnemySpawn.Stage" + std::to_string(stageNumber_) + ".Areas");
+	enemySpawnData_ = GameConfigManager::GetInstance()->getJsonArray("Scene.Game.EnemySpawn.Stage" + std::to_string(stageNumber_) + ".Areas");
 
 	// ステージの再初期化
 	stage_->Initialize(stageNumber_, stageRepeatCount_);

@@ -549,7 +549,6 @@ protected:
 
 
 private:
-	MyEngine::GameConfigManager* cfg_ = nullptr;
 	KamataEngine::Audio* audio_ = nullptr;
 
 	MyEngine::WorldTransformEx worldTransform_;

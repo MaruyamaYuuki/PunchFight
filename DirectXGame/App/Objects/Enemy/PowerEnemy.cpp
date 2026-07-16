@@ -9,11 +9,10 @@ using MyEngine::GameConfigManager;
 void PowerEnemy::Initialize(const EnemyData& data) { 
 	EnemyBase::Initialize(data); 
 
-	cfg_ = GameConfigManager::GetInstance();
-	tackleProbability_ = cfg_->getFloat("Enemy.Types.Power.kTackleProbability");
-	tackleChargeTime_ = cfg_->getFloat("Enemy.Types.Power.kTackleChargeTime");
-	tackleMoveTime_ = cfg_->getFloat("Enemy.Types.Power.kTackleMoveTime");
-	tackleSpeed_ = cfg_->getFloat("Enemy.Types.Power.kTackleSpeed");
+	tackleProbability_ = GameConfigManager::GetInstance()->getFloat("Enemy.Types.Power.kTackleProbability");
+	tackleChargeTime_ = GameConfigManager::GetInstance()->getFloat("Enemy.Types.Power.kTackleChargeTime");
+	tackleMoveTime_ = GameConfigManager::GetInstance()->getFloat("Enemy.Types.Power.kTackleMoveTime");
+	tackleSpeed_ = GameConfigManager::GetInstance()->getFloat("Enemy.Types.Power.kTackleSpeed");
 
 
 	SetRIdleTexture(TextureManager::Load("enemies/powerEnemy/RPower.png"));

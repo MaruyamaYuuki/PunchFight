@@ -9,12 +9,10 @@ using MyEngine::GameConfigManager;
 void BossEnemy::Initialize(const EnemyData& data) {
 	EnemyBase::Initialize(data);
 
-	cfg_ = GameConfigManager::GetInstance();
-
 	// PowerEnemyと同じ設定を利用
-	tackleChargeTime_ = cfg_->getFloat("Enemy.Types.Power.kTackleChargeTime");
-	tackleMoveTime_ = cfg_->getFloat("Enemy.Types.Power.kTackleMoveTime");
-	tackleSpeed_ = cfg_->getFloat("Enemy.Types.Power.kTackleSpeed");
+	tackleChargeTime_ = GameConfigManager::GetInstance()->getFloat("Enemy.Types.Power.kTackleChargeTime");
+	tackleMoveTime_ = GameConfigManager::GetInstance()->getFloat("Enemy.Types.Power.kTackleMoveTime");
+	tackleSpeed_ = GameConfigManager::GetInstance()->getFloat("Enemy.Types.Power.kTackleSpeed");
 
 	SetRIdleTexture(TextureManager::Load("enemies/powerEnemy/RPower.png"));
 	SetRWaitTexture(TextureManager::Load("enemies/powerEnemy/RHeadbutt1.png"));

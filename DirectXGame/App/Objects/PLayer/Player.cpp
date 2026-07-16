@@ -33,28 +33,26 @@ void Player::Initialize(Model* model, KamataEngine::Model* modelSP, KamataEngine
 	smokeManager_ = std::make_unique<SmokeParticleManager>();
 	smokeManager_->Initialize();
 
-	cfg_ = GameConfigManager::GetInstance();
-
 	// 基本設定
-	maxHP_ = cfg_->getInt("Player.kInitialHP");
-	kInitialPos_ = cfg_->getVector3("Player.kGameInitialPos");
-	worldTransform_.scale_ = cfg_->getVector3("Global.kPlaneModelScale");
-	worldTransform_.rotation_.x = cfg_->getFloat("Global.kPlaneModelRotateX");
-	moveSpeed_ = cfg_->getFloat("Player.kMoveSpeed");
-	walkFrameInterval_ = cfg_->getInt("Player.kWalkFrameInterval");
-	playerHitBox_.size = cfg_->getVector3("Player.kHitBoxSize");
-	startMoveLimitX = cfg_->getFloat("Player.kStartMoveLimitX");
-	moveLimitZ = cfg_->getFloat("Player.kMoveLimitZ");
-	minMoveLimitZ = cfg_->getFloat("Player.kMinMoveLimitZ");
+	maxHP_ = GameConfigManager::GetInstance()->getInt("Player.kInitialHP");
+	kInitialPos_ = GameConfigManager::GetInstance()->getVector3("Player.kGameInitialPos");
+	worldTransform_.scale_ = GameConfigManager::GetInstance()->getVector3("Global.kPlaneModelScale");
+	worldTransform_.rotation_.x = GameConfigManager::GetInstance()->getFloat("Global.kPlaneModelRotateX");
+	moveSpeed_ = GameConfigManager::GetInstance()->getFloat("Player.kMoveSpeed");
+	walkFrameInterval_ = GameConfigManager::GetInstance()->getInt("Player.kWalkFrameInterval");
+	playerHitBox_.size = GameConfigManager::GetInstance()->getVector3("Player.kHitBoxSize");
+	startMoveLimitX = GameConfigManager::GetInstance()->getFloat("Player.kStartMoveLimitX");
+	moveLimitZ = GameConfigManager::GetInstance()->getFloat("Player.kMoveLimitZ");
+	minMoveLimitZ = GameConfigManager::GetInstance()->getFloat("Player.kMinMoveLimitZ");
 
-	stepCooldown_ = cfg_->getInt("Player.Step.kStepCoolDown");
-	stepPower_ = cfg_->getFloat("Player.Step.kStepPower");
-	worldTransformSP_.rotation_.x = cfg_->getFloat("Global.kPlaneModelRotateX");
+	stepCooldown_ = GameConfigManager::GetInstance()->getInt("Player.Step.kStepCoolDown");
+	stepPower_ = GameConfigManager::GetInstance()->getFloat("Player.Step.kStepPower");
+	worldTransformSP_.rotation_.x = GameConfigManager::GetInstance()->getFloat("Global.kPlaneModelRotateX");
 	
-	poseWaitTimer_ = cfg_->getFloat("Player.Clear.kPoseWaitTimer");
-	knockDownDuration_ = cfg_->getFloat("Player.KnockDown.kKnockDownTimer");
-	trailSpawnInterval_ = cfg_->getFloat("Player.Particle.kTrailSpawnInterval");
-	smokeSize_ = cfg_->getVector3("Player.Particle.kSmokeSize");
+	poseWaitTimer_ = GameConfigManager::GetInstance()->getFloat("Player.Clear.kPoseWaitTimer");
+	knockDownDuration_ = GameConfigManager::GetInstance()->getFloat("Player.KnockDown.kKnockDownTimer");
+	trailSpawnInterval_ = GameConfigManager::GetInstance()->getFloat("Player.Particle.kTrailSpawnInterval");
+	smokeSize_ = GameConfigManager::GetInstance()->getVector3("Player.Particle.kSmokeSize");
 
 	HP_ = maxHP_;
 	worldTransform_.translation_ = kInitialPos_;

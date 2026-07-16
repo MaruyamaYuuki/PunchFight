@@ -85,7 +85,6 @@ public:
 	float GetSpecialCooldown() const { return specialCooldown_; }
 
 private:
-	MyEngine::GameConfigManager* cfg = nullptr;
 
 	// ===== 通常攻撃 =====
 	bool isNormalAttacking_ = false;

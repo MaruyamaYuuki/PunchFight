@@ -51,8 +51,6 @@ private:
 	void UpdateLoadedStages();
 
 private:
-	MyEngine::GameConfigManager* cfg_ = nullptr;
-
 	std::unordered_map<int32_t, std::unique_ptr<Stage>> activeStages_;
 
 std::unique_ptr<KamataEngine::Model> startModel_;

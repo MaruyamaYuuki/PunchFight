@@ -77,7 +77,6 @@ private:
 	void UpdateControlUI();
 
 private:
-	GameConfigManager* cfg_ = nullptr;
 
 	uint32_t textureHandle_ = 0;
 	uint32_t keyBaseCtrlTexture_ = 0;

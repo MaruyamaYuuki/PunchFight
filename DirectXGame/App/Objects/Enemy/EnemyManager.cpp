@@ -16,7 +16,6 @@ void EnemyManager::Initialize() {
     smokeManager_ = std::make_unique<SmokeParticleManager>();
 	smokeManager_->Initialize();
 
-	cfg_ = GameConfigManager::GetInstance();
 }
 
 void EnemyManager::AddArea(float triggerX) {
@@ -42,31 +41,31 @@ void EnemyManager::SpawnEnemy(EnemyType type, const KamataEngine::Vector3& pos) 
 
 	switch (type) {
 	case EnemyType::Normal:
-		data = {cfg_->getString("Global.kCharacterModelPath"), 
-			cfg_->getFloat("Enemy.Types.Normal.speed"), 
-			cfg_->getInt("Enemy.Types.Normal.hp"), 
-			cfg_->getInt("Enemy.Types.Normal.attackPower")
+		data = {GameConfigManager::GetInstance()->getString("Global.kCharacterModelPath"), 
+			GameConfigManager::GetInstance()->getFloat("Enemy.Types.Normal.speed"), 
+			GameConfigManager::GetInstance()->getInt("Enemy.Types.Normal.hp"), 
+			GameConfigManager::GetInstance()->getInt("Enemy.Types.Normal.attackPower")
 		};
 		enemy = std::make_unique<NormalEnemy>();
-		enemy->SetHitBox(pos, cfg_->getVector3("Enemy.Types.Normal.hitBoxSize")); // 中心0.5f、高さ1
-		enemy->SetScale(cfg_->getVector3("Enemy.Types.Normal.scale"));
+		enemy->SetHitBox(pos, GameConfigManager::GetInstance()->getVector3("Enemy.Types.Normal.hitBoxSize")); // 中心0.5f、高さ1
+		enemy->SetScale(GameConfigManager::GetInstance()->getVector3("Enemy.Types.Normal.scale"));
 		break;
 	case EnemyType::Power:
 		data = {
-			cfg_->getString("Global.kCharacterModelPath"), 
-			cfg_->getFloat("Enemy.Types.Power.speed"), 
-			cfg_->getInt("Enemy.Types.Power.hp"), 
-			cfg_->getInt("Enemy.Types.Power.attackPower")
+			GameConfigManager::GetInstance()->getString("Global.kCharacterModelPath"), 
+			GameConfigManager::GetInstance()->getFloat("Enemy.Types.Power.speed"), 
+			GameConfigManager::GetInstance()->getInt("Enemy.Types.Power.hp"), 
+			GameConfigManager::GetInstance()->getInt("Enemy.Types.Power.attackPower")
 		};
 		enemy = std::make_unique<PowerEnemy>();
-		enemy->SetHitBox(pos, cfg_->getVector3("Enemy.Types.Power.hitBoxSize"));
-		enemy->SetScale(cfg_->getVector3("Enemy.Types.Power.scale"));
+		enemy->SetHitBox(pos, GameConfigManager::GetInstance()->getVector3("Enemy.Types.Power.hitBoxSize"));
+		enemy->SetScale(GameConfigManager::GetInstance()->getVector3("Enemy.Types.Power.scale"));
 		break;
 	case EnemyType::Fast:
-		data = {cfg_->getString("Global.kCharacterModelPath"), cfg_->getFloat("Enemy.Types.Fast.speed"), cfg_->getInt("Enemy.Types.Fast.hp"), cfg_->getInt("Enemy.Types.Fast.attackPower")};
+		data = {GameConfigManager::GetInstance()->getString("Global.kCharacterModelPath"), GameConfigManager::GetInstance()->getFloat("Enemy.Types.Fast.speed"), GameConfigManager::GetInstance()->getInt("Enemy.Types.Fast.hp"), GameConfigManager::GetInstance()->getInt("Enemy.Types.Fast.attackPower")};
 		enemy = std::make_unique<FastEnemy>();
-		enemy->SetHitBox(pos, cfg_->getVector3("Enemy.Types.Fast.hitBoxSize"));
-		enemy->SetScale(cfg_->getVector3("Enemy.Types.Fast.scale"));
+		enemy->SetHitBox(pos, GameConfigManager::GetInstance()->getVector3("Enemy.Types.Fast.hitBoxSize"));
+		enemy->SetScale(GameConfigManager::GetInstance()->getVector3("Enemy.Types.Fast.scale"));
 		break;
 	}
 
