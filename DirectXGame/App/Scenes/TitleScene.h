@@ -67,7 +67,6 @@ public:
 private:
 	XINPUT_STATE state_, preState_;
 
-	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
 	KamataEngine::Input* input_ = nullptr;
 	KamataEngine::Audio* audio_ = nullptr;
 

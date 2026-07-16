@@ -19,7 +19,6 @@ GameScene::GameScene() {}
 GameScene::~GameScene() = default;
 
 void GameScene::Initialize() { 
-	dxCommon_ = DirectXCommon::GetInstance(); 
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
@@ -176,11 +175,11 @@ void GameScene::Update() {
 
 void GameScene::Draw() {
 	// 背景スプライト描画前処理
-	Sprite::PreDraw(dxCommon_->GetCommandList());
+	Sprite::PreDraw(DirectXCommon::GetInstance()->GetCommandList());
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
-	dxCommon_->ClearDepthBuffer();
+	DirectXCommon::GetInstance()->ClearDepthBuffer();
 
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw();
@@ -214,7 +213,7 @@ void GameScene::Draw() {
 	Model::PostDraw();
 
 	// 前景スプライト描画前処理
-	Sprite::PreDraw(dxCommon_->GetCommandList());
+	Sprite::PreDraw(DirectXCommon::GetInstance()->GetCommandList());
 
 	ui_->Draw();
 	if (isStageUIActive_) {

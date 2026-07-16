@@ -14,7 +14,6 @@ TitleScene::TitleScene() {}
 TitleScene::~TitleScene() = default;
 
 void TitleScene::Initialize() {
-	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
@@ -112,14 +111,14 @@ void TitleScene::Update() {
 
 void TitleScene::Draw() {
 	// 背景スプライト描画前処理
-	Sprite::PreDraw(dxCommon_->GetCommandList());
+	Sprite::PreDraw(DirectXCommon::GetInstance()->GetCommandList());
 
 	titleBackSprite_[0]->Draw();
 	titleBackSprite_[1]->Draw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
-	dxCommon_->ClearDepthBuffer();
+	DirectXCommon::GetInstance()->ClearDepthBuffer();
 
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw();
@@ -128,7 +127,7 @@ void TitleScene::Draw() {
 	Model::PostDraw();
 
 	// 前景スプライト描画前処理
-	Sprite::PreDraw(dxCommon_->GetCommandList());
+	Sprite::PreDraw(DirectXCommon::GetInstance()->GetCommandList());
 
 	if (titleVisible_) {
     	titleSprite_->Draw();

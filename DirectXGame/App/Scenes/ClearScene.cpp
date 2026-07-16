@@ -14,7 +14,6 @@ ClearScene::ClearScene() {}
 ClearScene::~ClearScene() = default;
 
 void ClearScene::Initialize() {
-	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
@@ -77,11 +76,11 @@ void ClearScene::Update() {
 
 void ClearScene::Draw() {
 	// 背景スプライト描画前処理
-	Sprite::PreDraw(dxCommon_->GetCommandList());
+	Sprite::PreDraw(DirectXCommon::GetInstance()->GetCommandList());
 	backSprite_->Draw();
 	// スプライト描画後処理
 	Sprite::PostDraw();
-	dxCommon_->ClearDepthBuffer();
+	DirectXCommon::GetInstance()->ClearDepthBuffer();
 
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw();
@@ -92,7 +91,7 @@ void ClearScene::Draw() {
 	Model::PostDraw();
 
 	// 前景スプライト描画前処理
-	Sprite::PreDraw(dxCommon_->GetCommandList());
+	Sprite::PreDraw(DirectXCommon::GetInstance()->GetCommandList());
 	if (player_->IsVictory()) {
 		clearSprite_->Draw();
 		if (pushSpaceShown_) {

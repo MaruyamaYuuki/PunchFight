@@ -206,7 +206,6 @@ private:
 	void UpdateStageUI();
 
 private:
-	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
 	KamataEngine::Input* input_ = nullptr;
 	KamataEngine::Audio* audio_ = nullptr;
 	std::unique_ptr<MyEngine::UIInputController> uiInput_;
