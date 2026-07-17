@@ -49,7 +49,7 @@
           "Areas": [
             {"triggerX": 15.0,
              "enemies": [
-              {"type": "Normal", "pos": [25,1,0]}
+              {"type": "Boss", "pos": [25,1,0]}
              ]
             },
             {"triggerX": 30.0,
@@ -279,6 +279,13 @@
         "hp":35,
         "attackPower": 5,
         "scale": [0.5,0.5,0.5]
+      },
+      "Boss": {
+        "speed": 0.03,
+        "hp": 200,
+        "attackPower": 10,
+        "hitBoxSize": [0.3, 0.5, 0.3],
+        "scale": [0.5, 0.5, 0.5]
       }
     }
   },

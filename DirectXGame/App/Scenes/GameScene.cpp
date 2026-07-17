@@ -592,8 +592,6 @@ void GameScene::ResetGame() {
 
 
 void GameScene::EnemyGenerate() {
-	//auto areas = GameConfigManager::GetInstance()->getJsonArray("Scene.Game.EnemySpawn.Areas");
-
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->Initialize();
 
@@ -605,13 +603,22 @@ void GameScene::EnemyGenerate() {
 		for (auto& e : enemySpawnData_[i]["enemies"]) {
 			std::string typeStr = e["type"];
 			auto posArr = e["pos"];
-			Vector3 pos{
-				posArr[0].get<float>(), 
-				posArr[1].get<float>(), 
-				posArr[2].get<float>()
-			};
+			KamataEngine::Vector3 pos{posArr[0].get<float>(), posArr[1].get<float>(), posArr[2].get<float>()};
 
-			EnemyType type = (typeStr == "Power") ? EnemyType::Power : EnemyType::Normal;
+			// ==========================================
+			// 【修正箇所】すべての敵タイプを判定できるようにする
+			// ==========================================
+			EnemyType type = EnemyType::Normal; // デフォルトはNormal
+
+			if (typeStr == "Power") {
+				type = EnemyType::Power;
+			} else if (typeStr == "Fast") {
+				type = EnemyType::Fast;
+			} else if (typeStr == "Boss") {
+				type = EnemyType::Boss;
+			} else if (typeStr == "Normal") {
+				type = EnemyType::Normal;
+			}
 
 			enemyManager_->AddSpawnToArea(static_cast<int>(i), type, pos);
 		}

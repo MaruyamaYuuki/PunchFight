@@ -186,16 +186,19 @@ void BossEnemy::TripleTackleAttack() {
 			SetAttacking(false);
 			SetAttackHitBoxActive(false);
 
-			// 1回分完了
+            // 1回分完了
 			tackleCount_++;
 
-			// まだ残っている場合は、
-			// 次のフレームで再度プレイヤー方向を向き直して溜め開始
+			// 次のタックル用に反対を向く
 			if (tackleCount_ < maxTackleCount_) {
-				// AttackProcess()で再度プレイヤー位置を見て
-				// EnterAttackModeせずそのまま継続する。
-				// 向きだけ更新したいのでAttackDirXを現在のFacingDirに合わせる。
-				SetAttackDirX(GetFacingDir());
+
+				float nextDir = -GetFacingDir();
+
+				SetFacingDir(nextDir);
+				SetAttackDirX(nextDir);
+
+				// 次のタックル準備
+				isTackleCharging_ = false;
 			}
 		}
 	}
