@@ -45,6 +45,8 @@ public:
 	/// <returns>離脱時間が規定値に達していれば true、それ以外は false</returns>
 	bool IsRetreatFinished() const;
 
+	float GetRetreatSpeedMultiplier() const { return retreatSpeedMultiplier_; }
+
 private:
 	/// <summary>
 	/// 離脱行動を開始する

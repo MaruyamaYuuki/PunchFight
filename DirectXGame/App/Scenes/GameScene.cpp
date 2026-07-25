@@ -143,7 +143,7 @@ void GameScene::Update() {
 			isFinished_ = true;
 		}
 		#endif
-		DebugText::GetInstance()->ConsolePrintf("Camera.Translate.x : %f\n\n", cameraController_->GetCamera().translation_.x);
+		//DebugText::GetInstance()->ConsolePrintf("Camera.Translate.x : %f\n\n", cameraController_->GetCamera().translation_.x);
 		stage_->Update(cameraController_->GetCamera().translation_.x);
 		player_->Update();
 
@@ -690,41 +690,49 @@ void GameScene::AllCollision() {
 	// 敵リストの取得
 	auto& enemies = enemyManager_->GetEnemies();
 
-	#pragma region プレイヤーの通常攻撃と敵の当たり判定
+#pragma region プレイヤーの通常攻撃と敵の当たり判定
 	CheckPlayerAttackToEnemies(player_->GetAttackHitBox(), hitEnemiesThisAttack_, player_->GetAttackPower(), player_->GetFacingDir());
-	#pragma endregion
+#pragma endregion
 
-	#pragma region プレイヤーの強攻撃と敵の当たり判定
+#pragma region プレイヤーの強攻撃と敵の当たり判定
 	CheckPlayerAttackToEnemies(player_->GetSPAttackHitBox(), hitEnemiesThisSPAttack_, player_->GetSPAttackPower(), player_->GetSPAttackDir());
-	#pragma endregion
+#pragma endregion
 
-	#pragma region 敵の攻撃とプレイヤーの当たり判定
+#pragma region 敵の攻撃とプレイヤーの当たり判定
 	for (auto& e : enemies) {
 
-		// 敵が攻撃状態ではないならスルー
-		if (!e->IsAttackHitBoxActive()) {
-			continue;
-		}
-
-		// 敵の攻撃ヒットボックス取得
-		const HitBox& enemyAtk = e->GetAttackHitBox();
-
-        // この攻撃でもうダメージを与えていたらスキップ
+		// この攻撃でもうダメージを与えていたらスキップ
 		if (e->HasDealtDamage()) {
 			continue;
 		}
 
-		// AABB判定
-		if (Collision::AABB(enemyAtk, pHitBox)) {
+		// ① 衝撃波（リング状）の当たり判定
+		if (e->IsShockWaveActive()) {
+			// ★変更: 衝撃波の判定の厚み（大きすぎると内側で当たり、小さすぎるとすり抜けるため調整してください）
+			float waveThickness = 0.8f;
 
-			// プレイヤーにダメージ処理
-			player_->OnHit(e->GetAttackPower());
+			// ★変更: CircleVsAABB から RingVsAABB に変更
+			if (Collision::RingVsAABB(e->GetPosition(), e->GetShockWaveRadius(), waveThickness, pHitBox)) {
+				// プレイヤーにダメージ処理
+				player_->OnHit(e->GetAttackPower());
+				// 多段ヒット防止
+				e->SetHasDealtDamage(true);
+			}
+		}
+		// ② 通常の攻撃（AABB）の当たり判定
+		else if (e->IsAttackHitBoxActive()) {
+			const HitBox& enemyAtk = e->GetAttackHitBox();
 
-			// 1回の攻撃で多段ヒットしないよう enemy 側にフラグを付ける
-			e->SetHasDealtDamage(true);
+			// AABB判定
+			if (Collision::AABB(enemyAtk, pHitBox)) {
+				// プレイヤーにダメージ処理
+				player_->OnHit(e->GetAttackPower());
+				// 多段ヒット防止
+				e->SetHasDealtDamage(true);
+			}
 		}
 	}
-	#pragma endregion
+#pragma endregion
 }
 
 void GameScene::CheckPlayerAttackToEnemies(const HitBox& attackHitBox, std::vector<EnemyBase*>& hitList, int attackPower, float attackDir) {

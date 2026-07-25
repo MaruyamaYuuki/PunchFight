@@ -372,6 +372,7 @@ void EnemyBase::DoNormalAttack(const Vector3& playerPos) {
 
 	float offsetX = 0.5f * facingDir_;
 	SetAttackHitBox(worldTransform_.translation_ + Vector3{offsetX, 0.1f, 0});
+	DebugText::GetInstance()->ConsolePrintf("Attack Start\n");
 	attackHitBox_.active = true;
 }
 

@@ -3,6 +3,14 @@
 #include "EnemyBase.h"
 
 /// <summary>
+/// 攻撃の種類
+/// </summary>
+enum class BossAttackType { 
+	Normal, 
+	TripleTackle, 
+	Jump };
+
+/// <summary>
 /// ボス専用クラス
 /// ・通常攻撃
 /// ・3連続タックル攻撃
@@ -21,6 +29,18 @@ public:
 	/// <param name="playerPos">プレイヤーの座標（追従対象）</param>
 	/// <param name="allEnemies">全エネミーのリスト（他の敵との重なり回避計算に使用）</param>
 	void Update(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) override;
+
+	/// <summary>
+	/// 描画
+	/// </summary>
+	/// <param name="camera">カメラ</param>
+	void Draw(KamataEngine::Camera& camera) override;
+
+	// 攻撃タイプに応じて返すテクスチャを切り替える
+	uint32_t GetRWaitTexture() const override;
+	uint32_t GetRAttackTexture() const override;
+	uint32_t GetLWaitTexture() const override;
+	uint32_t GetLAttackTexture() const override;
 
 private:
 
@@ -51,7 +71,27 @@ private:
 	/// </summary>
 	void ShockWaveAttack();
 
+	// 衝撃波攻撃の状態を返す
+	bool IsShockWaveActive() const override { return shockWaveActive_; }
+
+	// 当たり判定の半径として「現在の半径」を返すようにオーバーライド
+	float GetShockWaveRadius() const override { return currentShockWaveRadius_; }
+
 private:
+	uint32_t RTackleTexture_ = 0;
+	uint32_t RTackleWaitTexture_ = 0;
+	uint32_t RJumpAttackTexture_ = 0;
+	uint32_t LTackleTexture_ = 0;
+	uint32_t LTackleWaitTexture_ = 0;
+	uint32_t LJumpAttackTexture_ = 0;
+
+	std::unique_ptr<KamataEngine::Model> model_;
+
+	BossAttackType attackType_ = BossAttackType::Normal;
+
+	// ===== 衝撃波可視化用 =====
+	std::unique_ptr<KamataEngine::Model> shockWaveModel_;
+	MyEngine::WorldTransformEx shockWaveTransform_;
 
 	// ===== タックル設定 =====
 	bool useTripleTackle_ = true; // 必要なら確率で切り替え可能
@@ -87,6 +127,9 @@ private:
 
 	float groundY_ = 0.0f;
 	bool shockWaveActive_ = false;
-	float shockWaveTime_ = 0.15f;
+	float shockWaveTime_ = 0.5f;
 	float shockWaveTimer_ = 0.0f;
+	// 衝撃波の広がりを管理する変数
+	float currentShockWaveRadius_ = 0.0f; // 現在の半径
+	float maxShockWaveRadius_ = 3.0f;     // 最大まで広がった時の半径
 };

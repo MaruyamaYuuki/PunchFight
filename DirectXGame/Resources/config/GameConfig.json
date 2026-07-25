@@ -49,7 +49,7 @@
           "Areas": [
             {"triggerX": 15.0,
              "enemies": [
-              {"type": "Boss", "pos": [25,1,0]}
+              {"type": "Normal", "pos": [25,1,0]}
              ]
             },
             {"triggerX": 30.0,
@@ -122,13 +122,7 @@
             },
             {"triggerX": 75.0,
              "enemies":[
-              {"type": "Normal", "pos": [86,1,-3]},
-              {"type": "Normal", "pos": [85,1,-2]},
-              {"type": "Power", "pos": [88,1,-0]},
-              {"type": "Normal", "pos": [85,1,-1]},
-              {"type": "Normal", "pos": [89,1,1]},
-              {"type": "Power", "pos": [84,1,3]},
-              {"type": "Normal", "pos": [83,1,2]}
+              {"type": "Boss", "pos": [88,1,-0]}
              ]
             }
           ]
@@ -275,9 +269,10 @@
         "kRetreatDuration": 1.0,
         "kRetreatSpeedMultiplier": 1.5,
 
-        "Speed": 0.06,
+        "speed": 0.06,
         "hp":35,
         "attackPower": 5,
+        "hitBoxSize": [0.3, 0.5, 0.3],
         "scale": [0.5,0.5,0.5]
       },
       "Boss": {

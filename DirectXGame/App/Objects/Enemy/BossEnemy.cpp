@@ -9,28 +9,39 @@ using MyEngine::GameConfigManager;
 void BossEnemy::Initialize(const EnemyData& data) {
 	EnemyBase::Initialize(data);
 
-	// PowerEnemyと同じ設定を利用
+	// bossEnemyと同じ設定を利用
 	tackleChargeTime_ = GameConfigManager::GetInstance()->getFloat("Enemy.Types.Power.kTackleChargeTime");
 	tackleMoveTime_ = GameConfigManager::GetInstance()->getFloat("Enemy.Types.Power.kTackleMoveTime");
 	tackleSpeed_ = GameConfigManager::GetInstance()->getFloat("Enemy.Types.Power.kTackleSpeed");
 
-	SetRIdleTexture(TextureManager::Load("enemies/powerEnemy/RPower.png"));
-	SetRWaitTexture(TextureManager::Load("enemies/powerEnemy/RHeadbutt1.png"));
-	SetRAttackTexture(TextureManager::Load("enemies/powerEnemy/RHeadbutt2.png"));
-	SetRStunTexture(TextureManager::Load("enemies/powerEnemy/RStun.png"));
-	SetRWalkTexture(0, TextureManager::Load("enemies/powerEnemy/RWalk1.png"));
-	SetRWalkTexture(1, TextureManager::Load("enemies/powerEnemy/RWalk2.png"));
-	SetRWalkTexture(2, TextureManager::Load("enemies/powerEnemy/RWalk3.png"));
-	SetRWalkTexture(3, TextureManager::Load("enemies/powerEnemy/RWalk4.png"));
+	shockWaveModel_.reset(KamataEngine::Model::CreateFromOBJ("shockWave", true));
 
-	SetLIdleTexture(TextureManager::Load("enemies/powerEnemy/LPower.png"));
-	SetLWaitTexture(TextureManager::Load("enemies/powerEnemy/LHeadbutt1.png"));
-	SetLAttackTexture(TextureManager::Load("enemies/powerEnemy/LHeadbutt2.png"));
-	SetLStunTexture(TextureManager::Load("enemies/powerEnemy/RStun.png"));
-	SetLWalkTexture(0, TextureManager::Load("enemies/powerEnemy/LWalk1.png"));
-	SetLWalkTexture(1, TextureManager::Load("enemies/powerEnemy/LWalk2.png"));
-	SetLWalkTexture(2, TextureManager::Load("enemies/powerEnemy/LWalk3.png"));
-	SetLWalkTexture(3, TextureManager::Load("enemies/powerEnemy/LWalk4.png"));
+	// トランスフォームの初期化
+	shockWaveTransform_.Initialize();
+
+	SetRIdleTexture(TextureManager::Load("enemies/bossEnemy/RBoss.png"));
+	SetRWaitTexture(TextureManager::Load("enemies/bossEnemy/RHeadbutt1.png"));
+	SetRAttackTexture(TextureManager::Load("enemies/bossEnemy/RHeadbutt2.png"));
+	SetRStunTexture(TextureManager::Load("enemies/bossEnemy/RStun.png"));
+	SetRWalkTexture(0, TextureManager::Load("enemies/bossEnemy/RWalk1.png"));
+	SetRWalkTexture(1, TextureManager::Load("enemies/bossEnemy/RWalk2.png"));
+	SetRWalkTexture(2, TextureManager::Load("enemies/bossEnemy/RWalk3.png"));
+	SetRWalkTexture(3, TextureManager::Load("enemies/bossEnemy/RWalk4.png"));
+	RTackleTexture_ = TextureManager::Load("enemies/bossEnemy/RTackle.png");
+	RTackleWaitTexture_ = TextureManager::Load("enemies/bossEnemy/RTackleWait.png");
+	RJumpAttackTexture_ = TextureManager::Load("enemies/bossEnemy/RJump.png");
+
+	SetLIdleTexture(TextureManager::Load("enemies/bossEnemy/LBoss.png"));
+	SetLWaitTexture(TextureManager::Load("enemies/bossEnemy/LHeadbutt1.png"));
+	SetLAttackTexture(TextureManager::Load("enemies/bossEnemy/LHeadbutt2.png"));
+	SetLStunTexture(TextureManager::Load("enemies/bossEnemy/RStun.png"));
+	SetLWalkTexture(0, TextureManager::Load("enemies/bossEnemy/LWalk1.png"));
+	SetLWalkTexture(1, TextureManager::Load("enemies/bossEnemy/LWalk2.png"));
+	SetLWalkTexture(2, TextureManager::Load("enemies/bossEnemy/LWalk3.png"));
+	SetLWalkTexture(3, TextureManager::Load("enemies/bossEnemy/LWalk4.png"));
+	LTackleTexture_ = TextureManager::Load("enemies/bossEnemy/LTackle.png");
+	LTackleWaitTexture_ = TextureManager::Load("enemies/bossEnemy/LTackleWait.png");
+	LJumpAttackTexture_ = TextureManager::Load("enemies/bossEnemy/LJump.png");
 
 	ResetAttackCooldown();
 }
@@ -61,19 +72,33 @@ void BossEnemy::Update(const KamataEngine::Vector3& playerPos, const std::vector
 		MoveTowardPlayer(playerPos, allEnemies);
 	}
 
-	// 衝撃波攻撃の終了処理
+    // 衝撃波攻撃の終了処理
 	if (shockWaveActive_) {
+
 		shockWaveTimer_ -= GetDeltaTime();
 
 		if (shockWaveTimer_ <= 0) {
 			shockWaveActive_ = false;
-
+			attackType_ = BossAttackType::Normal;
 			SetAttackHitBoxActive(false);
-
 			SetAttackMode(false);
 			SetAttacking(false);
-
 			ResetAttackCooldown();
+		} else {
+			// 進行度を計算（0.0f = 発生直後, 1.0f = 消滅寸前）
+			float progress = 1.0f - (shockWaveTimer_ / shockWaveTime_);
+
+			// 進行度に合わせて現在の半径を 0 から最大値まで拡大する
+			currentShockWaveRadius_ = maxShockWaveRadius_ * progress;
+
+			// 衝撃波がアクティブな間、トランスフォームを更新して可視化の準備をする
+			shockWaveTransform_.translation_ = GetPosition();
+			float adjustMultiplier = 0.5f; // ★この数値を変更して見た目を当たり判定に合わせる
+
+			// 固定の GetShockWaveRadius() ではなく、変動する currentShockWaveRadius_ を使う
+			float visualScale = currentShockWaveRadius_ * 2.0f * adjustMultiplier;
+			shockWaveTransform_.scale_ = {visualScale, 0.5f, visualScale};
+			shockWaveTransform_.UpdateMatrix();
 		}
 	}
 
@@ -97,10 +122,21 @@ void BossEnemy::Update(const KamataEngine::Vector3& playerPos, const std::vector
 	}
 
 	EnemyBase::Update(playerPos, allEnemies);
+	shockWaveTransform_.UpdateMatrix();
 }
 
+void BossEnemy::Draw(KamataEngine::Camera& camera) {
+	// 親クラスの描画（ボス本体、通常ヒットボックス、パーティクル等）
+	EnemyBase::Draw(camera);
+
+	// 衝撃波がアクティブな場合のみ描画
+	if (shockWaveActive_ && shockWaveModel_) {
+		shockWaveModel_->Draw(shockWaveTransform_, camera);
+	}
+}
 
 void BossEnemy::AttackProcess(const KamataEngine::Vector3& playerPos) {
+
 	// 攻撃モードに入っていないなら距離チェック
 	if (!IsAttackMode()) {
 		KamataEngine::Vector3 toPlayer = playerPos - GetPosition();
@@ -113,16 +149,13 @@ void BossEnemy::AttackProcess(const KamataEngine::Vector3& playerPos) {
 		}
 	}
 
-if (useJumpAttack_) {
-
-		JumpAttack();
+    if (useJumpAttack_) {
+	    JumpAttack();
 
 	} else if (useTripleTackle_) {
-
 		TripleTackleAttack();
 
 	} else {
-
 		DoNormalAttack(playerPos);
 	}
 }
@@ -138,6 +171,7 @@ void BossEnemy::TripleTackleAttack() {
 			SetAttacking(false);
 			SetAttackHitBoxActive(false);
 			ResetAttackCooldown();
+			attackType_ = BossAttackType::Normal;
 			return;
 		}
 
@@ -186,10 +220,8 @@ void BossEnemy::TripleTackleAttack() {
 			SetAttacking(false);
 			SetAttackHitBoxActive(false);
 
-            // 1回分完了
 			tackleCount_++;
 
-			// 次のタックル用に反対を向く
 			if (tackleCount_ < maxTackleCount_) {
 
 				float nextDir = -GetFacingDir();
@@ -197,8 +229,9 @@ void BossEnemy::TripleTackleAttack() {
 				SetFacingDir(nextDir);
 				SetAttackDirX(nextDir);
 
-				// 次のタックル準備
 				isTackleCharging_ = false;
+			} else {
+				attackType_ = BossAttackType::Normal;
 			}
 		}
 	}
@@ -208,6 +241,8 @@ void BossEnemy::EnterAttackMode(const KamataEngine::Vector3& playerPos) {
 	// 攻撃モードをオンにする
 	SetAttackMode(true);
 
+	groundY_ = GetPosition().y; 
+
 	// プレイヤーの方向を計算して振り向く
 	KamataEngine::Vector3 toPlayer = playerPos - GetPosition();
 	if (fabs(toPlayer.x) > 0.01f) {
@@ -215,15 +250,42 @@ void BossEnemy::EnterAttackMode(const KamataEngine::Vector3& playerPos) {
 	}
 	SetAttackDirX(GetFacingDir());
 
-	// ボス特有の攻撃パターンのリセットと決定
-	// （ここでは例として、常に3連タックルを行うように設定しています）
-	useTripleTackle_ = true;
-	tackleCount_ = 0;
-	isTackleCharging_ = false;
-	isTackling_ = false;
+	float r = static_cast<float>(rand()) / RAND_MAX;
+
+if (r < 0.3f) {
+
+		attackType_ = BossAttackType::Jump;
+
+		useJumpAttack_ = true;
+		useTripleTackle_ = false;
+
+		isJumpCharging_ = false;
+		isJumping_ = false;
+		shockWaveActive_ = false;
+	} else if (r < 0.7f) {
+
+		attackType_ = BossAttackType::TripleTackle;
+
+		useJumpAttack_ = false;
+		useTripleTackle_ = true;
+
+		tackleCount_ = 0;
+		isTackleCharging_ = false;
+		isTackling_ = false;
+	} else {
+
+		attackType_ = BossAttackType::Normal;
+
+		useJumpAttack_ = false;
+		useTripleTackle_ = false;
+	}
 }
 
 void BossEnemy::JumpAttack() {
+	if (shockWaveActive_) {
+		return;
+	}
+
 	// 溜め
 	if (!isJumpCharging_ && !isJumping_) {
 		isJumpCharging_ = true;
@@ -236,8 +298,9 @@ void BossEnemy::JumpAttack() {
 
 		if (jumpChargeTimer_ <= 0.0f) {
 			isJumpCharging_ = false;
-
 			isJumping_ = true;
+
+			SetAttacking(true);
 
 			jumpVelocityY_ = jumpPower_;
 		}
@@ -265,13 +328,61 @@ void BossEnemy::JumpAttack() {
 }
 
 void BossEnemy::ShockWaveAttack() {
+	// 着地した瞬間の1フレームだけ呼ばれるため、発生処理のみを記述する
 	shockWaveActive_ = true;
+	shockWaveTimer_ = shockWaveTime_; // 設定した持続時間
+	currentShockWaveRadius_ = 0.0f;   // 発生時は半径を0にリセット
+	SetHasDealtDamage(false);         // ダメージフラグをリセット
+}
 
-	shockWaveTimer_ = shockWaveTime_;
+uint32_t BossEnemy::GetRWaitTexture() const {
+	switch (attackType_) {
+	case BossAttackType::TripleTackle:
+		return RTackleWaitTexture_;
 
-	SetAttackHitBoxActive(true);
+	case BossAttackType::Jump:
+		return RJumpAttackTexture_;
 
-	SetAttackHitBoxPos(GetPosition());
+	default:
+		return EnemyBase::GetRWaitTexture();
+	}
+}
 
-	SetAttackHitBoxSize({2.5f, 0.6f, 2.5f});
+uint32_t BossEnemy::GetRAttackTexture() const {
+	switch (attackType_) {
+	case BossAttackType::TripleTackle:
+		return RTackleTexture_;
+
+	case BossAttackType::Jump:
+		return RJumpAttackTexture_;
+
+	default:
+		return EnemyBase::GetRAttackTexture();
+	}
+}
+
+uint32_t BossEnemy::GetLWaitTexture() const {
+	switch (attackType_) {
+	case BossAttackType::TripleTackle:
+		return LTackleWaitTexture_;
+
+	case BossAttackType::Jump:
+		return LJumpAttackTexture_;
+
+	default:
+		return EnemyBase::GetLWaitTexture();
+	}
+}
+
+uint32_t BossEnemy::GetLAttackTexture() const {
+	switch (attackType_) {
+	case BossAttackType::TripleTackle:
+		return LTackleTexture_;
+
+	case BossAttackType::Jump:
+		return LJumpAttackTexture_;
+
+	default:
+		return EnemyBase::GetLAttackTexture();
+	}
 }
