@@ -242,6 +242,18 @@ public:
 
 	void SetStunMultiplier(float multiplier) { stunMultiplier_ = multiplier; }
 
+	/// <summary>
+	/// 衝撃波攻撃がアクティブかどうかを取得する
+	/// </summary>
+	/// <returns>アクティブなら true</returns>
+	virtual bool IsShockWaveActive() const { return false; } // 基底クラスではデフォルトfalse
+
+	/// <summary>
+	/// 衝撃波の半径を取得する
+	/// </summary>
+	/// <returns>半径</returns>
+	virtual float GetShockWaveRadius() const { return shockWaveRadius_; }
+
 	// --- Setter ---
 
 	/// <summary>
@@ -625,6 +637,9 @@ private:
 	float smokeSpawnInterval_;
 	KamataEngine::Vector3 smokeSize_;
 	std::unique_ptr<MyEngine::DustParticleManager> dustManager_;
+
+	// --- ショックウェーブ用 ---
+	float shockWaveRadius_ = 2.5f;
 
 	// ---- テクスチャ ----
 	EnemyState state_ = EnemyState::Idle;

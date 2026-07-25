@@ -143,7 +143,7 @@ void GameScene::Update() {
 			isFinished_ = true;
 		}
 		#endif
-		DebugText::GetInstance()->ConsolePrintf("Camera.Translate.x : %f\n\n", cameraController_->GetCamera().translation_.x);
+		//DebugText::GetInstance()->ConsolePrintf("Camera.Translate.x : %f\n\n", cameraController_->GetCamera().translation_.x);
 		stage_->Update(cameraController_->GetCamera().translation_.x);
 		player_->Update();
 
@@ -592,8 +592,6 @@ void GameScene::ResetGame() {
 
 
 void GameScene::EnemyGenerate() {
-	//auto areas = GameConfigManager::GetInstance()->getJsonArray("Scene.Game.EnemySpawn.Areas");
-
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->Initialize();
 
@@ -605,13 +603,22 @@ void GameScene::EnemyGenerate() {
 		for (auto& e : enemySpawnData_[i]["enemies"]) {
 			std::string typeStr = e["type"];
 			auto posArr = e["pos"];
-			Vector3 pos{
-				posArr[0].get<float>(), 
-				posArr[1].get<float>(), 
-				posArr[2].get<float>()
-			};
+			KamataEngine::Vector3 pos{posArr[0].get<float>(), posArr[1].get<float>(), posArr[2].get<float>()};
 
-			EnemyType type = (typeStr == "Power") ? EnemyType::Power : EnemyType::Normal;
+			// ==========================================
+			// 【修正箇所】すべての敵タイプを判定できるようにする
+			// ==========================================
+			EnemyType type = EnemyType::Normal; // デフォルトはNormal
+
+			if (typeStr == "Power") {
+				type = EnemyType::Power;
+			} else if (typeStr == "Fast") {
+				type = EnemyType::Fast;
+			} else if (typeStr == "Boss") {
+				type = EnemyType::Boss;
+			} else if (typeStr == "Normal") {
+				type = EnemyType::Normal;
+			}
 
 			enemyManager_->AddSpawnToArea(static_cast<int>(i), type, pos);
 		}
@@ -683,41 +690,49 @@ void GameScene::AllCollision() {
 	// 敵リストの取得
 	auto& enemies = enemyManager_->GetEnemies();
 
-	#pragma region プレイヤーの通常攻撃と敵の当たり判定
+#pragma region プレイヤーの通常攻撃と敵の当たり判定
 	CheckPlayerAttackToEnemies(player_->GetAttackHitBox(), hitEnemiesThisAttack_, player_->GetAttackPower(), player_->GetFacingDir());
-	#pragma endregion
+#pragma endregion
 
-	#pragma region プレイヤーの強攻撃と敵の当たり判定
+#pragma region プレイヤーの強攻撃と敵の当たり判定
 	CheckPlayerAttackToEnemies(player_->GetSPAttackHitBox(), hitEnemiesThisSPAttack_, player_->GetSPAttackPower(), player_->GetSPAttackDir());
-	#pragma endregion
+#pragma endregion
 
-	#pragma region 敵の攻撃とプレイヤーの当たり判定
+#pragma region 敵の攻撃とプレイヤーの当たり判定
 	for (auto& e : enemies) {
 
-		// 敵が攻撃状態ではないならスルー
-		if (!e->IsAttackHitBoxActive()) {
-			continue;
-		}
-
-		// 敵の攻撃ヒットボックス取得
-		const HitBox& enemyAtk = e->GetAttackHitBox();
-
-        // この攻撃でもうダメージを与えていたらスキップ
+		// この攻撃でもうダメージを与えていたらスキップ
 		if (e->HasDealtDamage()) {
 			continue;
 		}
 
-		// AABB判定
-		if (Collision::AABB(enemyAtk, pHitBox)) {
+		// ① 衝撃波（リング状）の当たり判定
+		if (e->IsShockWaveActive()) {
+			// ★変更: 衝撃波の判定の厚み（大きすぎると内側で当たり、小さすぎるとすり抜けるため調整してください）
+			float waveThickness = 0.8f;
 
-			// プレイヤーにダメージ処理
-			player_->OnHit(e->GetAttackPower());
+			// ★変更: CircleVsAABB から RingVsAABB に変更
+			if (Collision::RingVsAABB(e->GetPosition(), e->GetShockWaveRadius(), waveThickness, pHitBox)) {
+				// プレイヤーにダメージ処理
+				player_->OnHit(e->GetAttackPower());
+				// 多段ヒット防止
+				e->SetHasDealtDamage(true);
+			}
+		}
+		// ② 通常の攻撃（AABB）の当たり判定
+		else if (e->IsAttackHitBoxActive()) {
+			const HitBox& enemyAtk = e->GetAttackHitBox();
 
-			// 1回の攻撃で多段ヒットしないよう enemy 側にフラグを付ける
-			e->SetHasDealtDamage(true);
+			// AABB判定
+			if (Collision::AABB(enemyAtk, pHitBox)) {
+				// プレイヤーにダメージ処理
+				player_->OnHit(e->GetAttackPower());
+				// 多段ヒット防止
+				e->SetHasDealtDamage(true);
+			}
 		}
 	}
-	#pragma endregion
+#pragma endregion
 }
 
 void GameScene::CheckPlayerAttackToEnemies(const HitBox& attackHitBox, std::vector<EnemyBase*>& hitList, int attackPower, float attackDir) {

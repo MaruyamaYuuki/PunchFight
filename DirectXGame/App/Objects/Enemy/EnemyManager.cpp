@@ -36,12 +36,31 @@ void EnemyManager::AddSpawnToArea(int32_t areaIndex, EnemyType type, const Vecto
 }
 
 void EnemyManager::SpawnEnemy(EnemyType type, const KamataEngine::Vector3& pos) {
+	switch (type) {
+	case EnemyType::Normal:
+		OutputDebugStringA("Spawn Normal\n");
+		break;
+
+	case EnemyType::Power:
+		OutputDebugStringA("Spawn Power\n");
+		break;
+
+	case EnemyType::Fast:
+		OutputDebugStringA("Spawn Fast\n");
+		break;
+
+	case EnemyType::Boss:
+		OutputDebugStringA("Spawn Boss\n");
+		break;
+	}
+
 	EnemyData data{};
 	std::unique_ptr<EnemyBase> enemy;
 
 	switch (type) {
 	case EnemyType::Normal:
-		data = {GameConfigManager::GetInstance()->getString("Global.kCharacterModelPath"), 
+		data = {
+			GameConfigManager::GetInstance()->getString("Global.kCharacterModelPath"), 
 			GameConfigManager::GetInstance()->getFloat("Enemy.Types.Normal.speed"), 
 			GameConfigManager::GetInstance()->getInt("Enemy.Types.Normal.hp"), 
 			GameConfigManager::GetInstance()->getInt("Enemy.Types.Normal.attackPower")
@@ -62,10 +81,24 @@ void EnemyManager::SpawnEnemy(EnemyType type, const KamataEngine::Vector3& pos) 
 		enemy->SetScale(GameConfigManager::GetInstance()->getVector3("Enemy.Types.Power.scale"));
 		break;
 	case EnemyType::Fast:
-		data = {GameConfigManager::GetInstance()->getString("Global.kCharacterModelPath"), GameConfigManager::GetInstance()->getFloat("Enemy.Types.Fast.speed"), GameConfigManager::GetInstance()->getInt("Enemy.Types.Fast.hp"), GameConfigManager::GetInstance()->getInt("Enemy.Types.Fast.attackPower")};
+		data = {
+			GameConfigManager::GetInstance()->getString("Global.kCharacterModelPath"), 
+			GameConfigManager::GetInstance()->getFloat("Enemy.Types.Fast.speed"), 
+			GameConfigManager::GetInstance()->getInt("Enemy.Types.Fast.hp"), 
+			GameConfigManager::GetInstance()->getInt("Enemy.Types.Fast.attackPower")};
 		enemy = std::make_unique<FastEnemy>();
 		enemy->SetHitBox(pos, GameConfigManager::GetInstance()->getVector3("Enemy.Types.Fast.hitBoxSize"));
 		enemy->SetScale(GameConfigManager::GetInstance()->getVector3("Enemy.Types.Fast.scale"));
+		break;
+	case EnemyType::Boss:
+		data = {
+		    GameConfigManager::GetInstance()->getString("Global.kCharacterModelPath"), 
+			GameConfigManager::GetInstance()->getFloat("Enemy.Types.Boss.speed"),
+		    GameConfigManager::GetInstance()->getInt("Enemy.Types.Boss.hp"), 
+			GameConfigManager::GetInstance()->getInt("Enemy.Types.Boss.attackPower")};
+		enemy = std::make_unique<BossEnemy>();
+		enemy->SetHitBox(pos, GameConfigManager::GetInstance()->getVector3("Enemy.Types.Boss.hitBoxSize"));
+		enemy->SetScale(GameConfigManager::GetInstance()->getVector3("Enemy.Types.Boss.scale"));
 		break;
 	}
 

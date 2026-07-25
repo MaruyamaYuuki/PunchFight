@@ -29,45 +29,45 @@ void FastEnemy::Initialize(const EnemyData& data) {
 	SetLWalkTexture(2, TextureManager::Load("enemies/normalEnemy/LWalk3.png"));
 	SetLWalkTexture(3, TextureManager::Load("enemies/normalEnemy/LWalk2.png"));
 
-	ResetAttackCooldown();
+	//ResetAttackCooldown();
 }
 
 void FastEnemy::Update(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) {
 
-	// 中断状態（スタン・ノックバックなど）
 	if (IsMovementInterrupted()) {
 		EnemyBase::Update(playerPos, allEnemies);
 		return;
 	}
 
-	// Retreat中は通常の追尾処理をしない
-	if (GetState() == EnemyState::Retreat) {
+	// 毎フレーム確実にクールタイムを減算する
+	UpdateAttackCooldown(GetDeltaTime());
+
+	// ★追加・修正：離脱終了時間を迎えたら離脱フラグを折る
+	if (isRetreating_ && IsRetreatFinished()) {
+		isRetreating_ = false;
+	}
+
+	// ★修正：GetState() ではなく、自前の isRetreating_ フラグを使用する
+	if (isRetreating_) {
+		// 離脱中は追従処理を行わず、親クラス（ステート）のUpdateのみ実行
 		EnemyBase::Update(playerPos, allEnemies);
 		return;
 	}
 
-	// 通常の追従・攻撃ロジック
-	if (GetState() == EnemyState::Idle || GetState() == EnemyState::Walking) {
+	if (IsAttackMode()) {
+		AttackProcess(playerPos);
+	} else {
+		// 追従移動
+		MoveTowardPlayer(playerPos, allEnemies);
 
 		Vector3 toPlayer = playerPos - GetPosition();
-		float dist = Length(toPlayer);
 
-		if (dist <= GetAttackRange() && GetAttackCoolDownTimer() <= 0.0f) {
+		// 攻撃範囲内 ＆ クールタイム消化済みなら攻撃開始
+		if (Length(toPlayer) <= GetAttackRange() && GetAttackCoolDownTimer() <= 0.0f) {
 			SetAttackMode(true);
-		}
-
-		if (IsAttackMode()) {
-			AttackProcess(playerPos);
-		} else {
-			MoveTowardPlayer(playerPos, allEnemies);
-
-			if (GetState() != EnemyState::Walking) {
-				ChangeState<EnemyStateWalking>();
-			}
 		}
 	}
 
-	// 状態クラスの更新
 	EnemyBase::Update(playerPos, allEnemies);
 }
 
@@ -78,6 +78,10 @@ bool FastEnemy::IsRetreatFinished() const { return retreatTimer_ <= 0.0f; }
 void FastEnemy::StartRetreat() {
 	isRetreating_ = true;
 	retreatTimer_ = retreatDuration_;
+
+	// 通常攻撃状態を終了
+	SetAttackMode(false);
+	SetAttacking(false);
 }
 
 void FastEnemy::AttackProcess(const KamataEngine::Vector3& playerPos) {

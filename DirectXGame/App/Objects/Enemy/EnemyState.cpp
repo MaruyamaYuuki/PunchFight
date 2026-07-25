@@ -83,9 +83,10 @@ void EnemyStateAttacking::Update(EnemyBase* enemy) {
 		return;
 
 	// 攻撃が終了（フラグがfalse）したら Idle へ
-	// ※ FastEnemyの場合はここを Retreat へ切り替えるロジックに変える
 	if (!enemy->IsAttacking()) {
-		enemy->ChangeState<EnemyStateIdle>();
+		if (enemy->GetState() == EnemyState::Attacking) {
+			enemy->ChangeState<EnemyStateIdle>();
+		}
 	}
 }
 
@@ -141,15 +142,18 @@ void EnemyStateRetreat::Update(EnemyBase* enemy) {
 	if (CheckCommonTransitions(enemy))
 		return;
 
-	float speed = enemy->GetSpeed() * 1.5f;
-	enemy->AddPositionX(-enemy->GetFacingDir() * speed * enemy->GetDeltaTime());
+if (auto fast = dynamic_cast<FastEnemy*>(enemy)) {
+		float speed = enemy->GetSpeed() * fast->GetRetreatSpeedMultiplier();
 
-	// FastEnemy専用処理
-	if (auto fast = dynamic_cast<FastEnemy*>(enemy)) {
+		enemy->AddPositionX(-enemy->GetFacingDir() * speed * enemy->GetDeltaTime());
 
 		fast->UpdateRetreat(enemy->GetDeltaTime());
 
 		if (fast->IsRetreatFinished()) {
+
+			enemy->SetAttackMode(false);
+			enemy->SetAttacking(false);
+
 			enemy->ChangeState<EnemyStateIdle>();
 		}
 	}

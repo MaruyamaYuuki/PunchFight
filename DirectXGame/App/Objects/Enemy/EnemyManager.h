@@ -4,6 +4,7 @@
 #include "NormalEnemy.h"
 #include "PowerEnemy.h"
 #include "FastEnemy.h"
+#include "BossEnemy.h"
 #include "../../../Engine/Particle/SmokeParticleManager.h"
 #include <memory> // unique_ptr
 #include <vector>
@@ -12,7 +13,7 @@
 /// <summary>
 /// 敵の種類
 /// </summary>
-enum class EnemyType { Normal, Power, Fast };
+enum class EnemyType { Normal, Power, Fast, Boss };
 
 /// <summary>
 /// 敵の出現トリガー
