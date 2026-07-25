@@ -28,8 +28,8 @@ void UI::Initialize(std::weak_ptr<::Player> player) {
 	ctrlSprite_.reset(Sprite::Create(keyCtrlTexture_, {5.0f, 5.0f}));
 	keyBaseCtrlTexture_ = TextureManager::Load("UI/baseCTRLTest.png");
 	baseCtrlSprite_.reset(Sprite::Create(keyBaseCtrlTexture_, {5.0f, 130.0f}));
-	textureHandle_ = TextureManager::Load("UI/pause.png");
-	pauseSprite_.reset(Sprite::Create(textureHandle_, {0.0f, 0.0f}));
+	keyPauseTexture_ = TextureManager::Load("UI/pause.png");
+	pauseSprite_.reset(Sprite::Create(keyPauseTexture_, {0.0f, 0.0f}));
 	textureHandle_ = TextureManager::Load("UI/selectRestart.png");
 	selectSprite_[0].reset(Sprite::Create(textureHandle_, {0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f,0.5f}));
 	textureHandle_ = TextureManager::Load("UI/selectToTitle.png");
@@ -53,6 +53,7 @@ void UI::Initialize(std::weak_ptr<::Player> player) {
 	keyCheckSelectTexture_ = TextureManager::Load("UI/selectAD.png");
 	selectKeySprite_[1].reset(Sprite::Create(keyCheckSelectTexture_, {0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f}));
 
+	padPauseTexture_ = TextureManager::Load("UI/padPause.png");
 	padBaseCtrlTexture_ = TextureManager::Load("UI/padBaseCTRL.png");
 	padSelectTexture_ = TextureManager::Load("UI/selectPad.png");
 	padCtrlTexture_ = TextureManager::Load("UI/padCTRL.png");
@@ -184,6 +185,7 @@ void UI::UpdateAbilityCoolTime() {
 void UI::UpdateControlUI() {
 	if (isPadConnected_) {
 		// パッド用UI
+		pauseSprite_->SetTextureHandle(padPauseTexture_);
 		ctrlSprite_->SetTextureHandle(padCtrlTexture_);
 		baseCtrlSprite_->SetTextureHandle(padBaseCtrlTexture_);
 

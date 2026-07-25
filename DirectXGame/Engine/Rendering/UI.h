@@ -80,6 +80,8 @@ private:
 private:
 
 	uint32_t textureHandle_ = 0;
+	uint32_t keyPauseTexture_ = 0;
+	uint32_t padPauseTexture_ = 0;
 	uint32_t keyBaseCtrlTexture_ = 0;
 	uint32_t padBaseCtrlTexture_ = 0;
 	uint32_t keySelectTexture_ = 0;
