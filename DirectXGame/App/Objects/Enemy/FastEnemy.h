@@ -10,8 +10,8 @@ struct GhostEffect {
 };
 
 /// <summary>
-/// ヒット＆アウェイ（一撃離脱）戦法を特徴とする、素早い敵キャラクタークラス
-/// EnemyBaseを継承し、攻撃後にプレイヤーから距離を取る専用のAI挙動を持ちます。
+/// スピードタイプのエネミー。
+/// 接近して3連撃を行った後、一定時間待機する挙動を持ちます。
 /// </summary>
 class FastEnemy : public EnemyBase {
 public:
@@ -32,40 +32,34 @@ public:
 	/// <param name="allEnemies">全エネミーのリスト（他の敵との重なり回避計算に使用）</param>
 	virtual void Update(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies);
 
-/// <summary>
-	/// 離脱（後退）行動の更新処理
-	/// 離脱タイマーを進行させ、プレイヤーから遠ざかる方向へ移動を制御します。
+    /// <summary>
+	/// 待機行動の更新処理
 	/// </summary>
-	/// <param name="deltaTime">前フレームからの経過時間（秒）</param>
-	void UpdateRetreat(float deltaTime);
+	void UpdateWait(float deltaTime);
 
 	/// <summary>
-	/// 離脱行動が完了したかどうかを判定します
+	/// 待機行動が完了したかどうかを判定します
 	/// </summary>
-	/// <returns>離脱時間が規定値に達していれば true、それ以外は false</returns>
-	bool IsRetreatFinished() const;
-
-	float GetRetreatSpeedMultiplier() const { return retreatSpeedMultiplier_; }
+	bool IsWaitFinished() const;
 
 private:
 	/// <summary>
-	/// 離脱行動を開始する
-	/// タイマーをリセットし、離脱中フラグを有効にします。
+	/// 待機を開始する
 	/// </summary>
-	void StartRetreat();
+	void StartWait();
 
 	/// <summary>
 	/// FastEnemy固有の攻撃処理
-	/// 攻撃実行後に StartRetreat() を呼び出し、一撃離脱の挙動へ移行します。
+	/// 3連続で攻撃を行い、終了後に待機状態へ移行します。
 	/// </summary>
-	/// <param name="playerPos">プレイヤーの座標（攻撃ベクトル計算などに使用）</param>
 	void AttackProcess(const KamataEngine::Vector3& playerPos) override;
 
 private:
+	// --- 3連撃＆待機用パラメータ ---
+	bool isWaiting_ = false;    // 待機中フラグ
+	float waitTimer_ = 0.0f;    // 待機時間タイマー
+	float waitDuration_ = 2.0f; // 3連撃後の待機時間（秒）
 
-	// --- ヒット＆アラン用 ---
-	bool isRetreating_ = false;           // 離脱中フラグ
-	float retreatTimer_ = 0.0f;           // 離脱時間タイマー
-	float retreatDuration_ = 1.0f;        // 離脱する時間（秒）
-	float retreatSpeedMultiplier_ = 1.5f; // 離脱時の速度倍率
+	int comboCount_ = 0;          // 現在の攻撃回数
+	const int maxComboCount_ = 3; // 連撃の最大数
 };

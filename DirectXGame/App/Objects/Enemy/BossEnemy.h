@@ -36,11 +36,17 @@ public:
 	/// <param name="camera">カメラ</param>
 	void Draw(KamataEngine::Camera& camera) override;
 
+	//void OnHit(int32_t damage, const KamataEngine::Vector3& attackDir) override;
+
 	// 攻撃タイプに応じて返すテクスチャを切り替える
 	uint32_t GetRWaitTexture() const override;
 	uint32_t GetRAttackTexture() const override;
 	uint32_t GetLWaitTexture() const override;
 	uint32_t GetLAttackTexture() const override;
+
+	bool IsDeathEffectPlayed() const { return deathEffectPlayed_; }
+
+	void SetDeathEffectPlayed(bool flag) { deathEffectPlayed_ = flag; }
 
 private:
 
@@ -76,6 +82,8 @@ private:
 
 	// 当たり判定の半径として「現在の半径」を返すようにオーバーライド
 	float GetShockWaveRadius() const override { return currentShockWaveRadius_; }
+
+
 
 private:
 	uint32_t RTackleTexture_ = 0;
@@ -132,4 +140,6 @@ private:
 	// 衝撃波の広がりを管理する変数
 	float currentShockWaveRadius_ = 0.0f; // 現在の半径
 	float maxShockWaveRadius_ = 3.0f;     // 最大まで広がった時の半径
+
+	 bool deathEffectPlayed_ = false;
 };

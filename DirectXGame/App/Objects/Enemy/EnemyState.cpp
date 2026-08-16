@@ -141,22 +141,6 @@ uint32_t EnemyStateDead::GetTexture(EnemyBase* enemy) { return (enemy->GetFacing
 void EnemyStateRetreat::Update(EnemyBase* enemy) {
 	if (CheckCommonTransitions(enemy))
 		return;
-
-if (auto fast = dynamic_cast<FastEnemy*>(enemy)) {
-		float speed = enemy->GetSpeed() * fast->GetRetreatSpeedMultiplier();
-
-		enemy->AddPositionX(-enemy->GetFacingDir() * speed * enemy->GetDeltaTime());
-
-		fast->UpdateRetreat(enemy->GetDeltaTime());
-
-		if (fast->IsRetreatFinished()) {
-
-			enemy->SetAttackMode(false);
-			enemy->SetAttacking(false);
-
-			enemy->ChangeState<EnemyStateIdle>();
-		}
-	}
 }
 
 uint32_t EnemyStateRetreat::GetTexture(EnemyBase* enemy) {

@@ -1,5 +1,6 @@
 #include "EnemyBase.h"
 #include "../../../Engine/Utility/GameConfigManager.h"
+#include "../../../Engine/Utility/TimeManager.h"
 
 using namespace KamataEngine;
 using namespace KamataEngine::MathUtility;
@@ -50,6 +51,8 @@ void EnemyBase::Initialize(const EnemyData& data) {
 }
 
 void EnemyBase::Update(const Vector3&, const std::vector<std::unique_ptr<EnemyBase>>&) {
+	deltaTime_ = TimeManager::GetInstance()->GetDeltaTime();
+
 	if (enemyState_) {
 		enemyState_->Update(this);
 	}

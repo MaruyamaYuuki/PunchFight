@@ -1,5 +1,6 @@
 #pragma once
 #include "KamataEngine.h"
+#include <random>
 
 class Player;
 namespace MyEngine {
@@ -75,6 +76,13 @@ public:
 	/// </summary>
 	void StartReturnToPlayer();
 
+	/// <summary>
+	/// カメラの振動処理
+	/// </summary>
+	/// <param name="time">シェイクする時間</param>
+	/// <param name="power">シェイクの強さ</param>
+	void StartShake(float time = 0.25f, float power = 0.25f);
+
 private:
 	KamataEngine::Camera camera_;
 	std::weak_ptr<::Player> target_;
@@ -94,6 +102,13 @@ private:
 	KamataEngine::Vector3 returnTargetPos_;
 	float returnT_ = 0.0f;
 	KamataEngine::Vector3 velocityBias_{0, 0, 0};
+
+	bool isShake_ = false;
+	float shakeTimer_ = 0.0f;
+	float shakeTime_ = 0.25f;  // シェイク時間
+	float shakePower_ = 0.25f; // 揺れる大きさ
+
+	KamataEngine::Vector3 shakeOffset_{};
 };
 }
 

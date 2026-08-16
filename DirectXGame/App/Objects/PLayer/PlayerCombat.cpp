@@ -1,5 +1,6 @@
 #include "PlayerCombat.h"
 #include "../../../Engine/Utility/GameConfigManager.h"
+#include "../../../Engine/Utility/TimeManager.h"
 
 using namespace KamataEngine;
 using namespace KamataEngine::MathUtility;
@@ -52,7 +53,7 @@ void PlayerCombat::Update(const Vector3& playerPos, float facingDir) {
 	// ---------------------
 	if (isSpecialAttacking_) {
 
-		specialTimer_ -= deltaTime_;
+		specialTimer_ -= TimeManager::GetInstance()->GetDeltaTime();
 
 		// 発射時の向きで移動
 		specialPos_.x += specialSpeed_ * specialDir_;
@@ -71,7 +72,7 @@ void PlayerCombat::Update(const Vector3& playerPos, float facingDir) {
 	// クールタイム進行（気弾が生きていても進む）
 	// ---------------------
 	if (!canSpecialAttack_) {
-		specialCooldownTimer_ -= deltaTime_;
+		specialCooldownTimer_ -= TimeManager::GetInstance()->GetDeltaTime();
 
 		if (specialCooldownTimer_ <= 0.0f) {
 			canSpecialAttack_ = true;
