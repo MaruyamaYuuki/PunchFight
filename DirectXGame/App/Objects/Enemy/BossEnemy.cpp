@@ -1,5 +1,6 @@
 #include "BossEnemy.h"
 #include "../../../Engine/Utility/GameConfigManager.h"
+#include "../../../Engine//Utility/TimeManager.h"
 #include <cmath>
 
 using namespace KamataEngine;

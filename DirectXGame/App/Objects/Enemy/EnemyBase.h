@@ -610,7 +610,7 @@ private:
 	KamataEngine::Vector3 knockbackVelocity_{0, 0, 0};
 	float gravity_;
 
-	float deltaTime_ = 1.0f / 60.0f;
+	float deltaTime_;
 
 	// ---- スタン ----
 	bool isStun_ = false;

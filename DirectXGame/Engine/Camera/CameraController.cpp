@@ -2,14 +2,15 @@
 #include "CameraController.h"
 #include "../../App/Objects/Player/Player.h"
 #include "../Math/WorldTransformEx.h"
+#include "../Utility/TimeManager.h"
 #include <algorithm>
 
 using namespace KamataEngine;
 using namespace KamataEngine::MathUtility;
 
 namespace MyEngine {
-void CameraController::Initialize() { 
-	camera_.Initialize(); 
+void CameraController::Initialize() {
+	camera_.Initialize();
 	camera_.rotation_.x += 0.4f;
 }
 
@@ -21,7 +22,7 @@ void CameraController::Update() {
 
 	const WorldTransform& targetWT = target->GetWorldTransform();
 
-    // ===== 基本追従位置 =====
+	// ===== 基本追従位置 =====
 	Vector3 followPos;
 
 	// X：常にプレイヤー中心
@@ -54,12 +55,30 @@ void CameraController::Update() {
 	// ===== 移動制限 =====
 	camera_.translation_.x = std::clamp(camera_.translation_.x, movableArea_.left, movableArea_.right);
 
+	if (isShake_) {
+
+		shakeTimer_ -= TimeManager::GetInstance()->GetDeltaTime();
+
+		if (shakeTimer_ <= 0.0f) {
+			isShake_ = false;
+			shakeOffset_ = {0, 0, 0};
+		} else {
+
+			shakeOffset_.x = ((float)rand() / RAND_MAX * 2.0f - 1.0f) * shakePower_;
+
+			shakeOffset_.y = ((float)rand() / RAND_MAX * 2.0f - 1.0f) * shakePower_;
+
+			camera_.translation_ += shakeOffset_;
+		}
+	}
+
 	camera_.UpdateMatrix();
 }
 
 void CameraController::Reset() {
 	auto target = target_.lock();
-	if (!target)return;
+	if (!target)
+		return;
 	// 追従対象のワールドトランスフォームを参照
 	const WorldTransform& targetWorldTransform = target->GetWorldTransform();
 	// 追従対象とオフセットからカメラの座標を計算
@@ -73,5 +92,11 @@ void CameraController::StartReturnToPlayer() {
 	returnT_ = 0.0f;
 	isReturnInterpolating_ = true;
 }
-}
 
+void CameraController::StartShake(float time, float power) {
+	isShake_ = true;
+	shakeTimer_ = time;
+	shakeTime_ = time;
+	shakePower_ = power;
+}
+} // namespace MyEngine

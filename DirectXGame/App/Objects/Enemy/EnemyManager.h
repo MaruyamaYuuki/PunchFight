@@ -103,6 +103,25 @@ public:
 	/// <returns>敵のポインタを保持するコンテナ（参照）</returns>
 	const std::vector<std::unique_ptr<EnemyBase>>& GetEnemies() const { return enemies_; }
 
+	const std::vector<EnemyType> GetEnemyType() const {
+		std::vector<EnemyType> types;
+		for (const auto& enemy : enemies_) {
+			if (dynamic_cast<NormalEnemy*>(enemy.get())) {
+				types.push_back(EnemyType::Normal);
+			}
+			else if (dynamic_cast<PowerEnemy*>(enemy.get())) {
+				types.push_back(EnemyType::Power);
+			}
+			else if (dynamic_cast<FastEnemy*>(enemy.get())) {
+				types.push_back(EnemyType::Fast);
+			}
+			else if (dynamic_cast<BossEnemy*>(enemy.get())) {
+				types.push_back(EnemyType::Boss);
+			}
+		}
+		return types;
+	}
+
 private:
 	/// <summary>
 	/// 敵キャラクターの動的生成

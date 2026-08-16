@@ -3,6 +3,7 @@
 #include <cassert>
 #include <algorithm>
 #include "../../../Engine/Utility/GameConfigManager.h"
+#include "../../../Engine/Utility/TimeManager.h"
 
 using namespace KamataEngine;
 using namespace KamataEngine::MathUtility;
@@ -120,7 +121,7 @@ void Player::Update() {
 	combat_->Update(worldTransform_.translation_, facingDir_);
 
 	// ===== エフェクト =====
-	smokeManager_->Update(deltaTime_);
+	smokeManager_->Update(TimeManager::GetInstance()->GetDeltaTime());
 
 	// ===== テクスチャ更新 =====
 	TextureUpdate();
@@ -192,7 +193,7 @@ void Player::ClearAnimation() {
 		autoCmd.moveDirection = {0, 0, 0};
 
 		if (!isVictory_) {
-			poseWaitTimer_ -= deltaTime_;
+			poseWaitTimer_ -= TimeManager::GetInstance()->GetDeltaTime();;
 			if (poseWaitTimer_ <= 0.0f) {
 				isVictory_ = true; // ★ ここで勝利ポーズ
 			}
@@ -202,7 +203,7 @@ void Player::ClearAnimation() {
 	// ===== 共通関数を呼ぶ =====
 	Move(autoCmd);
 
-	smokeManager_->Update(deltaTime_);
+	smokeManager_->Update(TimeManager::GetInstance()->GetDeltaTime());
 
 	TextureUpdate();
 	worldTransform_.UpdateMatrix();
@@ -260,7 +261,7 @@ void Player::UpdateMoveEffects() {
 	if (move_.x == 0.0f && move_.z == 0.0f)
 		return;
 
-	trailSpawnTimer_ -= deltaTime_;
+	trailSpawnTimer_ -= TimeManager::GetInstance()->GetDeltaTime();;
 	if (trailSpawnTimer_ <= 0.0f) {
 		trailSpawnTimer_ = trailSpawnInterval_;
 
@@ -297,7 +298,7 @@ void Player::TextureUpdate() {
 	} else if (isVictory_) {
 		state = PlayerState::Victory;
 	} else if (HP_ <= 0) {
-		knockDownTimer_ -= deltaTime_;
+		knockDownTimer_ -= TimeManager::GetInstance()->GetDeltaTime();;
 		if (knockDownTimer_ <= 0) {
 			isDead_ = true;
 		} 

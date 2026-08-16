@@ -6,6 +6,7 @@
 #include "../../Engine/Math/Easing.h"
 #include "../../Engine//Math/Collision.h"
 #include "../../Engine/Utility/GameConfigManager.h"
+#include "../../Engine/Utility/TimeManager.h"
 #include <algorithm>
 
 using namespace KamataEngine;
@@ -113,7 +114,7 @@ void GameScene::Update() {
 	cmd = uiInput_->GetCommand();
 	ChangePhase();
 	GameOver();
-
+	auto& enemies = enemyManager_->GetEnemies();
 	switch (phase_) {
 	case GameScene::Phase::kFadeIn:
 	case GameScene::Phase::kReady:
@@ -149,6 +150,20 @@ void GameScene::Update() {
 
 		ui_->Update();
 		EnemyUpdate();
+
+
+		for (auto& enemy : enemies) {
+			BossEnemy* boss = dynamic_cast<BossEnemy*>(enemy.get());
+
+			if (boss && boss->GetHP() <= 0 && !boss->IsDeathEffectPlayed()) {
+				boss->SetDeathEffectPlayed(true);
+
+				TimeManager::GetInstance()->SetTimeScale(0.2f);
+				cameraController_->StartShake();
+			}
+		}
+
+
 		AllCollision();
 		break;
 	case GameScene::Phase::kFadeOut:
@@ -606,7 +621,7 @@ void GameScene::EnemyGenerate() {
 			KamataEngine::Vector3 pos{posArr[0].get<float>(), posArr[1].get<float>(), posArr[2].get<float>()};
 
 			// ==========================================
-			// 【修正箇所】すべての敵タイプを判定できるようにする
+			// すべての敵タイプを判定できるようにする
 			// ==========================================
 			EnemyType type = EnemyType::Normal; // デフォルトはNormal
 
@@ -708,10 +723,10 @@ void GameScene::AllCollision() {
 
 		// ① 衝撃波（リング状）の当たり判定
 		if (e->IsShockWaveActive()) {
-			// ★変更: 衝撃波の判定の厚み（大きすぎると内側で当たり、小さすぎるとすり抜けるため調整してください）
+			// 衝撃波の判定の厚み（大きすぎると内側で当たり、小さすぎるとすり抜けるため調整してください）
 			float waveThickness = 0.8f;
 
-			// ★変更: CircleVsAABB から RingVsAABB に変更
+			// CircleVsAABB から RingVsAABB に変更
 			if (Collision::RingVsAABB(e->GetPosition(), e->GetShockWaveRadius(), waveThickness, pHitBox)) {
 				// プレイヤーにダメージ処理
 				player_->OnHit(e->GetAttackPower());
