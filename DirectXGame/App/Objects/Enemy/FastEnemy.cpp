@@ -29,15 +29,19 @@ void FastEnemy::Initialize(const EnemyData& data) {
 	SetLWalkTexture(2, TextureManager::Load("enemies/FastEnemy/LWalk3.png"));
 	SetLWalkTexture(3, TextureManager::Load("enemies/FastEnemy/LWalk2.png"));
 
-	//ResetAttackCooldown();
+    // 攻撃前待機時間を1秒に設定し、タイマーをリセット
+	preAttackDuration_ = 1.0f;
+	preAttackTimer_ = preAttackDuration_;
 }
 
 void FastEnemy::Update(const KamataEngine::Vector3& playerPos, const std::vector<std::unique_ptr<EnemyBase>>& allEnemies) {
 
 	if (IsMovementInterrupted()) {
-		// ★追加: 被弾してスタンやノックバックした場合はコンボと待機をキャンセル（リセット）する
+		// 被弾してスタンやノックバックした場合はコンボと待機をリセット
 		comboCount_ = 0;
 		isWaiting_ = false;
+		isPreAttackWaiting_ = false; // ★追加: 攻撃前待機もリセット
+		preAttackTimer_ = preAttackDuration_;
 		EnemyBase::Update(playerPos, allEnemies);
 		return;
 	}
@@ -51,8 +55,8 @@ void FastEnemy::Update(const KamataEngine::Vector3& playerPos, const std::vector
 	// ==========================================
 	// プレイヤー方向（左右）を決める
 	// ==========================================
-	// コンボ中（comboCount_ > 0）は振り向かないように条件を追加
-	if (!IsAttackMode() && !IsAttacking() && comboCount_ == 0) {
+	// コンボ中や攻撃前待機中は振り向かない
+	if (!IsAttackMode() && !IsAttacking() && comboCount_ == 0 && !isPreAttackWaiting_) {
 		if (std::abs(toPlayer.x) > 0.01f) {
 			float dir = (toPlayer.x > 0.0f) ? 1.0f : -1.0f;
 			SetFacingDir(dir);
@@ -68,36 +72,49 @@ void FastEnemy::Update(const KamataEngine::Vector3& playerPos, const std::vector
 		comboCount_ = 0; // コンボ回数をリセットして再び追従可能にする
 	}
 
-	// 待機中の場合
+	// 3連撃後の待機中の場合
 	if (isWaiting_) {
 		UpdateWait(GetDeltaTime());
 		EnemyBase::Update(playerPos, allEnemies);
 		return;
 	}
 
-// ==========================================
+    // ==========================================
 	// 攻撃の開始判定と移動の順番を整理
 	// ==========================================
-	// コンボ中は現在の向きを維持するため、自分の目の前のダミー座標を渡す
 	KamataEngine::Vector3 attackTargetPos = playerPos;
 	if (comboCount_ > 0) {
 		attackTargetPos = GetPosition();
-
-		// ★修正: GetFacingDir() そのままだと距離1.0fになり射程外(0.7)で不発するため、確実に射程内になるよう 0.1f を掛ける
-		attackTargetPos.x += GetFacingDir() * 0.1f;
+		attackTargetPos.x += GetFacingDir() * 0.1f; // 目の前のダミー座標
 	}
 
-	// ★修正: IsAttackMode() だけでなく、コンボ中（comboCount_ > 0）なら強制的に攻撃を継続させる
 	if (IsAttackMode() || comboCount_ > 0) {
-		// 既に攻撃中、またはコンボ途中ならそのまま攻撃処理を継続
+		// 既に攻撃中、またはコンボ途中ならそのまま継続
+		isPreAttackWaiting_ = false;
 		AttackProcess(attackTargetPos);
 
+	} else if (isPreAttackWaiting_) {
+		// 一度「攻撃前待機」に入ったら、距離の変動に関わらずタイマーを進める（リセットされない）
+		preAttackTimer_ -= GetDeltaTime();
+		if (preAttackTimer_ <= 0.0f) {
+			isPreAttackWaiting_ = false;
+
+			// ★修正: 1秒待っている間にプレイヤーが射程外に離れてしまった場合、
+			// 基底クラス側で攻撃がキャンセルされてしまうのを防ぐため、ダミー座標を渡す
+			KamataEngine::Vector3 dummyPos = GetPosition();
+			dummyPos.x += GetFacingDir() * 0.1f;
+			AttackProcess(dummyPos);
+		}
+
 	} else if (dist <= GetAttackRange() && GetAttackCoolDownTimer() <= 0.0f) {
-		// 攻撃範囲内 ＆ クールタイム消化済みなら攻撃開始
-		AttackProcess(attackTargetPos);
+		// 攻撃範囲内に入った瞬間、1秒の待機フェーズを開始する
+		isPreAttackWaiting_ = true;
+		preAttackTimer_ = preAttackDuration_;
 
 	} else {
 		// 攻撃範囲外なら追従移動
+		isPreAttackWaiting_ = false;
+		preAttackTimer_ = preAttackDuration_;
 		MoveTowardPlayer(playerPos, allEnemies);
 	}
 
@@ -110,12 +127,12 @@ void FastEnemy::Update(const KamataEngine::Vector3& playerPos, const std::vector
 	} else if (IsAttackMode()) {
 		if (GetState() != EnemyState::AttackWait)
 			ChangeState<EnemyStateAttackWait>();
-	} else if (GetSpeed() > 0.0f && dist > GetAttackRange()) {
-		// 移動中かつプレイヤーが射程外ならWalking
+	} else if (GetSpeed() > 0.0f && dist > GetAttackRange() && !isPreAttackWaiting_) {
+		// 攻撃前待機中ではない時だけ Walking
 		if (GetState() != EnemyState::Walking)
 			ChangeState<EnemyStateWalking>();
 	} else {
-		// それ以外は Idle
+		// 攻撃前待機中を含め、それ以外は Idle で立ち止まる
 		if (GetState() != EnemyState::Idle)
 			ChangeState<EnemyStateIdle>();
 	}

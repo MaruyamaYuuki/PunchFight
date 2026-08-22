@@ -62,4 +62,9 @@ private:
 
 	int comboCount_ = 0;          // 現在の攻撃回数
 	const int maxComboCount_ = 3; // 連撃の最大数
+
+	// 攻撃前待機用パラメータ
+	bool isPreAttackWaiting_ = false; // 接敵後、攻撃前の待機フラグ
+	float preAttackTimer_ = 0.0f;     // 攻撃前待機タイマー
+	float preAttackDuration_ = 1.0f;  // 攻撃前の待機時間（秒）
 };
