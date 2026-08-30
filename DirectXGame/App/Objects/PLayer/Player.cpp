@@ -304,8 +304,15 @@ void Player::TextureUpdate() {
 		} 
 		state = PlayerState::Dead;
 	} else if (combat_->IsNormalAttacking()) {
-		state = PlayerState::Attack;
-	} else if (isStepping_) {
+		// ==========================================
+		// 自動コンボの3段目ならアッパーのステートにする
+		// ==========================================
+		if (combat_->IsAutoCombo() && combat_->GetAutoComboStep() == 3) {
+			state = PlayerState::Uppercut;
+		} else {
+			state = PlayerState::Attack;
+		}
+	}else if (isStepping_) {
 		state = PlayerState::Step;
 	} else if (move_.x != 0.0f || move_.z != 0.0f) {
 		state = PlayerState::Move;
@@ -372,11 +379,15 @@ void Player::UpdateWorldTransform() {
 }
 
 void Player::OnHit(int32_t damage) {
-	if (!isStepping_) {
-    	HP_ -= damage;
+	// ==========================================
+	// ステップ中、または自動コンボ中は完全無敵（処理をスキップ）
+	// ==========================================
+	if (isStepping_ || combat_->IsAutoCombo()) {
+		return;
 	}
 
-
+	// 無敵ではない場合のみダメージを受ける
+	HP_ -= damage;
 
 	if (HP_ < 0) {
 		HP_ = 0;

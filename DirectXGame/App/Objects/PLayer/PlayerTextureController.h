@@ -9,6 +9,7 @@ enum class PlayerState {
 	Move,
 	Step,
 	Attack,
+	Uppercut,
 	Stun,
 	Dead,
 	Victory
@@ -43,6 +44,7 @@ private:
 	uint32_t RRun_[3];
 	uint32_t RLeftPunch_;
 	uint32_t RRightPunch_;
+	uint32_t RUppercut_;
 	uint32_t RKnockDown_[2];
 	uint32_t RStun_;
 	uint32_t RVictory_;
@@ -51,6 +53,7 @@ private:
 	uint32_t LIdle_;
 	uint32_t LRun_[3];
 	uint32_t LLeftPunch_;
+	uint32_t LUppercut_;
 	uint32_t LRightPunch_;
 	uint32_t LKnockDown_[2];
 	uint32_t LStun_;

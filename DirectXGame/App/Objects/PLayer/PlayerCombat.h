@@ -84,6 +84,16 @@ public:
 	/// <summary> 設定された強攻撃の最大クールタイム値を取得 </summary>
 	float GetSpecialCooldown() const { return specialCooldown_; }
 
+	// ==========================================
+	// 現在自動コンボ（3連撃）中であるかを取得
+	// ==========================================
+	bool IsAutoCombo() const { return isAutoCombo_; }
+
+	// ==========================================
+	// 自動3連撃の現在の段数（1～3）を取得
+	// ==========================================
+	int GetAutoComboStep() const { return autoComboStep_; }
+
 private:
 
 	// ===== 通常攻撃 =====
@@ -118,6 +128,15 @@ private:
 
 	KamataEngine::Vector3 specialPos_;
 	HitBox specialHitBox_;
+
+	// コンボ管理用
+	int comboCount_ = 0;                   // 現在何発目の攻撃か
+	float comboResetTimer_ = 0.0f;         // 攻撃間隔が空いた時にリセットするタイマー
+	const float comboResetTimeMax_ = 1.0f; // 1秒間入力がなければコンボリセット
+
+	// 5段目の3連撃用
+	bool isAutoCombo_ = false; // 自動3連撃中かどうか
+	int autoComboStep_ = 0;    // 現在何連撃目か (1～3)
 
 	const float deltaTime_ = 1.0f / 60.0f;
 };

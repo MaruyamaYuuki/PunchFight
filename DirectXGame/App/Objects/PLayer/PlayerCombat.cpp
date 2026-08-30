@@ -25,21 +25,55 @@ void PlayerCombat::Update(const Vector3& playerPos, float facingDir) {
     justStartedNormal_ = false;
 	justStartedSpecial_ = false;
 
-	// ===== 通常攻撃 =====
-	if (isNormalAttacking_) {
-		normalTimer_--;
-		if (normalTimer_ <= 0) {
-			isNormalAttacking_ = false;
-			normalHitBox_.active = false;
-			normalCooldownTimer_ = normalCooldown_;
-		} else {
-			float hitboxOffsetX = 0.5f * facingDir; // プレイヤーが右向きなら+0.8、左向きなら-0.8
-			normalHitBox_.pos = playerPos + Vector3{hitboxOffsetX, 0.1f, 0.0f};
+// ==========================================
+	// ★追加: 一定時間攻撃しなかったらコンボリセット
+	// ==========================================
+	if (!isNormalAttacking_ && comboCount_ > 0) {
+		comboResetTimer_ -= deltaTime_;
+		if (comboResetTimer_ <= 0.0f) {
+			comboCount_ = 0;
 		}
 	}
 
-	// クールタイム中
-	else if (!canNormalAttack_) {
+	// ===== 通常攻撃の更新 =====
+	if (isNormalAttacking_) {
+		normalTimer_--;
+
+		// ヒットボックス追従
+		float offsetX = 0.5f * facingDir;
+		normalHitBox_.pos = playerPos + KamataEngine::Vector3{offsetX, 0.1f, 0.0f};
+
+		if (normalTimer_ <= 0) {
+			// 1発分の攻撃終了
+			isNormalAttacking_ = false;
+			normalHitBox_.active = false;
+
+			// ==========================================
+			// 3連撃モード中の処理
+			// ==========================================
+			if (isAutoCombo_) {
+				autoComboStep_++;
+				if (autoComboStep_ <= 3) {
+					// 3連撃中：クールタイムを挟まず、即座に次のパンチを出す
+					isNormalAttacking_ = true;
+					justStartedNormal_ = true; // SEやエフェクトを再度発生させる
+					normalTimer_ = normalDuration_;
+					attackFromRight_ = !attackFromRight_;
+					normalHitBox_.active = true;
+				} else {
+					// 3発終わったら自動連撃終了 → クールタイムへ
+					isAutoCombo_ = false;
+					canNormalAttack_ = false;
+					normalCooldownTimer_ = normalCooldown_;
+				}
+			} else {
+				// 通常の1発攻撃終了時 → クールタイムへ
+				canNormalAttack_ = false;
+				normalCooldownTimer_ = normalCooldown_;
+			}
+		}
+	} else if (!canNormalAttack_) {
+		// クールタイム中
 		normalCooldownTimer_--;
 		if (normalCooldownTimer_ <= 0) {
 			canNormalAttack_ = true;
@@ -84,6 +118,17 @@ void PlayerCombat::Update(const Vector3& playerPos, float facingDir) {
 void PlayerCombat::StartNormalAttack(KamataEngine::Vector3 playerPos, float facingDir) {
 	if (!canNormalAttack_ || isNormalAttacking_)
 		return;
+
+	// コンボのカウントアップ
+	comboCount_++;
+	comboResetTimer_ = comboResetTimeMax_; // タイマーリセット
+
+	// 4回目なら3連撃モード突入
+	if (comboCount_ >= 4) {
+		isAutoCombo_ = true;
+		autoComboStep_ = 1;
+		comboCount_ = 0; // 次のためにコンボ数をリセットしておく
+	}
 
 	isNormalAttacking_ = true;
 	canNormalAttack_ = false;

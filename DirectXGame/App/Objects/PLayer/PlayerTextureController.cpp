@@ -14,6 +14,8 @@ void PlayerTextureController::Initialize() {
 	RLeftPunch_ = TextureManager::Load("playerTextures/RLeftPunch.png");
 	RRightPunch_ = TextureManager::Load("playerTextures/RRightPunch.png");
 
+	RUppercut_ = TextureManager::Load("playerTextures/RUppercut.png");
+
 	RKnockDown_[0] = TextureManager::Load("playerTextures/RKnockDown.png");
 	RKnockDown_[1] = TextureManager::Load("playerTextures/RKnockDown2.png");
 
@@ -28,6 +30,8 @@ void PlayerTextureController::Initialize() {
 
 	LLeftPunch_ = TextureManager::Load("playerTextures/LLeftPunch.png");
 	LRightPunch_ = TextureManager::Load("playerTextures/LRightPunch.png");
+
+	LUppercut_ = TextureManager::Load("playerTextures/LUppercut.png");
 
 	LKnockDown_[0] = TextureManager::Load("playerTextures/LKnockDown.png");
 	LKnockDown_[1] = TextureManager::Load("playerTextures/LKnockDown2.png");
@@ -68,6 +72,11 @@ uint32_t PlayerTextureController::GetTexture(
 		} else {
 			return isRight ? RLeftPunch_ : LLeftPunch_;
 		}
+	}
+
+	// 上段攻撃
+	if (state == PlayerState::Uppercut) {
+		return isRight ? RUppercut_ : LUppercut_;
 	}
 
 	// ステップ

@@ -223,6 +223,11 @@ public:
 	/// </summary>
 	void ClearAnimation();
 
+	/// <summary>
+	/// 通常攻撃が開始された瞬間の判定
+	/// </summary>
+	bool DidStartNormalAttack() const { return combat_->DidStartNormalAttack(); }
+
 private:
 	/// <summary>
 	/// 入力に基づいた移動計算（通常移動、ステップ）の実行
