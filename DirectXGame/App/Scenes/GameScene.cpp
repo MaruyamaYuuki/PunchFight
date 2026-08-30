@@ -699,6 +699,14 @@ void GameScene::EnemyUpdate() {
 
 void GameScene::AllCollision() {
 
+	// ==========================================
+	// 新しいパンチ（2発目・3発目含む）が出た瞬間に、
+	// 「すでにダメージを与えた敵」のリストをリセットして多段ヒットを許可する
+	// ==========================================
+	if (player_->DidStartNormalAttack()) {
+		hitEnemiesThisAttack_.clear();
+	}
+
 	// プレイヤーのヒットボックスを取得する
 	const HitBox& pHitBox = player_->GetPlayerHitBox();
 

@@ -50,7 +50,7 @@
             {"triggerX": 15.0,
              "enemies": [
               {"type": "Normal", "pos": [26,1,-1]},
-              {"type": "Fast", "pos": [25,1,0]},
+              {"type": "Normal", "pos": [25,1,0]},
               {"type": "Normal", "pos": [26,1,1]}
              ]
             },
